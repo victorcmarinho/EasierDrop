@@ -4,25 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
-main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await windowManager.ensureInitialized();
-
-  WindowOptions windowOptions = WindowOptions(
-    size: Size(250, 250),
-    backgroundColor: Colors.transparent,
-    skipTaskbar: false,
-    fullScreen: false,
-    alwaysOnTop: true,
-    titleBarStyle: TitleBarStyle.hidden,
-    title: 'Easier Drop',
-    minimumSize: Size(150, 150),
-  );
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
-  });
+  await _configureWindow();
 
   runApp(
     MultiProvider(
@@ -30,6 +14,25 @@ main() async {
       child: const EasierDrop(),
     ),
   );
+}
+
+Future<void> _configureWindow() async {
+  const WindowOptions windowOptions = WindowOptions(
+    minimumSize: Size(150, 150),
+    size: Size(250, 250),
+    backgroundColor: Colors.transparent,
+    skipTaskbar: false,
+    fullScreen: false,
+    alwaysOnTop: true,
+    titleBarStyle: TitleBarStyle.hidden,
+    title: 'Easier Drop',
+  );
+  await Future.wait([
+    windowManager.ensureInitialized(),
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await Future.wait([windowManager.show(), windowManager.focus()]);
+    }),
+  ]);
 }
 
 class EasierDrop extends StatelessWidget {

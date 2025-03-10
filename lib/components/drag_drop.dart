@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:easier_drop/components/drop_hit.dart';
 import 'package:easier_drop/components/files_stack.dart';
 import 'package:easier_drop/components/remove_button.dart';
@@ -9,8 +8,7 @@ import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// ignore: implementation_imports
-import 'package:super_clipboard/src/reader.dart';
+import 'package:super_clipboard/super_clipboard.dart' show DataReader;
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 class DragDrop extends StatefulWidget {
@@ -25,38 +23,37 @@ class _DragDropState extends State<DragDrop> {
 
   Future<void> _onPerformDrop(
     PerformDropEvent event,
-    Function(List<FileReference>) addAllFiles,
+    void Function(List<FileReference>) addAllFiles,
   ) async {
-    final uriList = <String>[];
-    for (final item in event.session.items) {
-      final reader = item.dataReader!;
-      if (reader.canProvide(Formats.fileUri)) {
-        final uri = (await _getUri(reader));
-        if (uri != null) {
-          uriList.add(uri);
+    final uriList = await Future.wait(
+      event.session.items.map((item) async {
+        final reader = item.dataReader;
+        if (reader != null && reader.canProvide(Formats.fileUri)) {
+          return _getUri(reader);
         }
-      }
+        return null;
+      }),
+    );
+
+    final validUris = uriList.whereType<String>().toList();
+    if (validUris.isNotEmpty) {
+      _addToDroppedFiles(validUris, addAllFiles);
     }
-    _addToDroppedFiles(uriList, addAllFiles);
   }
 
   Future<String?> _getUri(DataReader reader) {
     final completer = Completer<String?>();
     reader.getValue<Uri>(
       Formats.fileUri,
-      (value) {
-        completer.complete(value?.toFilePath(windows: false));
-      },
-      onError: (error) {
-        completer.complete(null);
-      },
+      (value) => completer.complete(value?.toFilePath(windows: false)),
+      onError: (_) => completer.complete(null),
     );
     return completer.future;
   }
 
-  _addToDroppedFiles(
+  Future<void> _addToDroppedFiles(
     List<String> uriList,
-    Function(List<FileReference>) addAllFiles,
+    void Function(List<FileReference>) addAllFiles,
   ) async {
     final newFiles = await Future.wait(
       uriList.map((file) async {
@@ -68,56 +65,61 @@ class _DragDropState extends State<DragDrop> {
     addAllFiles(newFiles);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final files = context.watch<FilesProvider>().files;
-    final hasFiles = files.isNotEmpty;
-    final addAllFiles = context.watch<FilesProvider>().addAllFiles;
-    final shared = context.watch<FilesProvider>().shared;
-
+  Offset? _getButtonPosition() {
     final RenderBox? renderBox =
         _buttonKey.currentContext?.findRenderObject() as RenderBox?;
-    final Offset? position = renderBox?.localToGlobal(Offset.zero);
+    return renderBox?.localToGlobal(Offset.zero);
+  }
+
+  Widget _buildAnimatedButton({required bool visible, required Widget child}) {
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 300),
+      opacity: visible ? 1.0 : 0.0,
+      child: visible ? child : const SizedBox(width: 40, height: 40),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filesProvider = context.watch<FilesProvider>();
+    final hasFiles = filesProvider.files.isNotEmpty;
 
     return DropRegion(
       formats: [Formats.fileUri],
       hitTestBehavior: HitTestBehavior.opaque,
-      onDropOver: (event) {
-        if (event.session.allowedOperations.contains(DropOperation.link)) {
-          return DropOperation.link;
-        }
-        return DropOperation.none;
-      },
-      onPerformDrop: (event) => _onPerformDrop(event, addAllFiles),
+      onDropOver:
+          (event) =>
+              event.session.allowedOperations.contains(DropOperation.link)
+                  ? DropOperation.link
+                  : DropOperation.none,
+      onPerformDrop:
+          (event) => _onPerformDrop(event, filesProvider.addAllFiles),
       child: Stack(
         alignment: Alignment.center,
         children: [
+          hasFiles
+              ? FilesStack(droppedFiles: filesProvider.files)
+              : const DropHit(),
+
           Positioned(
             right: 0,
             top: 0,
-
-            child: AnimatedOpacity(
-              duration: Duration(milliseconds: 300),
-              opacity: hasFiles ? 1.0 : 0.0,
+            child: _buildAnimatedButton(
+              visible: hasFiles,
               child: ShareButton(
                 key: _buttonKey,
-                onPressed: () {
-                  shared(position: position);
-                },
+                onPressed:
+                    () => filesProvider.shared(position: _getButtonPosition()),
               ),
             ),
           ),
 
-          hasFiles ? FilesStack(droppedFiles: files) : DropHit(),
           Positioned(
             right: 0,
             bottom: 0,
-            child: AnimatedOpacity(
-              duration: Duration(milliseconds: 300),
-              opacity: hasFiles ? 1.0 : 0.0,
-              child: RemoveButton(
-                onPressed: () => context.read<FilesProvider>().clear(),
-              ),
+            child: _buildAnimatedButton(
+              visible: hasFiles,
+              child: RemoveButton(onPressed: filesProvider.clear),
             ),
           ),
         ],
