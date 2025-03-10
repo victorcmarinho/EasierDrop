@@ -33,6 +33,8 @@ dependencies:
   win32: ^5.11.0
   ffi: ^2.1.4
   window_manager: ^0.4.2
+  provider: ^6.1.2
+  share_plus: ^10.1.4
   flutter:
     sdk: flutter
 

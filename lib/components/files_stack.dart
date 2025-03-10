@@ -1,9 +1,9 @@
-import 'package:easier_drop/model/x_file.dart';
+import 'package:easier_drop/model/file_reference.dart';
 import 'package:flutter/material.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 class FilesStack extends StatelessWidget {
-  final List<XFile> droppedFiles;
+  final List<FileReference> droppedFiles;
 
   const FilesStack({super.key, required this.droppedFiles});
 

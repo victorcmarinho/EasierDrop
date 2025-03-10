@@ -1,5 +1,7 @@
+import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/screens/file_transfer_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 main() async {
@@ -22,7 +24,12 @@ main() async {
     await windowManager.focus();
   });
 
-  runApp(const EasierDrop());
+  runApp(
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => FilesProvider())],
+      child: const EasierDrop(),
+    ),
+  );
 }
 
 class EasierDrop extends StatelessWidget {
