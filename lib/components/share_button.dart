@@ -12,7 +12,7 @@ class ShareButton extends StatelessWidget {
       hint: "Toque para compartilhar este conteúdo",
       child: IconButton(
         onPressed: onPressed,
-        icon: Icon(Icons.share),
+        icon: const Icon(Icons.share),
         tooltip: "Compartilhar",
       ),
     );

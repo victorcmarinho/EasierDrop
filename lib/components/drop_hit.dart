@@ -5,9 +5,9 @@ class DropHit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
+      children: [
         Icon(Icons.file_download_outlined, size: 100),
         Text('Jogue os arquivos aqui'),
       ],
