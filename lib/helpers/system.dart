@@ -35,6 +35,7 @@ class SystemHelper {
         titleBarStyle: TitleBarStyle.hidden,
         title: 'Easier Drop',
         windowButtonVisibility: false,
+        skipTaskbar: true,
       ),
       () async {
         await SystemHelper.open();

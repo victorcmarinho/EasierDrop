@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:easier_drop/helpers/system.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -14,8 +12,8 @@ class Tray extends StatefulWidget {
 class _TrayState extends State<Tray> with TrayListener {
   @override
   void initState() async {
-    trayManager.addListener(this);
     super.initState();
+    trayManager.addListener(this);
   }
 
   @override
