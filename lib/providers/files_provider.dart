@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:easier_drop/model/file_reference.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -49,7 +52,7 @@ class FilesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<ShareResult> shared({Offset? position}) async {
+  shared({Offset? position}) async {
     if (xfiles.isEmpty) {
       return ShareResult(
         "Sem arquivos para compartilhar",

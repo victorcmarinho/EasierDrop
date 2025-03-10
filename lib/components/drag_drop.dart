@@ -4,6 +4,7 @@ import 'package:easier_drop/components/files_stack.dart';
 import 'package:easier_drop/components/remove_button.dart';
 import 'package:easier_drop/components/share_button.dart';
 import 'package:easier_drop/helpers/macos/file_icon_macos.dart';
+import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:flutter/material.dart';
@@ -100,6 +101,12 @@ class _DragDropState extends State<DragDrop> {
           hasFiles
               ? FilesStack(droppedFiles: filesProvider.files)
               : const DropHit(),
+
+          Positioned(
+            left: 0,
+            top: 0,
+            child: CloseButton(onPressed: () => SystemHelper.hide()),
+          ),
 
           Positioned(
             right: 0,

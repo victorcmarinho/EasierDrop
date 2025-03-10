@@ -1,4 +1,5 @@
 import 'package:easier_drop/components/drag_drop.dart';
+import 'package:easier_drop/components/tray.dart';
 import 'package:flutter/material.dart';
 
 class FileTransferScreen extends StatelessWidget {
@@ -6,6 +7,8 @@ class FileTransferScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Row(children: [Expanded(child: DragDrop())]));
+    return const Scaffold(
+      body: Row(children: [Expanded(child: DragDrop()), Tray()]),
+    );
   }
 }

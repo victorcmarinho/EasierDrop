@@ -1,12 +1,25 @@
+import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/screens/file_transfer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _configureWindow();
+
+  await trayManager.setIcon('assets/images/icon.icns');
+
+  Menu menu = Menu(
+    items: [
+      MenuItem(key: 'show_window', label: 'Abrir bandeja'),
+      MenuItem.separator(),
+      MenuItem(key: 'exit_app', label: 'Fechar o aplicativo'),
+    ],
+  );
+  await trayManager.setContextMenu(menu);
 
   runApp(
     MultiProvider(
@@ -27,10 +40,10 @@ Future<void> _configureWindow() async {
       alwaysOnTop: true,
       titleBarStyle: TitleBarStyle.hidden,
       title: 'Easier Drop',
+      windowButtonVisibility: false,
     ),
     () async {
-      await windowManager.show();
-      await windowManager.focus();
+      await SystemHelper.open();
     },
   );
 }
