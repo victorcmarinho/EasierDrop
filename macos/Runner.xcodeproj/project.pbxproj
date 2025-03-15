@@ -21,6 +21,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		13E1177A2D85FB4400AD325F /* FileIconChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E117782D85FB4400AD325F /* FileIconChannel.swift */; };
+		13E1177B2D85FB4400AD325F /* FileDropChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E117772D85FB4400AD325F /* FileDropChannel.swift */; };
+		13E117812D85FD3A00AD325F /* CustomDraggingSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E1177F2D85FD3A00AD325F /* CustomDraggingSource.swift */; };
 		331C80D8294CF71000263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C80D7294CF71000263BE5 /* RunnerTests.swift */; };
 		335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */; };
 		33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC10F02044A3C60003C045 /* AppDelegate.swift */; };
@@ -63,6 +66,9 @@
 
 /* Begin PBXFileReference section */
 		0987C3E621E7A473B4E8769A /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
+		13E117772D85FB4400AD325F /* FileDropChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDropChannel.swift; sourceTree = "<group>"; };
+		13E117782D85FB4400AD325F /* FileIconChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileIconChannel.swift; sourceTree = "<group>"; };
+		13E1177F2D85FD3A00AD325F /* CustomDraggingSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDraggingSource.swift; sourceTree = "<group>"; };
 		331C80D5294CF71000263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		331C80D7294CF71000263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		333000ED22D3DE5D00554162 /* Warnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Warnings.xcconfig; sourceTree = "<group>"; };
@@ -110,6 +116,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		13E117792D85FB4400AD325F /* FlutterChannels */ = {
+			isa = PBXGroup;
+			children = (
+				13E117772D85FB4400AD325F /* FileDropChannel.swift */,
+				13E117782D85FB4400AD325F /* FileIconChannel.swift */,
+			);
+			path = FlutterChannels;
+			sourceTree = "<group>";
+		};
+		13E117802D85FD3A00AD325F /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				13E1177F2D85FD3A00AD325F /* CustomDraggingSource.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		1FF9EB4AF6FAB0F552AEA0D2 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -188,8 +211,10 @@
 		33FAB671232836740065AC1E /* Runner */ = {
 			isa = PBXGroup;
 			children = (
-				33CC10F02044A3C60003C045 /* AppDelegate.swift */,
+				13E117802D85FD3A00AD325F /* Utils */,
+				13E117792D85FB4400AD325F /* FlutterChannels */,
 				33CC11122044BFA00003C045 /* MainFlutterWindow.swift */,
+				33CC10F02044A3C60003C045 /* AppDelegate.swift */,
 				33E51913231747F40026EE4D /* DebugProfile.entitlements */,
 				33E51914231749380026EE4D /* Release.entitlements */,
 				33CC11242044D66E0003C045 /* Resources */,
@@ -438,6 +463,9 @@
 			files = (
 				33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */,
 				33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */,
+				13E1177A2D85FB4400AD325F /* FileIconChannel.swift in Sources */,
+				13E1177B2D85FB4400AD325F /* FileDropChannel.swift in Sources */,
+				13E117812D85FD3A00AD325F /* CustomDraggingSource.swift in Sources */,
 				335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

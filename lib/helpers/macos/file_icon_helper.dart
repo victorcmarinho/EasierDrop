@@ -3,7 +3,7 @@
 import 'package:flutter/services.dart';
 
 class FileIconHelper {
-  static const MethodChannel _channel = MethodChannel('file_icon_helper');
+  static const MethodChannel _channel = MethodChannel('file_icon_channel');
 
   static Future<Uint8List?> getFileIcon(String filePath) async {
     try {

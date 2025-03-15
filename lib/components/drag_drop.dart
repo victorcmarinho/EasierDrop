@@ -3,7 +3,8 @@ import 'package:easier_drop/components/drop_hit.dart';
 import 'package:easier_drop/components/files_stack.dart';
 import 'package:easier_drop/components/remove_button.dart';
 import 'package:easier_drop/components/share_button.dart';
-import 'package:easier_drop/helpers/macos/file_icon_macos.dart';
+import 'package:easier_drop/helpers/macos/file_drop_helper.dart';
+import 'package:easier_drop/helpers/macos/file_icon_helper.dart';
 import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
@@ -80,6 +81,12 @@ class _DragDropState extends State<DragDrop> {
     );
   }
 
+  Future<void> _onDropLeave(DropEvent event) async {
+    FileDropHelper.getPath().then((path) {
+      print("Drop leave: $path");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final filesProvider = context.watch<FilesProvider>();
@@ -88,6 +95,7 @@ class _DragDropState extends State<DragDrop> {
     return DropRegion(
       formats: [Formats.fileUri],
       hitTestBehavior: HitTestBehavior.opaque,
+      onDropLeave: _onDropLeave,
       onDropOver:
           (event) =>
               event.session.allowedOperations.contains(DropOperation.link)

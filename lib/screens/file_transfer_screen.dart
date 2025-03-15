@@ -8,7 +8,12 @@ class FileTransferScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Row(children: [Expanded(child: DragDrop()), Tray()]),
+      body: Stack(
+        children: [
+          Row(children: [Expanded(child: DragDrop())]),
+          Tray(),
+        ],
+      ),
     );
   }
 }

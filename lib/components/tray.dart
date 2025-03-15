@@ -11,7 +11,7 @@ class Tray extends StatefulWidget {
 
 class _TrayState extends State<Tray> with TrayListener {
   @override
-  void initState() async {
+  void initState() {
     super.initState();
     trayManager.addListener(this);
   }
@@ -48,6 +48,6 @@ class _TrayState extends State<Tray> with TrayListener {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Container();
   }
 }
