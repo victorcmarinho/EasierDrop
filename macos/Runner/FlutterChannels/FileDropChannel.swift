@@ -20,12 +20,12 @@ class FileDropChannel {
                 return
             }
 
-            if let path = self.getDroppedFilePath(channel: channel) {
+            if let path = self.getDroppedFilePath() {
                 result(path)
             } else {
                 result(
                     FlutterError(
-                        code: "PATH_ERROR", message: "Não foi possível obet o path", details: nil)
+                        code: "PATH_ERROR", message: "Não foi possível obter o path", details: nil)
                 )
             }
 

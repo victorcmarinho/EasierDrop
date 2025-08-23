@@ -49,15 +49,16 @@ class FilesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  shared({Offset? position}) async {
+  Future<Object> shared({Offset? position}) async {
     if (xfiles.isEmpty) {
       return ShareResult(
         "Sem arquivos para compartilhar",
         ShareResultStatus.unavailable,
       );
     }
-    return Share.shareXFiles(
-      xfiles,
+
+    final params = ShareParams(
+      files: xfiles,
       sharePositionOrigin:
           position != null
               ? Rect.fromLTRB(
@@ -68,5 +69,7 @@ class FilesProvider with ChangeNotifier {
               )
               : null,
     );
+
+    return SharePlus.instance.share(params);
   }
 }
