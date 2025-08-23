@@ -1,5 +1,5 @@
 //
-//  DragDrop.swift
+//  MacOSFileIconChannel.swift
 //  Runner
 //
 //  Created by Victor Marinho on 15/03/25.
@@ -7,7 +7,7 @@
 import Cocoa
 import FlutterMacOS
 
-class FileIconChannel {
+class MacOSFileIconChannel {
     private static var channel: FlutterMethodChannel?
     private static let iconCache = NSCache<NSString, NSImage>()
     

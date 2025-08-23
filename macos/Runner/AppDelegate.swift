@@ -16,8 +16,8 @@ class AppDelegate: FlutterAppDelegate {
       fatalError("FlutterViewController não encontrado")
     }
 
-    FileIconChannel.setup(for: controller)
-    FileDropChannel.setup(for: controller)
+    MacOSFileIconChannel.setup(for: controller)
+    MacOSFileDropChannel.setup(for: controller)
 
     super.applicationDidFinishLaunching(notification)
   }
