@@ -1,6 +1,7 @@
 import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/screens/file_transfer_screen.dart';
+import 'package:easier_drop/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,9 +25,9 @@ class EasierDrop extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Easier Drop',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       home: const FileTransferScreen(),
     );
   }
