@@ -8,10 +8,15 @@
 import Cocoa
 import FlutterMacOS
 
+/// Canal de comunicação para operações de drag and drop no macOS
 class MacOSFileDropChannel {
+    /// Canal de método Flutter para comunicação
     private static var channel: FlutterMethodChannel?
+    
+    /// Armazena o último caminho de arquivo dropado
     private static var lastDroppedPath: String?
-
+    
+    /// Configura o canal de comunicação com o Flutter
     static func setup(for controller: FlutterViewController) {
         channel = FlutterMethodChannel(
             name: "file_drop_channel",
@@ -27,19 +32,20 @@ class MacOSFileDropChannel {
         }
     }
 
+    /// Manipula um arquivo que foi solto na aplicação
     static func handleDroppedFile(_ url: URL) {
         lastDroppedPath = url.path
     }
 
+    /// Manipula a requisição para obter o último caminho de arquivo
     private static func handleGetDroppedPath(result: @escaping FlutterResult) {
         if let path = lastDroppedPath {
             result(path)
-            // Limpa o caminho após retornar
             lastDroppedPath = nil
         } else {
             result(FlutterError(
                 code: "PATH_ERROR",
-                message: "Nenhum arquivo foi solto recentemente",
+                message: "Nenhum arquivo foi solto ainda",
                 details: nil
             ))
         }
