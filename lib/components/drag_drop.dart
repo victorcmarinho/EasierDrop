@@ -82,9 +82,12 @@ class _DragDropState extends State<DragDrop> {
   }
 
   Future<void> _onDropLeave(DropEvent event) async {
-    FileDropHelper.getPath().then((path) {
-      print("Drop leave: $path");
-    });
+    try {
+      final path = await FileDropHelper.getPath();
+      debugPrint("Drop leave: $path");
+    } catch (e) {
+      debugPrint("Erro ao obter caminho do arquivo: $e");
+    }
   }
 
   @override

@@ -2,6 +2,7 @@ import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/screens/file_transfer_screen.dart';
 import 'package:easier_drop/theme/app_theme.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +29,15 @@ class EasierDrop extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
+      debugShowCheckedModeBanner: false,
+      // Configurações recomendadas para desktop
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.trackpad,
+          PointerDeviceKind.touch,
+        },
+      ),
       home: const FileTransferScreen(),
     );
   }

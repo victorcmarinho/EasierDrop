@@ -13,7 +13,8 @@ class SystemHelper {
   }
 
   static Future<void> exit() async {
-    await SystemNavigator.pop(animated: true);
+    await trayManager.destroy();
+    await windowManager.destroy();
   }
 
   static Future<void> setup() async {

@@ -20,16 +20,17 @@ class FilesStack extends StatelessWidget {
         },
         child: DraggableWidget(
           child: Stack(
-            children: droppedFiles.take(5).toList().asMap().entries.map((entry) {
-              final index = entry.key;
-              final file = entry.value;
-              final angle = (index * 0.1).clamp(0.0, 0.3);
+            children:
+                droppedFiles.take(5).toList().asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final file = entry.value;
+                  final angle = (index * 0.1).clamp(0.0, 0.3);
 
-              return Transform.rotate(
-                angle: angle,
-                child: Image.memory(file.iconData!),
-              );
-            }).toList(),
+                  return Transform.rotate(
+                    angle: angle,
+                    child: Image.memory(file.iconData!),
+                  );
+                }).toList(),
           ),
         ),
       ),

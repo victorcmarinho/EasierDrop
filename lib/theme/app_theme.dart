@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:macos_ui/macos_ui.dart';
 
 class AppTheme {
   static const _primaryColor = Color(0xFF6750A4);

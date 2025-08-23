@@ -28,21 +28,20 @@ class _TrayState extends State<Tray> with TrayListener {
   }
 
   @override
-  void onTrayIconRightMouseDown() {
-    // do something
-  }
-
-  @override
-  void onTrayIconRightMouseUp() {
-    // do something
-  }
-
-  @override
-  void onTrayMenuItemClick(MenuItem menuItem) {
-    if (menuItem.key == 'show_window') {
-      SystemHelper.open();
-    } else if (menuItem.key == 'exit_app') {
-      SystemHelper.exit();
+  void onTrayMenuItemClick(MenuItem menuItem) async {
+    try {
+      switch (menuItem.key) {
+        case 'show_window':
+          await SystemHelper.open();
+          break;
+        case 'exit_app':
+          await SystemHelper.exit();
+          break;
+        default:
+          debugPrint('Menu item desconhecido: ${menuItem.key}');
+      }
+    } catch (e) {
+      debugPrint('Erro ao executar ação do menu: $e');
     }
   }
 
