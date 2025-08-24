@@ -128,7 +128,9 @@ class _DragDropState extends State<DragDrop> {
             border: Border.all(
               color:
                   _hovering
-                      ? Theme.of(context).colorScheme.primary.withOpacity(0.6)
+                      ? Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.6)
                       : Colors.transparent,
               width: 2,
             ),

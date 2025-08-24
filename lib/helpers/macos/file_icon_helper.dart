@@ -61,7 +61,4 @@ class FileIconHelper {
     if (dotIndex == -1 || dotIndex == path.length - 1) return null;
     return path.substring(dotIndex + 1).toLowerCase();
   }
-
-  /// Apenas para debug / métricas.
-  static int get cacheSize => _iconCache.length;
 }

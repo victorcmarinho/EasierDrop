@@ -72,40 +72,11 @@ class FilesProvider with ChangeNotifier {
       }
       final size = await file.size;
       AppLogger.info(
-        'Arquivo adicionado: ${file.fileName} (${size} bytes)',
+        'Arquivo adicionado: ${file.fileName} ($size bytes)',
         tag: 'FilesProvider',
       );
     } catch (e) {
       AppLogger.error('Erro ao adicionar arquivo: $e', tag: 'FilesProvider');
-    }
-  }
-
-  Future<void> addAllFiles(List<FileReference> files) async {
-    try {
-      if (_files.length >= _maxFiles) return;
-      for (final file in files) {
-        if (_files.length >= _maxFiles) break;
-        if (_files.containsKey(file.pathname)) continue;
-        if (!await file.isValidAsync()) continue;
-        _files[file.pathname] = file;
-      }
-      _scheduleNotify();
-
-      // Carrega ícones em paralelo para novos arquivos que ainda não têm ícone
-      await Future.wait(
-        _files.values.where((f) => f.iconData == null).map((f) async {
-          final icon = await FileIconHelper.getFileIcon(f.pathname);
-          if (icon != null) {
-            final current = _files[f.pathname];
-            if (current != null && current.iconData == null) {
-              _files[f.pathname] = current.withIcon(icon);
-            }
-          }
-        }),
-      );
-      _scheduleNotify();
-    } catch (e) {
-      AppLogger.error('Erro ao adicionar arquivos: $e', tag: 'FilesProvider');
     }
   }
 

@@ -7,14 +7,12 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     useMaterial3: true,
-    colorScheme: ColorScheme.light(
+    colorScheme: const ColorScheme.light(
       primary: _primaryColor,
       secondary: _secondaryColor,
-      surface: const Color(0xFFFFFBFE),
-      background: const Color(0xFFFFFBFE),
-      error: const Color(0xFFB3261E),
+      surface: Color(0xFFFFFBFE),
+      error: Color(0xFFB3261E),
     ),
-    scaffoldBackgroundColor: const Color(0xFFFFFBFE),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: _primaryColor,
@@ -26,14 +24,12 @@ class AppTheme {
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     useMaterial3: true,
-    colorScheme: ColorScheme.dark(
+    colorScheme: const ColorScheme.dark(
       primary: _primaryColor,
       secondary: _secondaryColor,
-      surface: const Color(0xFF1C1B1F),
-      background: const Color(0xFF1C1B1F),
-      error: const Color(0xFFF2B8B5),
+      surface: Color(0xFF1C1B1F),
+      error: Color(0xFFF2B8B5),
     ),
-    scaffoldBackgroundColor: const Color(0xFF1C1B1F),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: _primaryColor,

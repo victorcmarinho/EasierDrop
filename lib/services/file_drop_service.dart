@@ -43,11 +43,6 @@ class FileDropService {
     await _filesController.close();
   }
 
-  Future<void> beginExternalDrag(List<String> paths) async {
-    if (paths.isEmpty) return;
-    await _channel.invokeMethod(PlatformChannels.beginDrag, {'items': paths});
-  }
-
   void setMethodCallHandler(
     Future<dynamic> Function(MethodCall call)? handler,
   ) {
