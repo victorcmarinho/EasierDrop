@@ -126,13 +126,6 @@
 			path = FlutterChannels;
 			sourceTree = "<group>";
 		};
-		13E117802D85FD3A00AD325F /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Utils;
-			sourceTree = "<group>";
-		};
 		1FF9EB4AF6FAB0F552AEA0D2 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -211,7 +204,6 @@
 		33FAB671232836740065AC1E /* Runner */ = {
 			isa = PBXGroup;
 			children = (
-				13E117802D85FD3A00AD325F /* Utils */,
 				13E117792D85FB4400AD325F /* FlutterChannels */,
 				33CC11122044BFA00003C045 /* MainFlutterWindow.swift */,
 				33CC10F02044A3C60003C045 /* AppDelegate.swift */,
@@ -437,9 +429,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
