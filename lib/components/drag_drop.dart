@@ -113,8 +113,10 @@ class _DragDropState extends State<DragDrop> {
 
   @override
   Widget build(BuildContext context) {
-    final filesProvider = context.watch<FilesProvider>();
-    final hasFiles = filesProvider.files.isNotEmpty;
+    final filesProvider = context.read<FilesProvider>();
+    final hasFiles = context.select<FilesProvider, bool>(
+      (p) => p.files.isNotEmpty,
+    );
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
@@ -139,9 +141,14 @@ class _DragDropState extends State<DragDrop> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              hasFiles
-                  ? FilesStack(droppedFiles: filesProvider.files)
-                  : const DropHit(),
+              Selector<FilesProvider, List<FileReference>>(
+                selector: (_, p) => p.files,
+                builder:
+                    (context, files, _) =>
+                        files.isNotEmpty
+                            ? FilesStack(droppedFiles: files)
+                            : const DropHit(),
+              ),
 
               Positioned(
                 left: 0,
@@ -180,7 +187,11 @@ class _DragDropState extends State<DragDrop> {
                             ),
                             child: Center(
                               child: Text(
-                                filesProvider.files.length.toString(),
+                                context
+                                    .select<FilesProvider, int>(
+                                      (p) => p.files.length,
+                                    )
+                                    .toString(),
                                 style: const TextStyle(
                                   fontSize: 11,
                                   color: Colors.white,

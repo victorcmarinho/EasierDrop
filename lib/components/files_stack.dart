@@ -1,7 +1,7 @@
-import 'package:easier_drop/model/file_reference.dart';
-import 'package:flutter/material.dart';
-import 'package:easier_drop/services/constants.dart';
 import 'dart:math' as math;
+import 'package:easier_drop/model/file_reference.dart';
+import 'package:easier_drop/services/constants.dart';
+import 'package:flutter/material.dart';
 
 class FilesStack extends StatelessWidget {
   final List<FileReference> droppedFiles;
@@ -23,11 +23,12 @@ class FilesStack extends StatelessWidget {
       builder: (context, constraints) {
         final iconSize =
             math.min(constraints.maxWidth, constraints.maxHeight) * 0.8;
-        return Stack(
-          alignment: Alignment.center,
-          children:
-              droppedFiles.map((file) {
-                return SizedBox(
+        return RepaintBoundary(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              for (final file in droppedFiles)
+                SizedBox(
                   width: iconSize,
                   height: iconSize,
                   child:
@@ -42,8 +43,9 @@ class FilesStack extends StatelessWidget {
                             size: iconSize * 0.6,
                             color: Colors.grey,
                           ),
-                );
-              }).toList(),
+                ),
+            ],
+          ),
         );
       },
     );

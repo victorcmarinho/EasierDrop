@@ -22,18 +22,19 @@ class FilesProvider with ChangeNotifier {
 
   bool get isEmpty => _files.isEmpty;
 
-  Timer? _debounce;
+  bool _notifyScheduled = false;
   void _scheduleNotify() {
-    _debounce?.cancel();
-    _debounce = Timer(
-      const Duration(milliseconds: 40),
-      () => notifyListeners(),
-    );
+    if (_notifyScheduled) return;
+    _notifyScheduled = true;
+    scheduleMicrotask(() {
+      _notifyScheduled = false;
+      notifyListeners();
+    });
   }
 
   @override
   void dispose() {
-    _debounce?.cancel();
+    // nenhum recurso pendente além do microtask agendado
     super.dispose();
   }
 
@@ -70,9 +71,8 @@ class FilesProvider with ChangeNotifier {
           _scheduleNotify();
         }
       }
-      final size = await file.size;
       AppLogger.info(
-        'Arquivo adicionado: ${file.fileName} ($size bytes)',
+        'Arquivo adicionado: ${file.fileName}',
         tag: 'FilesProvider',
       );
     } catch (e) {
