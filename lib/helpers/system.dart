@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
@@ -53,7 +54,7 @@ class SystemHelper with WindowListener {
             animate: false,
           );
         } catch (e) {
-          AppLogger.warn('Falha ao restaurar posição janela: $e');
+          AppLogger.warn('Failed to restore window position: $e');
         }
       }
       await SystemHelper.open();
@@ -64,15 +65,26 @@ class SystemHelper with WindowListener {
     try {
       await trayManager.setIcon('assets/images/icon.icns');
     } catch (e) {
-      AppLogger.warn('Falha ao carregar ícone da tray: $e');
+      AppLogger.warn('Failed to load tray icon: $e');
     }
+
+    // Tenta obter locale preferido antes de buildar menu inicial
+    final code = SettingsService.instance.localeCode;
+    // Fallback para 'en'
+    final locale = code != null
+        ? (code.contains('_')
+            ? Locale(code.split('_')[0], code.split('_')[1])
+            : Locale(code))
+        : const Locale('en');
+    final loc = lookupAppLocalizations(locale);
+
     await trayManager.setContextMenu(
       Menu(
         items: [
-          MenuItem(key: 'show_window', label: 'Open tray'),
-          MenuItem(key: 'files_count', label: '\uD83D\uDCC2 No files'),
+          MenuItem(key: 'show_window', label: loc.openTray),
+          MenuItem(key: 'files_count', label: loc.trayFilesNone),
           MenuItem.separator(),
-          MenuItem(key: 'exit_app', label: 'Quit application'),
+          MenuItem(key: 'exit_app', label: loc.trayExit),
         ],
       ),
     );

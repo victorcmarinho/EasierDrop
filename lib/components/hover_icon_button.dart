@@ -43,7 +43,7 @@ class _HoverIconButtonState extends State<HoverIconButton> {
   @override
   Widget build(BuildContext context) {
     final theme = MacosTheme.of(context);
-    final base = (widget.baseColor ?? theme.primaryColor).withOpacity(1);
+  final base = (widget.baseColor ?? theme.primaryColor).withValues(alpha: 1);
     final opacity =
         !widget.enabled
             ? 0.0
@@ -60,7 +60,7 @@ class _HoverIconButtonState extends State<HoverIconButton> {
       width: widget.size,
       padding: widget.padding,
       decoration: BoxDecoration(
-        color: base.withOpacity(opacity),
+  color: base.withValues(alpha: opacity),
         borderRadius: widget.borderRadius,
       ),
       child: Center(

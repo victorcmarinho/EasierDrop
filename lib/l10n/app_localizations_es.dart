@@ -105,4 +105,24 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get languageLabel => 'Idioma:';
+
+  @override
+  String get languageEnglish => 'Inglés';
+
+  @override
+  String get languagePortuguese => 'Portugués';
+
+  @override
+  String get languageSpanish => 'Español';
+
+  @override
+  String limitReached(int max) {
+    return 'Se alcanzó el límite de archivos ($max)';
+  }
+
+  @override
+  String get shareNone => 'No hay archivos para compartir';
+
+  @override
+  String get shareError => 'Error al compartir archivos';
 }

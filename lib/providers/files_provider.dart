@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:easier_drop/helpers/macos/file_icon_helper.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/services/logger.dart';
+import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
@@ -59,7 +60,7 @@ class FilesProvider with ChangeNotifier {
       if (_files.length >= _maxFiles) {
         _lastLimitHit = DateTime.now();
         AppLogger.warn(
-          'Limite de arquivos atingido ($_maxFiles)',
+          'File limit reached ($_maxFiles)',
           tag: 'FilesProvider',
         );
         _scheduleNotify();
@@ -67,14 +68,14 @@ class FilesProvider with ChangeNotifier {
       }
       if (!await file.isValidAsync()) {
         AppLogger.debug(
-          'Arquivo inválido: ${file.pathname}',
+          'Invalid file skipped: ${file.pathname}',
           tag: 'FilesProvider',
         );
         return;
       }
       if (_files.containsKey(file.pathname)) {
         AppLogger.debug(
-          'Arquivo já existe: ${file.pathname}',
+          'Duplicate file ignored: ${file.pathname}',
           tag: 'FilesProvider',
         );
         return;
@@ -92,11 +93,11 @@ class FilesProvider with ChangeNotifier {
         }
       }
       AppLogger.info(
-        'Arquivo adicionado: ${file.fileName}',
+        'File added: ${file.fileName}',
         tag: 'FilesProvider',
       );
     } catch (e) {
-      AppLogger.error('Erro ao adicionar arquivo: $e', tag: 'FilesProvider');
+      AppLogger.error('Error adding file: $e', tag: 'FilesProvider');
     }
   }
 
@@ -111,12 +112,12 @@ class FilesProvider with ChangeNotifier {
       if (_files.remove(file.pathname) != null) {
         _scheduleNotify();
         AppLogger.info(
-          'Arquivo removido: ${file.fileName}',
+          'File removed: ${file.fileName}',
           tag: 'FilesProvider',
         );
       }
     } catch (e) {
-      AppLogger.error('Erro ao remover arquivo: $e', tag: 'FilesProvider');
+      AppLogger.error('Error removing file: $e', tag: 'FilesProvider');
     }
   }
 
@@ -124,11 +125,11 @@ class FilesProvider with ChangeNotifier {
     try {
       if (_files.remove(pathname) != null) {
         _scheduleNotify();
-        AppLogger.info('Arquivo removido: $pathname', tag: 'FilesProvider');
+        AppLogger.info('File removed: $pathname', tag: 'FilesProvider');
       }
     } catch (e) {
       AppLogger.error(
-        'Erro ao remover arquivo por path: $e',
+        'Error removing file by path: $e',
         tag: 'FilesProvider',
       );
     }
@@ -139,17 +140,15 @@ class FilesProvider with ChangeNotifier {
     final count = _files.length;
     _files.clear();
     _scheduleNotify();
-    AppLogger.info('$count arquivos removidos', tag: 'FilesProvider');
+  AppLogger.info('$count file(s) cleared', tag: 'FilesProvider');
   }
 
   Future<Object> shared({Offset? position}) async {
     try {
       final validFiles = xfiles;
       if (validFiles.isEmpty) {
-        return ShareResult(
-          'Sem arquivos para compartilhar',
-          ShareResultStatus.unavailable,
-        );
+        // Retorna key para ser resolvida na UI
+        return ShareResult('shareNone', ShareResultStatus.unavailable);
       }
       final params = ShareParams(
         files: validFiles,
@@ -166,13 +165,10 @@ class FilesProvider with ChangeNotifier {
       return SharePlus.instance.share(params);
     } catch (e) {
       AppLogger.error(
-        'Erro ao compartilhar arquivos: $e',
+        'Error sharing files: $e',
         tag: 'FilesProvider',
       );
-      return ShareResult(
-        'Erro ao compartilhar arquivos',
-        ShareResultStatus.unavailable,
-      );
+      return ShareResult('shareError', ShareResultStatus.unavailable);
     }
   }
 
@@ -190,9 +186,23 @@ class FilesProvider with ChangeNotifier {
     }
     _scheduleNotify();
     AppLogger.info(
-      '${toRemove.length} arquivo(s) removidos após rescan',
+      '${toRemove.length} invalid file(s) removed after rescan',
       tag: 'FilesProvider',
     );
+  }
+
+  /// Utilitário para resolver mensagem de `ShareResult` retornada pelo provider.
+  /// Se `rawMessage` corresponder a uma key interna ('shareNone' / 'shareError')
+  /// retorna a string localizada; caso contrário devolve o próprio texto.
+  static String resolveShareMessage(String rawMessage, AppLocalizations loc) {
+    switch (rawMessage) {
+      case 'shareNone':
+        return loc.shareNone;
+      case 'shareError':
+        return loc.shareError;
+      default:
+        return rawMessage; // já é texto amigável ou desconhecido.
+    }
   }
 
   void rescanNow() => _rescanInternal();

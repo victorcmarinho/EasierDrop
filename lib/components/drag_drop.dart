@@ -12,10 +12,8 @@ import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/constants.dart';
 import 'package:easier_drop/services/logger.dart';
 import 'package:easier_drop/services/settings_service.dart';
-import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'hover_icon_button.dart';
 import 'package:provider/provider.dart';
 
@@ -68,7 +66,7 @@ class _DragDropState extends State<DragDrop> {
       if (call.method == PlatformChannels.fileDroppedCallback) {
         final op = call.arguments as String?;
         AppLogger.info(
-          'Drag finalizado (inbound). Operação: ${op ?? 'desconhecida'}',
+          'Drag finished (inbound). Operation: ${op ?? 'unknown'}',
           tag: 'DragDrop',
         );
       }
@@ -79,12 +77,12 @@ class _DragDropState extends State<DragDrop> {
       if (call.method == PlatformChannels.fileDroppedCallback) {
         final op = call.arguments as String?; // copy | move
         AppLogger.info(
-          'Drag finalizado (outbound). Operação: ${op ?? 'desconhecida'}',
+          'Drag finished (outbound). Operation: ${op ?? 'unknown'}',
           tag: 'DragDrop',
         );
         if (op == 'copy') {
           AppLogger.info(
-            'Operação de cópia detectada. Arquivos mantidos na bandeja.',
+            'Copy operation detected. Files kept in tray.',
             tag: 'DragDrop',
           );
           return null;
@@ -113,12 +111,12 @@ class _DragDropState extends State<DragDrop> {
       );
 
   Future<void> _handleDragOut() async {
-    AppLogger.debug('Iniciando drag out', tag: 'DragDrop');
+  AppLogger.debug('Starting drag out', tag: 'DragDrop');
     final filesProvider = context.read<FilesProvider>();
     final files = filesProvider.files.map((f) => f.pathname).toList();
 
     if (files.isEmpty) {
-      AppLogger.warn('Nenhum arquivo para arrastar', tag: 'DragDrop');
+      AppLogger.warn('No files to drag', tag: 'DragDrop');
       return;
     }
     setState(() => _draggingOut = true);
@@ -126,7 +124,7 @@ class _DragDropState extends State<DragDrop> {
     Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted) setState(() => _draggingOut = false);
     });
-    AppLogger.info('Drag externo iniciado', tag: 'DragDrop');
+  AppLogger.info('External drag started', tag: 'DragDrop');
   }
 
   Future<void> _confirmAndClear(FilesProvider provider) async {
@@ -181,12 +179,12 @@ class _DragDropState extends State<DragDrop> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 160),
             decoration: BoxDecoration(
-              color: MacosTheme.of(context).canvasColor.withOpacity(0.05),
+              color: MacosTheme.of(context).canvasColor.withValues(alpha: 0.05),
               border: Border.all(
                 color:
                     _hovering
-                        ? MacosTheme.of(context).primaryColor.withOpacity(0.6)
-                        : MacosTheme.of(context).primaryColor.withOpacity(0.0),
+                        ? MacosTheme.of(context).primaryColor.withValues(alpha: 0.6)
+                        : MacosTheme.of(context).primaryColor.withValues(alpha: 0.0),
                 width: 2,
               ),
               borderRadius: BorderRadius.circular(8),
@@ -204,7 +202,7 @@ class _DragDropState extends State<DragDrop> {
                         decoration: BoxDecoration(
                           color: MacosTheme.of(
                             context,
-                          ).canvasColor.withOpacity(0.9),
+                          ).canvasColor.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: MacosTheme.of(context).primaryColor,
@@ -225,13 +223,13 @@ class _DragDropState extends State<DragDrop> {
                           decoration: BoxDecoration(
                             color: MacosTheme.of(
                               context,
-                            ).primaryColor.withOpacity(0.85),
+                            ).primaryColor.withValues(alpha: 0.85),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           alignment: Alignment.center,
                           padding: const EdgeInsets.all(16),
                           child: Text(
-                            'Limite de ${SettingsService.instance.maxFiles} arquivos atingido',
+                            loc.limitReached(SettingsService.instance.maxFiles),
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,

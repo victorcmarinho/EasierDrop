@@ -240,6 +240,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language:'**
   String get languageLabel;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languagePortuguese.
+  ///
+  /// In en, this message translates to:
+  /// **'Portuguese'**
+  String get languagePortuguese;
+
+  /// No description provided for @languageSpanish.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish'**
+  String get languageSpanish;
+
+  /// No description provided for @limitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'File limit ({max}) reached'**
+  String limitReached(int max);
+
+  /// No description provided for @shareNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No files to share'**
+  String get shareNone;
+
+  /// No description provided for @shareError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error sharing files'**
+  String get shareError;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

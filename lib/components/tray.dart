@@ -100,18 +100,24 @@ class _TrayState extends State<Tray> with TrayListener {
         MenuItem(key: 'lang_label', label: loc.languageLabel),
         MenuItem(
           key: 'lang_en',
-          label: current == 'en' ? '• English' : 'English',
+          label:
+              current == 'en'
+                  ? '• ${loc.languageEnglish}'
+                  : loc.languageEnglish,
         ),
         MenuItem(
           key: 'lang_pt',
           label:
-              current == 'pt_BR' || current == 'pt'
-                  ? '• Português'
-                  : 'Português',
+              (current == 'pt_BR' || current == 'pt')
+                  ? '• ${loc.languagePortuguese}'
+                  : loc.languagePortuguese,
         ),
         MenuItem(
           key: 'lang_es',
-          label: current == 'es' ? '• Español' : 'Español',
+          label:
+              current == 'es'
+                  ? '• ${loc.languageSpanish}'
+                  : loc.languageSpanish,
         ),
         MenuItem.separator(),
         MenuItem(key: 'exit_app', label: loc.trayExit),

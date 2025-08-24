@@ -26,5 +26,12 @@
   "trayExit": "Quit application",
   "openTray": "Open tray",
   "filesCountTooltip": "Current number of files",
-  "languageLabel": "Language:"
+  "languageLabel": "Language:",
+  "languageEnglish": "English",
+  "languagePortuguese": "Portuguese",
+  "languageSpanish": "Spanish",
+  "limitReached": "File limit ({max}) reached",
+  "@limitReached": {"placeholders": {"max": {"type": "int"}}},
+  "shareNone": "No files to share",
+  "shareError": "Error sharing files"
 }

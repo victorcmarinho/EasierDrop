@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';

@@ -26,5 +26,12 @@
   "trayExit": "Fechar o aplicativo",
   "openTray": "Abrir bandeja",
   "filesCountTooltip": "Quantidade atual na bandeja",
-  "languageLabel": "Idioma:"
+  "languageLabel": "Idioma:",
+  "languageEnglish": "Inglês",
+  "languagePortuguese": "Português",
+  "languageSpanish": "Espanhol",
+  "limitReached": "Limite de {max} arquivos atingido",
+  "@limitReached": {"placeholders": {"max": {"type": "int"}}},
+  "shareNone": "Sem arquivos para compartilhar",
+  "shareError": "Erro ao compartilhar arquivos"
 }
