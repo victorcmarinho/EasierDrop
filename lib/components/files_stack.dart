@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:easier_drop/model/file_reference.dart';
-import 'package:easier_drop/services/constants.dart';
+import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class FilesStack extends StatelessWidget {
@@ -11,10 +11,10 @@ class FilesStack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (droppedFiles.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          AppTexts.dropHere,
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+          AppLocalizations.of(context).t('drop.here'),
+          style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
       );
     }

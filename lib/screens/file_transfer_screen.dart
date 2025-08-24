@@ -19,6 +19,7 @@ class FileTransferScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final filesProvider = context.read<FilesProvider>();
+    // Locale selector removido do app (agora no tray)
 
     return Shortcuts(
       shortcuts: <LogicalKeySet, Intent>{
@@ -55,14 +56,13 @@ class FileTransferScreen extends StatelessWidget {
             },
           ),
         },
-        child: const Focus(
+        child: Focus(
           // garante foco para receber atalhos
           autofocus: true,
           child: Scaffold(
             body: Stack(
               children: [
                 Row(children: [Expanded(child: DragDrop())]),
-                // Mantém Tray montado para atualizar menu dinamicamente
                 Tray(),
               ],
             ),

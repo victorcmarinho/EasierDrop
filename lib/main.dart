@@ -2,8 +2,12 @@ import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/screens/file_transfer_screen.dart';
 import 'package:easier_drop/theme/app_theme.dart';
+import 'package:easier_drop/l10n/app_localizations.dart';
+import 'package:easier_drop/services/settings_service.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
@@ -70,21 +74,43 @@ class EasierDrop extends StatelessWidget {
             },
           ),
         },
-        child: MaterialApp(
-          navigatorKey: navigatorKey,
-          title: 'Easier Drop',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.system,
-          debugShowCheckedModeBanner: false,
-          scrollBehavior: const MaterialScrollBehavior().copyWith(
-            dragDevices: {
-              PointerDeviceKind.mouse,
-              PointerDeviceKind.trackpad,
-              PointerDeviceKind.touch,
-            },
-          ),
-          home: const FileTransferScreen(),
+        child: AnimatedBuilder(
+          animation: SettingsService.instance,
+          builder: (context, _) {
+            final settings = SettingsService.instance;
+            Locale? forced;
+            if (settings.localeCode != null) {
+              final parts = settings.localeCode!.split('_');
+              forced =
+                  parts.length == 2
+                      ? Locale(parts[0], parts[1])
+                      : Locale(parts[0]);
+            }
+            return MaterialApp(
+              navigatorKey: navigatorKey,
+              onGenerateTitle: (ctx) => AppLocalizations.of(ctx).t('app.title'),
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: ThemeMode.system,
+              debugShowCheckedModeBanner: false,
+              localizationsDelegates: const [
+                AppLocalizationsDelegate(),
+                GlobalWidgetsLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: forced,
+              scrollBehavior: const MaterialScrollBehavior().copyWith(
+                dragDevices: {
+                  PointerDeviceKind.mouse,
+                  PointerDeviceKind.trackpad,
+                  PointerDeviceKind.touch,
+                },
+              ),
+              home: const FileTransferScreen(),
+            );
+          },
         ),
       ),
     );

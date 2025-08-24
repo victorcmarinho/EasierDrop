@@ -12,15 +12,7 @@ class PlatformChannels {
   static const String fileDroppedCallback = 'fileDropped';
 }
 
-/// Textos (temporário, até i18n). Centralizar evita literais espalhados.
-class AppTexts {
-  static const dropHere = 'Jogue os arquivos aqui';
-  static const dragOutNone = 'Nenhum arquivo para arrastar.';
-  static const share = 'Compartilhar';
-  static const removeAll = 'Remover arquivos';
-  static const close = 'Fechar';
-  static const keptOnCopy = 'Mantido por cópia';
-}
+// Textos migraram para AppLocalizations (ver l10n/app_localizations.dart)
 
 /// Flags de comportamento (poderiam futuramente vir de prefs).
 // FeatureFlags migrou para SettingsService (ver settings_service.dart)

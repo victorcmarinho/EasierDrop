@@ -8,6 +8,7 @@ import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/services/file_drop_service.dart';
 import 'package:easier_drop/services/drag_out_service.dart';
+import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/constants.dart';
 import 'package:easier_drop/services/logger.dart';
 import 'package:flutter/material.dart';
@@ -135,18 +136,22 @@ class _DragDropState extends State<DragDrop> {
       context: context,
       builder:
           (ctx) => AlertDialog(
-            title: const Text('Limpar arquivos?'),
-            content: const Text(
-              'Essa ação removerá todos os arquivos coletados.',
+            title: Text(AppLocalizations.of(context).t('dialog.clear.title')),
+            content: Text(
+              AppLocalizations.of(context).t('dialog.clear.message'),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Cancelar'),
+                child: Text(
+                  AppLocalizations.of(context).t('dialog.clear.cancel'),
+                ),
               ),
               FilledButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Limpar'),
+                child: Text(
+                  AppLocalizations.of(context).t('dialog.clear.confirm'),
+                ),
               ),
             ],
           ),
@@ -162,6 +167,7 @@ class _DragDropState extends State<DragDrop> {
     final hasFiles = context.select<FilesProvider, bool>(
       (p) => p.files.isNotEmpty,
     );
+    final loc = AppLocalizations.of(context);
 
     return FocusTraversalGroup(
       policy: OrderedTraversalPolicy(),
@@ -211,26 +217,31 @@ class _DragDropState extends State<DragDrop> {
                   ),
                 Selector<FilesProvider, List<FileReference>>(
                   selector: (_, p) => p.files,
-                  builder:
-                      (context, files, _) => Semantics(
-                        label: 'Área de colecionar arquivos',
-                        hint:
-                            hasFiles
-                                ? 'Contém ${files.length} arquivos. Arraste para fora para mover ou use compartilhar.'
-                                : 'Vazio. Arraste arquivos aqui.',
-                        liveRegion: true,
-                        child:
-                            files.isNotEmpty
-                                ? FilesStack(droppedFiles: files)
-                                : const DropHit(),
-                      ),
+                  builder: (context, files, _) {
+                    final hint =
+                        files.isEmpty
+                            ? loc.t('sem.area.hint.empty')
+                            : loc.t(
+                              'sem.area.hint.has',
+                              params: {'count': files.length.toString()},
+                            );
+                    return Semantics(
+                      label: loc.t('sem.area.label'),
+                      hint: hint,
+                      liveRegion: true,
+                      child:
+                          files.isNotEmpty
+                              ? FilesStack(droppedFiles: files)
+                              : const DropHit(),
+                    );
+                  },
                 ),
 
                 Positioned(
                   left: 0,
                   top: 0,
                   child: Semantics(
-                    label: AppTexts.close,
+                    label: AppLocalizations.of(context).t('close'),
                     button: true,
                     child: CloseButton(onPressed: () => SystemHelper.hide()),
                   ),
@@ -245,13 +256,20 @@ class _DragDropState extends State<DragDrop> {
                       clipBehavior: Clip.none,
                       children: [
                         Tooltip(
-                          message: 'Compartilhar (Cmd+Shift+C)',
+                          message: loc.t('tooltip.share'),
                           child: Semantics(
-                            label: AppTexts.share,
+                            label: loc.t('share'),
                             hint:
                                 hasFiles
-                                    ? 'Compartilhar ${filesProvider.files.length} arquivos'
-                                    : 'Nenhum arquivo para compartilhar',
+                                    ? loc.t(
+                                      'sem.share.hint.some',
+                                      params: {
+                                        'count':
+                                            filesProvider.files.length
+                                                .toString(),
+                                      },
+                                    )
+                                    : loc.t('sem.share.hint.none'),
                             button: true,
                             child: ShareButton(
                               key: _buttonKey,
@@ -303,13 +321,19 @@ class _DragDropState extends State<DragDrop> {
                   child: _buildAnimatedButton(
                     visible: hasFiles,
                     child: Tooltip(
-                      message: 'Limpar (Cmd+Backspace)',
+                      message: loc.t('tooltip.clear'),
                       child: Semantics(
-                        label: AppTexts.removeAll,
+                        label: loc.t('remove.all'),
                         hint:
                             hasFiles
-                                ? 'Remover ${filesProvider.files.length} arquivos'
-                                : 'Nenhum arquivo para remover',
+                                ? loc.t(
+                                  'sem.remove.hint.some',
+                                  params: {
+                                    'count':
+                                        filesProvider.files.length.toString(),
+                                  },
+                                )
+                                : loc.t('sem.remove.hint.none'),
                         button: true,
                         child: RemoveButton(
                           onPressed: () => _confirmAndClear(filesProvider),

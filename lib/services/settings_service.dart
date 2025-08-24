@@ -19,6 +19,7 @@ class SettingsService with ChangeNotifier {
   static const _kWinW = 'windowW';
   static const _kWinH = 'windowH';
   static const int _currentSchemaVersion = 1;
+  static const _kLocale = 'locale';
 
   bool _loaded = false;
   bool get isLoaded => _loaded;
@@ -32,6 +33,7 @@ class SettingsService with ChangeNotifier {
   double? windowY;
   double? windowW;
   double? windowH;
+  String? localeCode; // e.g. 'en', 'pt_BR', 'es'
 
   Timer? _debounce;
   static const _debounceDuration = Duration(milliseconds: 250);
@@ -50,6 +52,7 @@ class SettingsService with ChangeNotifier {
           windowY = (map[_kWinY] as num?)?.toDouble();
           windowW = (map[_kWinW] as num?)?.toDouble();
           windowH = (map[_kWinH] as num?)?.toDouble();
+          if (map[_kLocale] is String) localeCode = map[_kLocale] as String;
         }
       }
       _loaded = true;
@@ -91,6 +94,7 @@ class SettingsService with ChangeNotifier {
         // Persistimos como false para manter compatibilidade de arquivo
         _kAutoClearInbound: false,
         _kMaxFiles: maxFiles,
+        if (localeCode != null) _kLocale: localeCode,
         if (windowX != null) _kWinX: windowX,
         if (windowY != null) _kWinY: windowY,
         if (windowW != null) _kWinW: windowW,
@@ -100,6 +104,13 @@ class SettingsService with ChangeNotifier {
     } catch (e) {
       AppLogger.warn('Falha ao salvar settings: $e');
     }
+  }
+
+  void setLocale(String? code) {
+    if (localeCode == code) return;
+    localeCode = code;
+    _schedulePersist();
+    notifyListeners();
   }
 
   Future<File> _file() async {
