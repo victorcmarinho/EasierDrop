@@ -59,10 +59,7 @@ class FilesProvider with ChangeNotifier {
     try {
       if (_files.length >= _maxFiles) {
         _lastLimitHit = DateTime.now();
-        AppLogger.warn(
-          'File limit reached ($_maxFiles)',
-          tag: 'FilesProvider',
-        );
+        AppLogger.warn('File limit reached ($_maxFiles)', tag: 'FilesProvider');
         _scheduleNotify();
         return;
       }
@@ -92,10 +89,7 @@ class FilesProvider with ChangeNotifier {
           _scheduleNotify();
         }
       }
-      AppLogger.info(
-        'File added: ${file.fileName}',
-        tag: 'FilesProvider',
-      );
+      AppLogger.info('File added: ${file.fileName}', tag: 'FilesProvider');
     } catch (e) {
       AppLogger.error('Error adding file: $e', tag: 'FilesProvider');
     }
@@ -111,10 +105,7 @@ class FilesProvider with ChangeNotifier {
     try {
       if (_files.remove(file.pathname) != null) {
         _scheduleNotify();
-        AppLogger.info(
-          'File removed: ${file.fileName}',
-          tag: 'FilesProvider',
-        );
+        AppLogger.info('File removed: ${file.fileName}', tag: 'FilesProvider');
       }
     } catch (e) {
       AppLogger.error('Error removing file: $e', tag: 'FilesProvider');
@@ -128,10 +119,7 @@ class FilesProvider with ChangeNotifier {
         AppLogger.info('File removed: $pathname', tag: 'FilesProvider');
       }
     } catch (e) {
-      AppLogger.error(
-        'Error removing file by path: $e',
-        tag: 'FilesProvider',
-      );
+      AppLogger.error('Error removing file by path: $e', tag: 'FilesProvider');
     }
   }
 
@@ -140,7 +128,7 @@ class FilesProvider with ChangeNotifier {
     final count = _files.length;
     _files.clear();
     _scheduleNotify();
-  AppLogger.info('$count file(s) cleared', tag: 'FilesProvider');
+    AppLogger.info('$count file(s) cleared', tag: 'FilesProvider');
   }
 
   Future<Object> shared({Offset? position}) async {
@@ -164,10 +152,7 @@ class FilesProvider with ChangeNotifier {
       );
       return SharePlus.instance.share(params);
     } catch (e) {
-      AppLogger.error(
-        'Error sharing files: $e',
-        tag: 'FilesProvider',
-      );
+      AppLogger.error('Error sharing files: $e', tag: 'FilesProvider');
       return ShareResult('shareError', ShareResultStatus.unavailable);
     }
   }

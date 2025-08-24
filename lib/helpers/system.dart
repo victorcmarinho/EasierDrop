@@ -71,11 +71,12 @@ class SystemHelper with WindowListener {
     // Tenta obter locale preferido antes de buildar menu inicial
     final code = SettingsService.instance.localeCode;
     // Fallback para 'en'
-    final locale = code != null
-        ? (code.contains('_')
-            ? Locale(code.split('_')[0], code.split('_')[1])
-            : Locale(code))
-        : const Locale('en');
+    final locale =
+        code != null
+            ? (code.contains('_')
+                ? Locale(code.split('_')[0], code.split('_')[1])
+                : Locale(code))
+            : const Locale('en');
     final loc = lookupAppLocalizations(locale);
 
     await trayManager.setContextMenu(

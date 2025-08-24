@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
+import 'package:macos_ui/macos_ui.dart';
+import 'package:provider/provider.dart';
 import 'package:easier_drop/components/drop_hit.dart';
 import 'package:easier_drop/components/files_stack.dart';
 import 'package:easier_drop/components/remove_button.dart';
@@ -12,10 +15,7 @@ import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/constants.dart';
 import 'package:easier_drop/services/logger.dart';
 import 'package:easier_drop/services/settings_service.dart';
-import 'package:macos_ui/macos_ui.dart';
-import 'package:flutter/cupertino.dart';
 import 'hover_icon_button.dart';
-import 'package:provider/provider.dart';
 
 class DragDrop extends StatefulWidget {
   const DragDrop({super.key});
@@ -111,7 +111,7 @@ class _DragDropState extends State<DragDrop> {
       );
 
   Future<void> _handleDragOut() async {
-  AppLogger.debug('Starting drag out', tag: 'DragDrop');
+    AppLogger.debug('Starting drag out', tag: 'DragDrop');
     final filesProvider = context.read<FilesProvider>();
     final files = filesProvider.files.map((f) => f.pathname).toList();
 
@@ -124,7 +124,7 @@ class _DragDropState extends State<DragDrop> {
     Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted) setState(() => _draggingOut = false);
     });
-  AppLogger.info('External drag started', tag: 'DragDrop');
+    AppLogger.info('External drag started', tag: 'DragDrop');
   }
 
   Future<void> _confirmAndClear(FilesProvider provider) async {
@@ -169,202 +169,177 @@ class _DragDropState extends State<DragDrop> {
         DateTime.now().difference(limitHitAt) < const Duration(seconds: 2);
     final loc = AppLocalizations.of(context)!;
 
-    return FocusTraversalGroup(
-      policy: OrderedTraversalPolicy(),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hovering = true),
-        onExit: (_) => setState(() => _hovering = false),
-        child: GestureDetector(
-          onPanStart: (_) => _handleDragOut(),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 160),
-            decoration: BoxDecoration(
-              color: MacosTheme.of(context).canvasColor.withValues(alpha: 0.05),
-              border: Border.all(
-                color:
-                    _hovering
-                        ? MacosTheme.of(context).primaryColor.withValues(alpha: 0.6)
-                        : MacosTheme.of(context).primaryColor.withValues(alpha: 0.0),
-                width: 2,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Top bar: close (left) and share (right)
+        Row(
+          children: [
+            MacosTooltip(
+              message: AppLocalizations.of(context)!.close,
+              child: HoverIconButton(
+                icon: const MacosIcon(CupertinoIcons.clear_thick),
+                onPressed: () => SystemHelper.hide(),
+                semanticsLabel: AppLocalizations.of(context)!.close,
               ),
-              borderRadius: BorderRadius.circular(8),
             ),
-            child: Stack(
-              alignment: Alignment.center,
-              fit: StackFit.expand,
-              children: [
-                if (_draggingOut)
-                  IgnorePointer(
-                    child: AnimatedOpacity(
-                      opacity: 0.9,
-                      duration: const Duration(milliseconds: 120),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: MacosTheme.of(
-                            context,
-                          ).canvasColor.withValues(alpha: 0.9),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: MacosTheme.of(context).primaryColor,
-                            width: 2,
-                          ),
+            const Spacer(),
+            _buildAnimatedButton(
+              visible: hasFiles,
+              child: MacosTooltip(
+                message: loc.tooltipShare,
+                child: Semantics(
+                  label: loc.share,
+                  hint:
+                      hasFiles
+                          ? loc.semShareHintSome(filesProvider.files.length)
+                          : loc.semShareHintNone,
+                  button: true,
+                  child: ShareButton(
+                    key: _buttonKey,
+                    onPressed:
+                        () => filesProvider.shared(
+                          position: _getButtonPosition(),
                         ),
-                        padding: const EdgeInsets.all(16),
-                      ),
-                    ),
-                  ),
-                if (showLimit)
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: AnimatedOpacity(
-                        opacity: showLimit ? 1 : 0,
-                        duration: const Duration(milliseconds: 150),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: MacosTheme.of(
-                              context,
-                            ).primaryColor.withValues(alpha: 0.85),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(16),
-                          child: Text(
-                            loc.limitReached(SettingsService.instance.maxFiles),
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: MacosColors.white,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                Selector<FilesProvider, List<FileReference>>(
-                  selector: (_, p) => p.files,
-                  builder: (context, files, _) {
-                    final hint =
-                        files.isEmpty
-                            ? loc.semAreaHintEmpty
-                            : loc.semAreaHintHas(files.length);
-                    return Semantics(
-                      label: loc.semAreaLabel,
-                      hint: hint,
-                      liveRegion: true,
-                      child:
-                          files.isNotEmpty
-                              ? FilesStack(droppedFiles: files)
-                              : const DropHit(),
-                    );
-                  },
-                ),
-
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  child: Semantics(
-                    label: AppLocalizations.of(context)!.close,
-                    button: true,
-                    child: HoverIconButton(
-                      icon: const MacosIcon(CupertinoIcons.clear_thick),
-                      onPressed: () => SystemHelper.hide(),
-                      addSemantics: false,
-                    ),
                   ),
                 ),
-
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: _buildAnimatedButton(
-                    visible: hasFiles,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        MacosTooltip(
-                          message: loc.tooltipShare,
-                          child: Semantics(
-                            label: loc.share,
-                            hint:
-                                hasFiles
-                                    ? loc.semShareHintSome(
-                                      filesProvider.files.length,
-                                    )
-                                    : loc.semShareHintNone,
-                            button: true,
-                            child: ShareButton(
-                              key: _buttonKey,
-                              onPressed:
-                                  () => filesProvider.shared(
-                                    position: _getButtonPosition(),
-                                  ),
-                            ),
-                          ),
-                        ),
-                        if (hasFiles)
-                          Positioned(
-                            right: -2,
-                            top: -2,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        // Dropzone area
+        Expanded(
+          child: FocusTraversalGroup(
+            policy: OrderedTraversalPolicy(),
+            child: MouseRegion(
+              onEnter: (_) => setState(() => _hovering = true),
+              onExit: (_) => setState(() => _hovering = false),
+              child: GestureDetector(
+                onPanStart: (_) => _handleDragOut(),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 160),
+                  decoration: BoxDecoration(
+                    color: MacosTheme.of(
+                      context,
+                    ).canvasColor.withValues(alpha: 0.05),
+                    border: Border.all(
+                      color:
+                          _hovering
+                              ? MacosTheme.of(
+                                context,
+                              ).primaryColor.withValues(alpha: 0.6)
+                              : MacosTheme.of(
+                                context,
+                              ).primaryColor.withValues(alpha: 0.0),
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    fit: StackFit.expand,
+                    children: [
+                      if (_draggingOut)
+                        IgnorePointer(
+                          child: AnimatedOpacity(
+                            opacity: 0.9,
+                            duration: const Duration(milliseconds: 120),
                             child: Container(
-                              padding: const EdgeInsets.all(3),
                               decoration: BoxDecoration(
-                                color: MacosTheme.of(context).primaryColor,
-                                shape: BoxShape.circle,
+                                color: MacosTheme.of(
+                                  context,
+                                ).canvasColor.withValues(alpha: 0.9),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: MacosTheme.of(context).primaryColor,
+                                  width: 2,
+                                ),
                               ),
-                              constraints: const BoxConstraints(
-                                minWidth: 20,
-                                minHeight: 20,
-                              ),
-                              child: Center(
+                              padding: const EdgeInsets.all(16),
+                            ),
+                          ),
+                        ),
+                      if (showLimit)
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: AnimatedOpacity(
+                              opacity: showLimit ? 1 : 0,
+                              duration: const Duration(milliseconds: 150),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: MacosTheme.of(
+                                    context,
+                                  ).primaryColor.withValues(alpha: 0.85),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(16),
                                 child: Text(
-                                  context
-                                      .select<FilesProvider, int>(
-                                        (p) => p.files.length,
-                                      )
-                                      .toString(),
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: MacosColors.white,
-                                    fontWeight: FontWeight.bold,
+                                  loc.limitReached(
+                                    SettingsService.instance.maxFiles,
                                   ),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: MacosColors.white,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
                             ),
                           ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                Positioned(
-                  right: 0,
-                  bottom: 0,
-                  child: _buildAnimatedButton(
-                    visible: hasFiles,
-                    child: MacosTooltip(
-                      message: loc.tooltipClear,
-                      child: Semantics(
-                        label: loc.removeAll,
-                        hint:
-                            hasFiles
-                                ? loc.semRemoveHintSome(
-                                  filesProvider.files.length,
-                                )
-                                : loc.semRemoveHintNone,
-                        button: true,
-                        child: RemoveButton(
-                          onPressed: () => _confirmAndClear(filesProvider),
                         ),
+                      Selector<FilesProvider, List<FileReference>>(
+                        selector: (_, p) => p.files,
+                        builder: (context, files, _) {
+                          final hint =
+                              files.isEmpty
+                                  ? loc.semAreaHintEmpty
+                                  : loc.semAreaHintHas(files.length);
+                          return Semantics(
+                            label: loc.semAreaLabel,
+                            hint: hint,
+                            liveRegion: true,
+                            child:
+                                files.isNotEmpty
+                                    ? FilesStack(droppedFiles: files)
+                                    : const DropHit(),
+                          );
+                        },
                       ),
-                    ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+        const SizedBox(height: 8),
+        // Bottom bar: clear button
+        Row(
+          children: [
+            const Spacer(),
+            _buildAnimatedButton(
+              visible: hasFiles,
+              child: MacosTooltip(
+                message: loc.tooltipClear,
+                child: Semantics(
+                  label: loc.removeAll,
+                  hint:
+                      hasFiles
+                          ? loc.semRemoveHintSome(filesProvider.files.length)
+                          : loc.semRemoveHintNone,
+                  button: true,
+                  child: RemoveButton(
+                    onPressed: () => _confirmAndClear(filesProvider),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
