@@ -57,6 +57,12 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   generate: true
+  # Configuração gen_l10n
+  # O Flutter usará os ARB em lib/l10n/ com prefixo app_*.arb e gerará
+  # a classe AppLocalizations em .dart_tool/flutter_gen/gen_l10n/.
+  # Mantemos a classe manual temporariamente até integrar totalmente.
+  # Após migração completa, remover lib/l10n/app_localizations.dart.
+  # (Deixar valores padrão implícitos.)
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

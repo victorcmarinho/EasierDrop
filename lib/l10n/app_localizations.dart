@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 
-/// Simple manual localization (pt-BR, en, es) without intl dependency for MVP.
-/// For expansion, can be migrated to flutter gen_l10n later.
+/// Manual localization legacy (pt-BR, en, es).
+/// TODO: Remover após migração completa para gen_l10n (usar ARB gerado).
 class AppLocalizations {
   final Locale locale;
   AppLocalizations(this.locale);
@@ -39,6 +39,9 @@ class AppLocalizations {
       'tray.files.none': '📂 No files',
       'tray.files.count': '📁 Files: {count}',
       'tray.exit': 'Quit application',
+      'tray.open': 'Open tray',
+      'tray.lang': 'Language:',
+      'tray.files.tooltip': 'Current count in tray',
     },
     'pt': {
       'app.title': 'Easier Drop',
@@ -65,6 +68,9 @@ class AppLocalizations {
       'tray.files.none': '📂 Sem arquivos',
       'tray.files.count': '📁 Arquivos: {count}',
       'tray.exit': 'Fechar o aplicativo',
+      'tray.open': 'Abrir bandeja',
+      'tray.lang': 'Idioma:',
+      'tray.files.tooltip': 'Quantidade atual na bandeja',
     },
     'es': {
       'app.title': 'Easier Drop',
@@ -92,6 +98,9 @@ class AppLocalizations {
       'tray.files.none': '📂 Sin archivos',
       'tray.files.count': '📁 Archivos: {count}',
       'tray.exit': 'Cerrar la aplicación',
+      'tray.open': 'Abrir bandeja',
+      'tray.lang': 'Idioma:',
+      'tray.files.tooltip': 'Cantidad actual en la bandeja',
     },
   };
 

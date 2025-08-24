@@ -25,5 +25,6 @@
   "@trayFilesCount": {"placeholders": {"count": {"type": "int"}}},
   "trayExit": "Quit application",
   "openTray": "Open tray",
-  "filesCountTooltip": "Current number of files"
+  "filesCountTooltip": "Current number of files",
+  "languageLabel": "Language:"
 }

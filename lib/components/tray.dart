@@ -90,7 +90,7 @@ class _TrayState extends State<Tray> with TrayListener {
     final current = settings.localeCode ?? loc.locale.languageCode;
     final menu = Menu(
       items: [
-        MenuItem(key: 'show_window', label: 'Abrir bandeja'),
+        MenuItem(key: 'show_window', label: loc.t('tray.open')),
         MenuItem(
           key: 'files_count',
           label:
@@ -100,10 +100,10 @@ class _TrayState extends State<Tray> with TrayListener {
                     params: {'count': count.toString()},
                   )
                   : loc.t('tray.files.none'),
-          toolTip: 'Quantidade atual na bandeja',
+          toolTip: loc.t('tray.files.tooltip'),
         ),
         MenuItem.separator(),
-        MenuItem(key: 'lang_label', label: 'Idioma:'),
+        MenuItem(key: 'lang_label', label: loc.t('tray.lang')),
         MenuItem(
           key: 'lang_en',
           label: current == 'en' ? '• English' : 'English',
