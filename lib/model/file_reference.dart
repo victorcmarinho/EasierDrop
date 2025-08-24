@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:easier_drop/services/logger.dart';
 
-/// Representa um arquivo no shelf. Imutável.
 class FileReference {
   final Uint8List? iconData;
   final String pathname;
@@ -20,11 +19,9 @@ class FileReference {
       final stat = await file.stat();
       if (stat.type != FileSystemEntityType.file) return false;
 
-      // Teste rápido de permissão de leitura: tenta abrir e ler 1 byte (ou 0 se vazio)
       RandomAccessFile? raf;
       try {
         raf = await file.open(mode: FileMode.read);
-        // readByte retorna -1 em EOF (arquivo vazio) — ainda considera válido
         await raf.readByte();
         return true;
       } on FileSystemException catch (e) {
@@ -55,7 +52,6 @@ class FileReference {
       final file = File(pathname);
       if (!file.existsSync()) return false;
       if (file.statSync().type != FileSystemEntityType.file) return false;
-      // Testa abrir para leitura
       RandomAccessFile? raf;
       try {
         raf = file.openSync(mode: FileMode.read);

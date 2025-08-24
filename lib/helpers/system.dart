@@ -19,7 +19,6 @@ class SystemHelper with WindowListener {
   }
 
   static Future<void> setup() async {
-    // Carrega settings
     await SettingsService.instance.load();
     windowManager.addListener(SystemHelper());
     await Future.wait([
@@ -67,7 +66,6 @@ class SystemHelper with WindowListener {
     } catch (e) {
       AppLogger.warn('Falha ao carregar ícone da tray: $e');
     }
-    // Menu inicial mínimo; será substituído pelo widget/traduções após build.
     await trayManager.setContextMenu(
       Menu(
         items: [
@@ -80,7 +78,6 @@ class SystemHelper with WindowListener {
     );
   }
 
-  // WindowListener impl
   @override
   void onWindowResize() async {
     final size = await windowManager.getSize();
