@@ -13,6 +13,7 @@ import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/services/file_drop_service.dart';
 import 'package:easier_drop/services/drag_out_service.dart';
+import 'package:easier_drop/services/drag_result.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/constants.dart';
 import 'package:easier_drop/services/logger.dart';
@@ -34,6 +35,26 @@ class _DragDropState extends State<DragDrop> {
   StreamSubscription? _dropSubscription;
   bool _hovering = false;
   bool _draggingOut = false;
+
+  void _onOperationFinished(dynamic raw) {
+    final result = ChannelDragResult.parse(raw);
+    if (!result.isSuccess) {
+      AppLogger.warn('Drag finished with error', tag: 'DragDrop');
+      return;
+    }
+    switch (result.operation) {
+      case DragOperation.copy:
+        AppLogger.info('Copy detected; retaining files', tag: 'DragDrop');
+        break;
+      case DragOperation.move:
+        final provider = context.read<FilesProvider>();
+        if (provider.files.isNotEmpty) provider.clear();
+        break;
+      case DragOperation.unknown:
+        AppLogger.info('Unknown operation; retaining files', tag: 'DragDrop');
+        break;
+    }
+  }
 
   @override
   void initState() {
@@ -79,23 +100,7 @@ class _DragDropState extends State<DragDrop> {
 
     DragOutService.instance.setHandler((call) async {
       if (call.method == PlatformChannels.fileDroppedCallback) {
-        final op = call.arguments as String?; // copy | move
-        AppLogger.info(
-          'Drag finished (outbound). Operation: ${op ?? 'unknown'}',
-          tag: 'DragDrop',
-        );
-        if (op == 'copy') {
-          AppLogger.info(
-            'Copy operation detected. Files kept in tray.',
-            tag: 'DragDrop',
-          );
-          return null;
-        }
-        final provider = context.read<FilesProvider>();
-        final removed = provider.files.length;
-        if (removed > 0) {
-          provider.clear();
-        }
+        _onOperationFinished(call.arguments);
       }
       return null;
     });
@@ -106,13 +111,6 @@ class _DragDropState extends State<DragDrop> {
         _buttonKey.currentContext?.findRenderObject() as RenderBox?;
     return renderBox?.localToGlobal(Offset.zero);
   }
-
-  Widget _buildAnimatedButton({required bool visible, required Widget child}) =>
-      AnimatedOpacity(
-        duration: const Duration(milliseconds: 300),
-        opacity: visible ? 1.0 : 0.0,
-        child: visible ? child : const SizedBox(width: 40, height: 40),
-      );
 
   Future<void> _handleDragOut() async {
     AppLogger.debug('Starting drag out', tag: 'DragDrop');
@@ -177,208 +175,254 @@ class _DragDropState extends State<DragDrop> {
       policy: OrderedTraversalPolicy(),
       child: Stack(
         children: [
-          MouseRegion(
-            onEnter: (_) => setState(() => _hovering = true),
-            onExit: (_) => setState(() => _hovering = false),
-            child: GestureDetector(
-              onPanStart: (details) {
-                if (details.localPosition.dy <= _handleGestureHeight) return;
-                _handleDragOut();
-              },
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 160),
-                    decoration: BoxDecoration(
-                      color: MacosTheme.of(
-                        context,
-                      ).canvasColor.withValues(alpha: 0.03),
-                      border: Border.all(
-                        color:
-                            _hovering
-                                ? MacosTheme.of(
-                                  context,
-                                ).primaryColor.withValues(alpha: 0.7)
-                                : MacosColors.transparent,
-                        width: 4,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Selector<FilesProvider, List<FileReference>>(
-                      selector: (_, p) => p.files,
-                      builder: (context, files, _) {
-                        final hint =
-                            files.isEmpty
-                                ? loc.semAreaHintEmpty
-                                : loc.semAreaHintHas(files.length);
-                        final fileNameLabel = () {
-                          if (files.isEmpty) return '';
-                          if (files.length == 1) {
-                            final name = files.first.fileName;
-                            return loc.fileLabelSingle(name);
-                          }
-                          return loc.fileLabelMultiple(files.length);
-                        }();
-                        return Semantics(
-                          label: loc.semAreaLabel,
-                          hint: hint,
-                          liveRegion: true,
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.6,
-                                  child:
-                                      files.isNotEmpty
-                                          ? FilesStack(droppedFiles: files)
-                                          : const DropHit(),
-                                ),
-                                if (fileNameLabel.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 6),
-                                    child: Text(
-                                      fileNameLabel,
-                                      style:
-                                          MacosTheme.of(
-                                            context,
-                                          ).typography.caption1,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  if (_draggingOut)
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: AnimatedOpacity(
-                          opacity: 0.9,
-                          duration: const Duration(milliseconds: 120),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: MacosTheme.of(
-                                context,
-                              ).canvasColor.withValues(alpha: 0.85),
-                              border: Border.all(
-                                color: MacosTheme.of(context).primaryColor,
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (showLimit)
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: AnimatedOpacity(
-                          opacity: showLimit ? 1 : 0,
-                          duration: const Duration(milliseconds: 150),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: MacosTheme.of(
-                                context,
-                              ).primaryColor.withValues(alpha: 0.85),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.all(16),
-                            child: Text(
-                              loc.limitReached(
-                                SettingsService.instance.maxFiles,
-                              ),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: MacosColors.white,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  // Top left close button
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: MacosTooltip(
-                      message: AppLocalizations.of(context)!.close,
-                      child: HoverIconButton(
-                        icon: const MacosIcon(CupertinoIcons.clear_thick),
-                        onPressed: () => SystemHelper.hide(),
-                        semanticsLabel: AppLocalizations.of(context)!.close,
-                      ),
-                    ),
-                  ),
-                  // Top right share button
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: _buildAnimatedButton(
-                      visible: hasFiles,
-                      child: MacosTooltip(
-                        message: loc.tooltipShare,
-                        child: Semantics(
-                          label: loc.share,
-                          hint:
-                              hasFiles
-                                  ? loc.semShareHintSome(
-                                    filesProvider.files.length,
-                                  )
-                                  : loc.semShareHintNone,
-                          button: true,
-                          child: ShareButton(
-                            key: _buttonKey,
-                            onPressed:
-                                () => filesProvider.shared(
-                                  position: _getButtonPosition(),
-                                ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Bottom right clear button
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: _buildAnimatedButton(
-                      visible: hasFiles,
-                      child: MacosTooltip(
-                        message: loc.tooltipClear,
-                        child: Semantics(
-                          label: loc.removeAll,
-                          hint:
-                              hasFiles
-                                  ? loc.semRemoveHintSome(
-                                    filesProvider.files.length,
-                                  )
-                                  : loc.semRemoveHintNone,
-                          button: true,
-                          child: RemoveButton(
-                            onPressed: () => _confirmAndClear(filesProvider),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          _FilesSurface(
+            hovering: _hovering,
+            draggingOut: _draggingOut,
+            showLimit: showLimit,
+            hasFiles: hasFiles,
+            buttonKey: _buttonKey,
+            loc: loc,
+            onHoverChanged: (h) => setState(() => _hovering = h),
+            onDragCheck: (dy) => dy > _handleGestureHeight,
+            onDragRequest: _handleDragOut,
+            onClear: () => _confirmAndClear(filesProvider),
+            getButtonPosition: _getButtonPosition,
+            filesProvider: filesProvider,
           ),
           const WindowHandle(),
         ],
+      ),
+    );
+  }
+}
+
+class _FilesSurface extends StatelessWidget {
+  const _FilesSurface({
+    required this.hovering,
+    required this.draggingOut,
+    required this.showLimit,
+    required this.hasFiles,
+    required this.buttonKey,
+    required this.loc,
+    required this.onHoverChanged,
+    required this.onDragCheck,
+    required this.onDragRequest,
+    required this.onClear,
+    required this.getButtonPosition,
+    required this.filesProvider,
+  });
+
+  final bool hovering;
+  final bool draggingOut;
+  final bool showLimit;
+  final bool hasFiles;
+  final GlobalKey buttonKey;
+  final AppLocalizations loc;
+  final ValueChanged<bool> onHoverChanged;
+  final bool Function(double dy) onDragCheck;
+  final VoidCallback onDragRequest;
+  final VoidCallback onClear;
+  final Offset? Function() getButtonPosition;
+  final FilesProvider filesProvider;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => onHoverChanged(true),
+      onExit: (_) => onHoverChanged(false),
+      child: GestureDetector(
+        onPanStart: (details) {
+          if (!onDragCheck(details.localPosition.dy)) return;
+          onDragRequest();
+        },
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 160),
+              decoration: BoxDecoration(
+                color: MacosTheme.of(
+                  context,
+                ).canvasColor.withValues(alpha: 0.03),
+                border: Border.all(
+                  color:
+                      hovering
+                          ? MacosTheme.of(
+                            context,
+                          ).primaryColor.withValues(alpha: 0.7)
+                          : MacosColors.transparent,
+                  width: 4,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Selector<FilesProvider, List<FileReference>>(
+                selector: (_, p) => p.files,
+                builder: (context, files, _) {
+                  final hint =
+                      files.isEmpty
+                          ? loc.semAreaHintEmpty
+                          : loc.semAreaHintHas(files.length);
+                  final fileNameLabel = () {
+                    if (files.isEmpty) return '';
+                    if (files.length == 1) {
+                      final name = files.first.fileName;
+                      return loc.fileLabelSingle(name);
+                    }
+                    return loc.fileLabelMultiple(files.length);
+                  }();
+                  return Semantics(
+                    label: loc.semAreaLabel,
+                    hint: hint,
+                    liveRegion: true,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            child:
+                                files.isNotEmpty
+                                    ? FilesStack(droppedFiles: files)
+                                    : const DropHit(),
+                          ),
+                          if (fileNameLabel.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: Text(
+                                fileNameLabel,
+                                style:
+                                    MacosTheme.of(context).typography.caption1,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            if (draggingOut)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: AnimatedOpacity(
+                    opacity: 0.9,
+                    duration: const Duration(milliseconds: 120),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: MacosTheme.of(
+                          context,
+                        ).canvasColor.withValues(alpha: 0.85),
+                        border: Border.all(
+                          color: MacosTheme.of(context).primaryColor,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            if (showLimit)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: AnimatedOpacity(
+                    opacity: showLimit ? 1 : 0,
+                    duration: const Duration(milliseconds: 150),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: MacosTheme.of(
+                          context,
+                        ).primaryColor.withValues(alpha: 0.85),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        loc.limitReached(SettingsService.instance.maxFiles),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: MacosColors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            Positioned(
+              top: 8,
+              left: 8,
+              child: MacosTooltip(
+                message: AppLocalizations.of(context)!.close,
+                child: HoverIconButton(
+                  icon: const MacosIcon(CupertinoIcons.clear_thick),
+                  onPressed: () => SystemHelper.hide(),
+                  semanticsLabel: AppLocalizations.of(context)!.close,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 300),
+                opacity: hasFiles ? 1 : 0,
+                child:
+                    hasFiles
+                        ? MacosTooltip(
+                          message: loc.tooltipShare,
+                          child: Semantics(
+                            label: loc.share,
+                            hint:
+                                hasFiles
+                                    ? loc.semShareHintSome(
+                                      filesProvider.files.length,
+                                    )
+                                    : loc.semShareHintNone,
+                            button: true,
+                            child: ShareButton(
+                              key: buttonKey,
+                              onPressed:
+                                  () => filesProvider.shared(
+                                    position: getButtonPosition(),
+                                  ),
+                            ),
+                          ),
+                        )
+                        : const SizedBox(width: 40, height: 40),
+              ),
+            ),
+            Positioned(
+              bottom: 8,
+              right: 8,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 300),
+                opacity: hasFiles ? 1 : 0,
+                child:
+                    hasFiles
+                        ? MacosTooltip(
+                          message: loc.tooltipClear,
+                          child: Semantics(
+                            label: loc.removeAll,
+                            hint:
+                                hasFiles
+                                    ? loc.semRemoveHintSome(
+                                      filesProvider.files.length,
+                                    )
+                                    : loc.semRemoveHintNone,
+                            button: true,
+                            child: RemoveButton(onPressed: onClear),
+                          ),
+                        )
+                        : const SizedBox(width: 40, height: 40),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

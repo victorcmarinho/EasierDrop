@@ -294,6 +294,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'file'**
   String get genericFileName;
+
+  /// No description provided for @semHandleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Window handle'**
+  String get semHandleLabel;
+
+  /// No description provided for @semHandleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to move the window'**
+  String get semHandleHint;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

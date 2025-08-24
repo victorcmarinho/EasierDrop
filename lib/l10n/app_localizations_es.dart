@@ -138,4 +138,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get genericFileName => 'archivo';
+
+  @override
+  String get semHandleLabel => 'Barra de arrastre';
+
+  @override
+  String get semHandleHint => 'Arrastra para mover la ventana';
 }

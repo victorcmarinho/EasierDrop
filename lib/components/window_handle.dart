@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:easier_drop/l10n/app_localizations.dart';
 
 class WindowHandle extends StatefulWidget {
   const WindowHandle({
@@ -50,14 +51,21 @@ class _WindowHandleState extends State<WindowHandle> {
                     : SystemMouseCursors.grab,
             onEnter: (_) => setState(() => _hover = true),
             onExit: (_) => setState(() => _hover = false),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 140),
-              curve: Curves.easeOutQuad,
-              width: _pressed ? widget.activeWidth : widget.idleWidth,
-              height: widget.height,
-              decoration: BoxDecoration(
-                color: theme.primaryColor.withValues(alpha: _hover ? 0.55 : 0),
-                borderRadius: BorderRadius.circular(6),
+            child: Semantics(
+              label: AppLocalizations.of(context)?.semHandleLabel ?? 'Window handle',
+              hint: AppLocalizations.of(context)?.semHandleHint ?? 'Drag to move the window',
+              button: true,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 140),
+                curve: Curves.easeOutQuad,
+                width: _pressed ? widget.activeWidth : widget.idleWidth,
+                height: widget.height,
+                decoration: BoxDecoration(
+                  color: theme.primaryColor.withValues(
+                    alpha: _hover ? 0.55 : 0,
+                  ),
+                  borderRadius: BorderRadius.circular(6),
+                ),
               ),
             ),
           ),

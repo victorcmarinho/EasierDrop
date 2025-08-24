@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 
 class FilesProvider with ChangeNotifier {
   final Map<String, FileReference> _files = {};
+  List<FileReference>? _cachedList;
   int get _maxFiles => SettingsService.instance.maxFiles;
   DateTime? _lastLimitHit;
   DateTime? get lastLimitHit => _lastLimitHit;
@@ -20,7 +21,8 @@ class FilesProvider with ChangeNotifier {
   static const Duration _monitorInterval = Duration(seconds: 5);
   bool _monitoringEnabled = true;
 
-  List<FileReference> get files => _files.values.toList(growable: false);
+  List<FileReference> get files =>
+      _cachedList ??= _files.values.toList(growable: false);
 
   List<XFile> get xfiles => _files.values
       .where((f) => f.isValidSync())
@@ -79,6 +81,7 @@ class FilesProvider with ChangeNotifier {
       }
 
       _files[file.pathname] = file;
+      _cachedList = null;
       _scheduleNotify();
 
       final iconData = await FileIconHelper.getFileIcon(file.pathname);
@@ -86,6 +89,7 @@ class FilesProvider with ChangeNotifier {
         final current = _files[file.pathname];
         if (current != null && current.iconData == null) {
           _files[file.pathname] = current.withIcon(iconData);
+          _cachedList = null;
           _scheduleNotify();
         }
       }
@@ -104,6 +108,7 @@ class FilesProvider with ChangeNotifier {
   Future<void> removeFile(FileReference file) async {
     try {
       if (_files.remove(file.pathname) != null) {
+        _cachedList = null;
         _scheduleNotify();
         AppLogger.info('File removed: ${file.fileName}', tag: 'FilesProvider');
       }
@@ -115,6 +120,7 @@ class FilesProvider with ChangeNotifier {
   void removeByPath(String pathname) {
     try {
       if (_files.remove(pathname) != null) {
+        _cachedList = null;
         _scheduleNotify();
         AppLogger.info('File removed: $pathname', tag: 'FilesProvider');
       }
@@ -127,6 +133,7 @@ class FilesProvider with ChangeNotifier {
     if (_files.isEmpty) return;
     final count = _files.length;
     _files.clear();
+    _cachedList = null;
     _scheduleNotify();
     AppLogger.info('$count file(s) cleared', tag: 'FilesProvider');
   }
@@ -169,6 +176,7 @@ class FilesProvider with ChangeNotifier {
     for (final k in toRemove) {
       _files.remove(k);
     }
+    _cachedList = null;
     _scheduleNotify();
     AppLogger.info(
       '${toRemove.length} invalid file(s) removed after rescan',

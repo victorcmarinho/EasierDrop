@@ -39,4 +39,6 @@
   ,"genericFileName": "file"
   ,"@fileLabelSingle": {"placeholders": {"name": {"type": "String"}}}
   ,"@fileLabelMultiple": {"placeholders": {"count": {"type": "int"}}}
+  ,"semHandleLabel": "Window handle"
+  ,"semHandleHint": "Drag to move the window"
 }

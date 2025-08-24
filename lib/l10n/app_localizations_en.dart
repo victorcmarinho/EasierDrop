@@ -138,4 +138,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get genericFileName => 'file';
+
+  @override
+  String get semHandleLabel => 'Window handle';
+
+  @override
+  String get semHandleHint => 'Drag to move the window';
 }

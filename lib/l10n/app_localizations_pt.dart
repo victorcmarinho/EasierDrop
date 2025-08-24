@@ -138,4 +138,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get genericFileName => 'arquivo';
+
+  @override
+  String get semHandleLabel => 'Barra de arraste';
+
+  @override
+  String get semHandleHint => 'Arraste para mover a janela';
 }

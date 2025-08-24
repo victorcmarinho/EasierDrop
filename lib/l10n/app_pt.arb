@@ -39,4 +39,6 @@
   "genericFileName": "arquivo"
   ,"@fileLabelSingle": {"placeholders": {"name": {"type": "String"}}}
   ,"@fileLabelMultiple": {"placeholders": {"count": {"type": "int"}}}
+  ,"semHandleLabel": "Barra de arraste"
+  ,"semHandleHint": "Arraste para mover a janela"
 }
