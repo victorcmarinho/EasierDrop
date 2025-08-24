@@ -52,8 +52,12 @@ class _WindowHandleState extends State<WindowHandle> {
             onEnter: (_) => setState(() => _hover = true),
             onExit: (_) => setState(() => _hover = false),
             child: Semantics(
-              label: AppLocalizations.of(context)?.semHandleLabel ?? 'Window handle',
-              hint: AppLocalizations.of(context)?.semHandleHint ?? 'Drag to move the window',
+              label:
+                  AppLocalizations.of(context)?.semHandleLabel ??
+                  'Window handle',
+              hint:
+                  AppLocalizations.of(context)?.semHandleHint ??
+                  'Drag to move the window',
               button: true,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 140),

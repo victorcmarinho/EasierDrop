@@ -18,7 +18,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get clearFilesTitle => 'Limpar arquivos?';
 
   @override
-  String get clearFilesMessage => 'Essa ação removerá todos os arquivos coletados.';
+  String get clearFilesMessage =>
+      'Essa ação removerá todos os arquivos coletados.';
 
   @override
   String get clearCancel => 'Cancelar';
