@@ -18,7 +18,7 @@ import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/constants.dart';
 import 'package:easier_drop/services/logger.dart';
 import 'package:easier_drop/services/settings_service.dart';
-import 'hover_icon_button.dart';
+import 'mac_close_button.dart';
 
 class DragDrop extends StatefulWidget {
   const DragDrop({super.key});
@@ -29,8 +29,7 @@ class DragDrop extends StatefulWidget {
 
 class _DragDropState extends State<DragDrop> {
   final GlobalKey _buttonKey = GlobalKey();
-  static const double _handleGestureHeight =
-      28.0; // manter para lógica de bloqueio drag-out
+  static const double _handleGestureHeight = 28.0;
 
   StreamSubscription? _dropSubscription;
   bool _hovering = false;
@@ -354,20 +353,13 @@ class _FilesSurface extends StatelessWidget {
                 ),
               ),
             Positioned(
-              top: 8,
-              left: 8,
-              child: MacosTooltip(
-                message: AppLocalizations.of(context)!.close,
-                child: HoverIconButton(
-                  icon: const MacosIcon(CupertinoIcons.clear_thick),
-                  onPressed: () => SystemHelper.hide(),
-                  semanticsLabel: AppLocalizations.of(context)!.close,
-                ),
-              ),
+              top: 4,
+              left: 4,
+              child: MacCloseButton(onPressed: () => SystemHelper.hide()),
             ),
             Positioned(
-              top: 8,
-              right: 8,
+              top: 4,
+              right: 4,
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 300),
                 opacity: hasFiles ? 1 : 0,
@@ -397,8 +389,8 @@ class _FilesSurface extends StatelessWidget {
               ),
             ),
             Positioned(
-              bottom: 8,
-              right: 8,
+              bottom: 4,
+              right: 4,
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 300),
                 opacity: hasFiles ? 1 : 0,

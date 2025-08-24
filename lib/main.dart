@@ -92,10 +92,7 @@ class EasierDrop extends StatelessWidget {
               locale: forced,
               theme: MacosThemeData.light(),
               darkTheme: MacosThemeData.dark(),
-              home: const MacosWindow(
-                // Removido padding para que a área de drag ocupe 100% da janela.
-                child: FileTransferScreen(),
-              ),
+              home: const MacosWindow(child: FileTransferScreen()),
             );
           },
         ),
