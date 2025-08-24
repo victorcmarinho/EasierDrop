@@ -40,10 +40,10 @@ Essa separação garante que a lógica de entrada (drag in) e saída (drag out) 
 
 ### Atalhos de Teclado
 
-| Ação | Atalho |
-|------|--------|
+| Ação                     | Atalho                         |
+| ------------------------ | ------------------------------ |
 | Limpar todos os arquivos | Cmd + Backspace / Cmd + Delete |
-| Compartilhar arquivos | Cmd + Shift + C / Cmd + Enter |
+| Compartilhar arquivos    | Cmd + Shift + C / Cmd + Enter  |
 
 É necessário que a janela esteja focada (o app já coloca foco automático na área principal).
 
