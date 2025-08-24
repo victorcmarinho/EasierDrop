@@ -6,8 +6,11 @@ import 'package:easier_drop/components/share_button.dart';
 import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
+import 'package:easier_drop/services/file_drop_service.dart';
+import 'package:easier_drop/services/drag_out_service.dart';
+import 'package:easier_drop/services/constants.dart';
+import 'package:easier_drop/services/logger.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class DragDrop extends StatefulWidget {
@@ -20,7 +23,8 @@ class DragDrop extends StatefulWidget {
 class _DragDropState extends State<DragDrop> {
   final GlobalKey _buttonKey = GlobalKey();
 
-  StreamSubscription? _dropDestinationSubscription;
+  StreamSubscription? _dropSubscription;
+  bool _hovering = false;
 
   @override
   void initState() {
@@ -31,56 +35,50 @@ class _DragDropState extends State<DragDrop> {
 
   @override
   void dispose() {
-    _channel.setMethodCallHandler(null);
-    _dropDestinationSubscription?.cancel();
-    _stopDragMonitor();
+    FileDropService.instance.setMethodCallHandler(null);
+    DragOutService.instance.setHandler(null);
+    _dropSubscription?.cancel();
+    FileDropService.instance.stop();
     super.dispose();
   }
 
   Future<void> _startDragMonitor() async {
-    try {
-      await _channel.invokeMethod('startDropMonitor');
-
-      // Configura o listener para eventos de drop
-      final eventChannel = const EventChannel('file_drop_channel/events');
-      _dropDestinationSubscription = eventChannel
-          .receiveBroadcastStream()
-          .listen((dynamic event) async {
-            if (event is List) {
-              final files = List<String>.from(event);
-              debugPrint('[DragDrop] ⭐️ Arquivos recebidos: $files');
-              for (final path in files) {
-                final extension = path.split('.').last.toLowerCase();
-                final icon = await FileReference.getCachedIcon(extension, path);
-                final fileRef = FileReference(iconData: icon, pathname: path);
-                if (mounted) {
-                  context.read<FilesProvider>().addFile(fileRef);
-                }
-              }
-            }
-          });
-    } catch (e) {
-      debugPrint('❌ Erro ao iniciar monitor de drag: $e');
-    }
-  }
-
-  Future<void> _stopDragMonitor() async {
-    try {
-      await _channel.invokeMethod('stopDropMonitor');
-    } catch (e) {
-      debugPrint('❌ Erro ao parar monitor de drag: $e');
-    }
+    await FileDropService.instance.start();
+    _dropSubscription = FileDropService.instance.filesStream.listen((
+      paths,
+    ) async {
+      for (final path in paths) {
+        final fileRef = FileReference(pathname: path);
+        if (mounted) {
+          unawaited(context.read<FilesProvider>().addFile(fileRef));
+        }
+      }
+    });
   }
 
   void _setupMethodCallHandler() {
-    _channel.setMethodCallHandler((call) async {
-      if (call.method == 'fileDropped') {
-        final path = call.arguments as String;
-        debugPrint('✅ Arquivo movido com sucesso para: $path');
+    FileDropService.instance.setMethodCallHandler((call) async {
+      if (call.method == PlatformChannels.fileDroppedCallback) {
+        final op = call.arguments as String?;
+        AppLogger.info(
+          'Drag finalizado (inbound). Operação: ${op ?? 'desconhecida'}',
+          tag: 'DragDrop',
+        );
+        context.read<FilesProvider>().clear();
+      }
+      return null;
+    });
 
-        // Remove o arquivo da lista depois de movê-lo
-        final filesProvider = context.read<FilesProvider>();
-        filesProvider.clear();
+    // Handler para callbacks do drag-out
+    DragOutService.instance.setHandler((call) async {
+      if (call.method == PlatformChannels.fileDroppedCallback) {
+        final op = call.arguments as String?; // copy | move
+        AppLogger.info(
+          'Drag finalizado (outbound). Operação: ${op ?? 'desconhecida'}',
+          tag: 'DragDrop',
+        );
+        // Limpa a lista após arrastar para fora
+        context.read<FilesProvider>().clear();
       }
       return null;
     });
@@ -100,19 +98,17 @@ class _DragDropState extends State<DragDrop> {
     );
   }
 
-  final _channel = const MethodChannel('file_drop_channel');
-
   Future<void> _handleDragOut() async {
-    debugPrint("🔄 Iniciando operação de drag para fora do app");
+    AppLogger.debug('Iniciando drag out', tag: 'DragDrop');
     final filesProvider = context.read<FilesProvider>();
     final files = filesProvider.files.map((f) => f.pathname).toList();
 
-    try {
-      await _channel.invokeMethod('beginDrag', {'items': files});
-      debugPrint('✅ Operação de drag iniciada com sucesso');
-    } catch (e) {
-      debugPrint('❌ Erro ao iniciar drag: $e');
+    if (files.isEmpty) {
+      AppLogger.warn('Nenhum arquivo para arrastar', tag: 'DragDrop');
+      return;
     }
+    await DragOutService.instance.beginDrag(files);
+    AppLogger.info('Drag externo iniciado', tag: 'DragDrop');
   }
 
   @override
@@ -120,46 +116,93 @@ class _DragDropState extends State<DragDrop> {
     final filesProvider = context.watch<FilesProvider>();
     final hasFiles = filesProvider.files.isNotEmpty;
 
-    return GestureDetector(
-      onPanStart: (_) => _handleDragOut(),
-      child: Container(
-        color: Colors.transparent,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            hasFiles
-                ? FilesStack(droppedFiles: filesProvider.files)
-                : const DropHit(),
-
-            Positioned(
-              left: 0,
-              top: 0,
-              child: CloseButton(onPressed: () => SystemHelper.hide()),
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onPanStart: (_) => _handleDragOut(),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            border: Border.all(
+              color:
+                  _hovering
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.6)
+                      : Colors.transparent,
+              width: 2,
             ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              hasFiles
+                  ? FilesStack(droppedFiles: filesProvider.files)
+                  : const DropHit(),
 
-            Positioned(
-              right: 0,
-              top: 0,
-              child: _buildAnimatedButton(
-                visible: hasFiles,
-                child: ShareButton(
-                  key: _buttonKey,
-                  onPressed:
-                      () =>
-                          filesProvider.shared(position: _getButtonPosition()),
+              Positioned(
+                left: 0,
+                top: 0,
+                child: CloseButton(onPressed: () => SystemHelper.hide()),
+              ),
+
+              Positioned(
+                right: 0,
+                top: 0,
+                child: _buildAnimatedButton(
+                  visible: hasFiles,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      ShareButton(
+                        key: _buttonKey,
+                        onPressed:
+                            () => filesProvider.shared(
+                              position: _getButtonPosition(),
+                            ),
+                      ),
+                      if (hasFiles)
+                        Positioned(
+                          right: -2,
+                          top: -2,
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 20,
+                              minHeight: 20,
+                            ),
+                            child: Center(
+                              child: Text(
+                                filesProvider.files.length.toString(),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: _buildAnimatedButton(
-                visible: hasFiles,
-                child: RemoveButton(onPressed: filesProvider.clear),
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: _buildAnimatedButton(
+                  visible: hasFiles,
+                  child: RemoveButton(onPressed: filesProvider.clear),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

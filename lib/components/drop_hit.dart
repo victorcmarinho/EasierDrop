@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easier_drop/services/constants.dart';
 
 class DropHit extends StatelessWidget {
   const DropHit({super.key});
@@ -9,7 +10,7 @@ class DropHit extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.file_download_outlined, size: 100),
-        Text('Jogue os arquivos aqui'),
+        Text(AppTexts.dropHere),
       ],
     );
   }

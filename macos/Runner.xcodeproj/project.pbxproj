@@ -23,6 +23,7 @@
 /* Begin PBXBuildFile section */
 		13ADC8B82E5A830C00E032D0 /* MacOSFileDropChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13ADC8B72E5A830A00E032D0 /* MacOSFileDropChannel.swift */; };
 		13ADC8BA2E5A833200E032D0 /* MacOSFileIconChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13ADC8B92E5A833000E032D0 /* MacOSFileIconChannel.swift */; };
+		13ADC8BD2E5A900000E032D0 /* MacOSDragOutChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13ADC8BC2E5A900000E032D0 /* MacOSDragOutChannel.swift */; };
 		331C80D8294CF71000263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C80D7294CF71000263BE5 /* RunnerTests.swift */; };
 		335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */; };
 		33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC10F02044A3C60003C045 /* AppDelegate.swift */; };
@@ -67,6 +68,7 @@
 		0987C3E621E7A473B4E8769A /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		13ADC8B72E5A830A00E032D0 /* MacOSFileDropChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSFileDropChannel.swift; sourceTree = "<group>"; };
 		13ADC8B92E5A833000E032D0 /* MacOSFileIconChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSFileIconChannel.swift; sourceTree = "<group>"; };
+		13ADC8BC2E5A900000E032D0 /* MacOSDragOutChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSDragOutChannel.swift; sourceTree = "<group>"; };
 		331C80D5294CF71000263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		331C80D7294CF71000263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		333000ED22D3DE5D00554162 /* Warnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Warnings.xcconfig; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 		13E117792D85FB4400AD325F /* FlutterChannels */ = {
 			isa = PBXGroup;
 			children = (
+				13ADC8BC2E5A900000E032D0 /* MacOSDragOutChannel.swift */,
 				13ADC8B92E5A833000E032D0 /* MacOSFileIconChannel.swift */,
 				13ADC8B72E5A830A00E032D0 /* MacOSFileDropChannel.swift */,
 			);
@@ -458,6 +461,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13ADC8BD2E5A900000E032D0 /* MacOSDragOutChannel.swift in Sources */,
 				33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */,
 				33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */,
 				13ADC8BA2E5A833200E032D0 /* MacOSFileIconChannel.swift in Sources */,

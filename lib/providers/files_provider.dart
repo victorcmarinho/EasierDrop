@@ -1,162 +1,158 @@
+import 'dart:async';
 import 'package:easier_drop/helpers/macos/file_icon_helper.dart';
 import 'package:easier_drop/model/file_reference.dart';
+import 'package:easier_drop/services/logger.dart';
 import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
+/// Provider responsável apenas por gerenciar o estado (coleção de arquivos) e
+/// disparar notificações. Regras de ícone e validação simples permanecem aqui
+/// dado o pequeno escopo do app.
 class FilesProvider with ChangeNotifier {
-  final Set<FileReference> _files = {};
+  // Mantém ordem de inserção determinística
+  final Map<String, FileReference> _files = {};
   static const int _maxFiles = 100; // Limite de arquivos
 
-  List<FileReference> get files => _files.toList();
+  List<FileReference> get files => _files.values.toList(growable: false);
 
-  List<XFile> get xfiles {
-    return _files
-        .where((file) => file.isValid())
-        .map((file) => XFile(file.pathname))
-        .toList();
+  List<XFile> get xfiles => _files.values
+      .where((f) => f.isValidSync())
+      .map((f) => XFile(f.pathname))
+      .toList(growable: false);
+
+  bool get isEmpty => _files.isEmpty;
+
+  Timer? _debounce;
+  void _scheduleNotify() {
+    _debounce?.cancel();
+    _debounce = Timer(
+      const Duration(milliseconds: 40),
+      () => notifyListeners(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   Future<void> addFile(FileReference file) async {
     try {
-      if (!await file.isValidAsync()) {
-        debugPrint('Arquivo inválido: ${file.pathname}');
-        return;
-      }
-
       if (_files.length >= _maxFiles) {
-        debugPrint('Limite de arquivos atingido');
+        AppLogger.warn('Limite de arquivos atingido', tag: 'FilesProvider');
+        return;
+      }
+      if (!await file.isValidAsync()) {
+        AppLogger.debug(
+          'Arquivo inválido: ${file.pathname}',
+          tag: 'FilesProvider',
+        );
+        return;
+      }
+      if (_files.containsKey(file.pathname)) {
+        AppLogger.debug(
+          'Arquivo já existe: ${file.pathname}',
+          tag: 'FilesProvider',
+        );
         return;
       }
 
-      if (!_files.add(file)) {
-        debugPrint('Arquivo já existe: ${file.pathname}');
-        return;
-      }
+      _files[file.pathname] = file;
+      _scheduleNotify();
 
-      notifyListeners();
-
-      // Fetch icon after adding the file to update the UI with the icon
+      // Busca ícone (não bloqueia primeira pintura do item)
       final iconData = await FileIconHelper.getFileIcon(file.pathname);
       if (iconData != null) {
-        final fileWithIcon = FileReference(
-          pathname: file.pathname,
-          iconData: iconData,
-        );
-        // Replace the file reference in the set
-        _files.remove(file);
-        _files.add(fileWithIcon);
-        notifyListeners();
+        final current = _files[file.pathname];
+        if (current != null && current.iconData == null) {
+          _files[file.pathname] = current.withIcon(iconData);
+          _scheduleNotify();
+        }
       }
-
-      final fileSize = await file.size;
-      debugPrint('Arquivo adicionado: ${file.fileName} (${fileSize} bytes)');
+      final size = await file.size;
+      AppLogger.info(
+        'Arquivo adicionado: ${file.fileName} (${size} bytes)',
+        tag: 'FilesProvider',
+      );
     } catch (e) {
-      debugPrint('Erro ao adicionar arquivo: $e');
+      AppLogger.error('Erro ao adicionar arquivo: $e', tag: 'FilesProvider');
     }
   }
 
   Future<void> addAllFiles(List<FileReference> files) async {
     try {
-      if (_files.length + files.length > _maxFiles) {
-        debugPrint('Limite de arquivos seria excedido');
-        return;
+      if (_files.length >= _maxFiles) return;
+      for (final file in files) {
+        if (_files.length >= _maxFiles) break;
+        if (_files.containsKey(file.pathname)) continue;
+        if (!await file.isValidAsync()) continue;
+        _files[file.pathname] = file;
       }
+      _scheduleNotify();
 
-      final validFiles = await Future.wait(
-        files.map((file) async {
-          if (await file.isValidAsync()) return file;
-          return null;
+      // Carrega ícones em paralelo para novos arquivos que ainda não têm ícone
+      await Future.wait(
+        _files.values.where((f) => f.iconData == null).map((f) async {
+          final icon = await FileIconHelper.getFileIcon(f.pathname);
+          if (icon != null) {
+            final current = _files[f.pathname];
+            if (current != null && current.iconData == null) {
+              _files[f.pathname] = current.withIcon(icon);
+            }
+          }
         }),
       );
-
-      final newFiles = validFiles.whereType<FileReference>().toList();
-      if (newFiles.isEmpty) {
-        debugPrint('Nenhum arquivo válido para adicionar');
-        return;
-      }
-
-      final addedFiles = newFiles.where((file) => _files.add(file)).toList();
-
-      if (addedFiles.isNotEmpty) {
-        notifyListeners();
-        debugPrint('${addedFiles.length} arquivos adicionados');
-
-        // Fetch icons for all new files
-        await Future.wait(
-          addedFiles.map((file) async {
-            final iconData = await FileIconHelper.getFileIcon(file.pathname);
-            if (iconData != null) {
-              final updatedFile = FileReference(
-                pathname: file.pathname,
-                iconData: iconData,
-              );
-              _files.remove(file);
-              _files.add(updatedFile);
-            }
-          }),
-        );
-        notifyListeners();
-      } else {
-        debugPrint('Nenhum arquivo novo para adicionar');
-      }
+      _scheduleNotify();
     } catch (e) {
-      debugPrint('Erro ao adicionar arquivos: $e');
+      AppLogger.error('Erro ao adicionar arquivos: $e', tag: 'FilesProvider');
     }
   }
 
   Future<void> removeFile(FileReference file) async {
     try {
-      if (!_files.contains(file)) {
-        debugPrint('Arquivo não encontrado para remoção: ${file.pathname}');
-        return;
+      if (_files.remove(file.pathname) != null) {
+        _scheduleNotify();
+        AppLogger.info(
+          'Arquivo removido: ${file.fileName}',
+          tag: 'FilesProvider',
+        );
       }
-
-      _files.remove(file);
-      notifyListeners();
-      debugPrint('Arquivo removido: ${file.fileName}');
     } catch (e) {
-      debugPrint('Erro ao remover arquivo: $e');
+      AppLogger.error('Erro ao remover arquivo: $e', tag: 'FilesProvider');
     }
   }
 
   void removeByPath(String pathname) {
     try {
-      final file = _files.firstWhere(
-        (file) => file.pathname == pathname,
-        orElse: () => throw Exception('Arquivo não encontrado'),
-      );
-
-      _files.remove(file);
-      notifyListeners();
-      debugPrint('Arquivo removido: $pathname');
+      if (_files.remove(pathname) != null) {
+        _scheduleNotify();
+        AppLogger.info('Arquivo removido: $pathname', tag: 'FilesProvider');
+      }
     } catch (e) {
-      debugPrint('Erro ao remover arquivo por path: $e');
+      AppLogger.error(
+        'Erro ao remover arquivo por path: $e',
+        tag: 'FilesProvider',
+      );
     }
   }
 
   void clear() {
-    try {
-      final count = _files.length;
-      _files.clear();
-      notifyListeners();
-      debugPrint('$count arquivos removidos');
-    } catch (e) {
-      debugPrint('Erro ao limpar arquivos: $e');
-    }
+    final count = _files.length;
+    _files.clear();
+    _scheduleNotify();
+    AppLogger.info('$count arquivos removidos', tag: 'FilesProvider');
   }
 
   Future<Object> shared({Offset? position}) async {
     try {
       final validFiles = xfiles;
-
       if (validFiles.isEmpty) {
-        debugPrint('Nenhum arquivo válido para compartilhar');
         return ShareResult(
-          "Sem arquivos para compartilhar",
+          'Sem arquivos para compartilhar',
           ShareResultStatus.unavailable,
         );
       }
-
       final params = ShareParams(
         files: validFiles,
         sharePositionOrigin:
@@ -169,13 +165,14 @@ class FilesProvider with ChangeNotifier {
                 )
                 : null,
       );
-
-      debugPrint('Compartilhando ${validFiles.length} arquivos');
       return SharePlus.instance.share(params);
     } catch (e) {
-      debugPrint('Erro ao compartilhar arquivos: $e');
+      AppLogger.error(
+        'Erro ao compartilhar arquivos: $e',
+        tag: 'FilesProvider',
+      );
       return ShareResult(
-        "Erro ao compartilhar arquivos",
+        'Erro ao compartilhar arquivos',
         ShareResultStatus.unavailable,
       );
     }

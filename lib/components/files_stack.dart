@@ -1,5 +1,6 @@
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:flutter/material.dart';
+import 'package:easier_drop/services/constants.dart';
 import 'dart:math' as math;
 
 class FilesStack extends StatelessWidget {
@@ -12,7 +13,7 @@ class FilesStack extends StatelessWidget {
     if (droppedFiles.isEmpty) {
       return const Center(
         child: Text(
-          'Arraste os arquivos para cá',
+          AppTexts.dropHere,
           style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       );
