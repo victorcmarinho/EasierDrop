@@ -22,11 +22,30 @@ Funcionalidade semelhante ao conceito do aplicativo macOS [Dropover](https://dro
 
 - Caixa flutuante sempre no topo (alwaysOnTop) e fora da barra de tarefas (skipTaskbar)
 - Arraste & solte arquivos para dentro (drag in) via canal nativo macOS
-- Arraste o lote para fora (drag out) para mover para outra pasta / app
+- Arraste o lote para fora (drag out) para mover/copiar para outra pasta / app (canal dedicado `file_drag_out_channel`)
 - Visual empilhado dos ícones (ícones reais do sistema, quando disponíveis)
 - Compartilhamento rápido usando o menu de compartilhamento do sistema (Share Plus)
 - Ícones em cache com política LRU para reduzir chamadas nativas
 - Tray icon com menu para reabrir / encerrar
+
+### Drag Out (Como funciona)
+
+O fluxo de arrastar para fora (drag out) é tratado por um canal de plataforma separado (`file_drag_out_channel`).
+
+1. Ao iniciar um gesto de arrastar dentro da área (onPanStart), o app invoca `beginDrag` passando todos os caminhos coletados.
+2. O código nativo prepara uma sessão de arraste (`NSDraggingSession`) com ícones reais dos arquivos.
+3. Ao soltar em um destino válido, o canal retorna um callback (`fileDropped`) indicando a operação (copy/move) e o app limpa a coleção atual.
+
+Essa separação garante que a lógica de entrada (drag in) e saída (drag out) não se misturem, mantendo o código mais simples de evoluir.
+
+### Atalhos de Teclado
+
+| Ação | Atalho |
+|------|--------|
+| Limpar todos os arquivos | Cmd + Backspace / Cmd + Delete |
+| Compartilhar arquivos | Cmd + Shift + C / Cmd + Enter |
+
+É necessário que a janela esteja focada (o app já coloca foco automático na área principal).
 
 ## Capturas (futuro)
 
