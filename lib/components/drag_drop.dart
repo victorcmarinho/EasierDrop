@@ -82,12 +82,22 @@ class _DragDropState extends State<DragDrop> {
           'Drag finalizado (outbound). Operação: ${op ?? 'desconhecida'}',
           tag: 'DragDrop',
         );
-        // Limpa a lista após arrastar para fora
+        // Se a operação for cópia (segurando Cmd no início do drag), mantém arquivos
+        if (op == 'copy') {
+          AppLogger.info(
+            'Operação de cópia detectada. Arquivos mantidos na bandeja.',
+            tag: 'DragDrop',
+          );
+          return null;
+        }
+        // Caso contrário (move ou desconhecida) limpa a lista
         final provider = context.read<FilesProvider>();
         final removed = provider.files.length;
-        provider.clear();
-        if (mounted && removed > 0) {
-          _showUndoSnackbar(removed, dragOut: true);
+        if (removed > 0) {
+          provider.clear();
+          if (mounted) {
+            _showUndoSnackbar(removed, dragOut: true);
+          }
         }
       }
       return null;
