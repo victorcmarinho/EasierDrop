@@ -15,6 +15,11 @@ class FilesProvider with ChangeNotifier {
 
   List<FileReference>? _lastCleared; // snapshot para undo
 
+  // Timer de monitoramento opcional para remover arquivos que deixaram de existir
+  Timer? _monitorTimer;
+  static const Duration _monitorInterval = Duration(seconds: 5);
+  bool _monitoringEnabled = true;
+
   List<FileReference> get files => _files.values.toList(growable: false);
 
   List<XFile> get xfiles => _files.values
@@ -36,8 +41,18 @@ class FilesProvider with ChangeNotifier {
 
   @override
   void dispose() {
-    // nenhum recurso pendente além do microtask agendado
+    _monitorTimer?.cancel();
     super.dispose();
+  }
+
+  FilesProvider({bool enableMonitoring = true}) {
+    _monitoringEnabled = enableMonitoring;
+    if (_monitoringEnabled) {
+      _monitorTimer = Timer.periodic(
+        _monitorInterval,
+        (_) => _rescanInternal(),
+      );
+    }
   }
 
   Future<void> addFile(FileReference file) async {
@@ -164,4 +179,27 @@ class FilesProvider with ChangeNotifier {
       );
     }
   }
+
+  // Revalida arquivos existentes; remove os que não são mais válidos (excluídos ou sem permissão)
+  void _rescanInternal() {
+    if (_files.isEmpty) return;
+    final toRemove = <String>[];
+    for (final entry in _files.entries) {
+      if (!entry.value.isValidSync()) {
+        toRemove.add(entry.key);
+      }
+    }
+    if (toRemove.isEmpty) return;
+    for (final k in toRemove) {
+      _files.remove(k);
+    }
+    _scheduleNotify();
+    AppLogger.info(
+      '${toRemove.length} arquivo(s) removidos após rescan',
+      tag: 'FilesProvider',
+    );
+  }
+
+  /// API pública para testes ou acionamento manual.
+  void rescanNow() => _rescanInternal();
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easier_drop/services/constants.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -17,6 +18,8 @@ class SystemHelper {
   }
 
   static Future<void> setup() async {
+    // Carrega flags persistidas antes de configurar UI
+    await FeatureFlags.ensureLoaded();
     await Future.wait([
       SystemHelper._configureTray(),
       SystemHelper._configureWindow(),
@@ -47,6 +50,15 @@ class SystemHelper {
     final Menu menu = Menu(
       items: [
         MenuItem(key: 'show_window', label: 'Abrir bandeja'),
+        MenuItem.separator(),
+        MenuItem(
+          key: 'toggle_autoclear_in',
+          label: 'Auto limpar entrada',
+          toolTip: 'Alterna limpeza automática após drop de entrada',
+          checked: FeatureFlags.autoClearInbound,
+          // checked será atualizado dinamicamente fora daqui
+          // por simplicidade mantemos estático no setup; atualização exige rebuild de menu.
+        ),
         MenuItem.separator(),
         MenuItem(key: 'exit_app', label: 'Fechar o aplicativo'),
       ],

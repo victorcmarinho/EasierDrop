@@ -61,4 +61,9 @@ class FileIconHelper {
     if (dotIndex == -1 || dotIndex == path.length - 1) return null;
     return path.substring(dotIndex + 1).toLowerCase();
   }
+
+  /// TESTES: limpa cache (não usar em produção normal)
+  static void debugClearCache() {
+    _iconCache.clear();
+  }
 }

@@ -64,11 +64,13 @@ class _DragDropState extends State<DragDrop> {
           'Drag finalizado (inbound). Operação: ${op ?? 'desconhecida'}',
           tag: 'DragDrop',
         );
-        final provider = context.read<FilesProvider>();
-        final removed = provider.files.length;
-        provider.clear();
-        if (mounted && removed > 0) {
-          _showUndoSnackbar(removed);
+        if (FeatureFlags.autoClearInbound) {
+          final provider = context.read<FilesProvider>();
+          final removed = provider.files.length;
+          provider.clear();
+          if (mounted && removed > 0) {
+            _showUndoSnackbar(removed);
+          }
         }
       }
       return null;
@@ -192,106 +194,137 @@ class _DragDropState extends State<DragDrop> {
       (p) => p.files.isNotEmpty,
     );
 
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovering = true),
-      onExit: (_) => setState(() => _hovering = false),
-      child: GestureDetector(
-        onPanStart: (_) => _handleDragOut(),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            border: Border.all(
-              color:
-                  _hovering
-                      ? Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.6)
-                      : Colors.transparent,
-              width: 2,
+    return FocusTraversalGroup(
+      policy: OrderedTraversalPolicy(),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovering = true),
+        onExit: (_) => setState(() => _hovering = false),
+        child: GestureDetector(
+          onPanStart: (_) => _handleDragOut(),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 160),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              border: Border.all(
+                color:
+                    _hovering
+                        ? Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.6)
+                        : Colors.transparent,
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
             ),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            fit: StackFit.expand,
-            children: [
-              Selector<FilesProvider, List<FileReference>>(
-                selector: (_, p) => p.files,
-                builder:
-                    (context, files, _) =>
-                        files.isNotEmpty
-                            ? FilesStack(droppedFiles: files)
-                            : const DropHit(),
-              ),
-
-              Positioned(
-                left: 0,
-                top: 0,
-                child: CloseButton(onPressed: () => SystemHelper.hide()),
-              ),
-
-              Positioned(
-                right: 0,
-                top: 0,
-                child: _buildAnimatedButton(
-                  visible: hasFiles,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      ShareButton(
-                        key: _buttonKey,
-                        onPressed:
-                            () => filesProvider.shared(
-                              position: _getButtonPosition(),
-                            ),
+            child: Stack(
+              alignment: Alignment.center,
+              fit: StackFit.expand,
+              children: [
+                Selector<FilesProvider, List<FileReference>>(
+                  selector: (_, p) => p.files,
+                  builder:
+                      (context, files, _) => Semantics(
+                        label: 'Área de colecionar arquivos',
+                        hint:
+                            hasFiles
+                                ? 'Contém ${files.length} arquivos. Arraste para fora para mover ou use compartilhar.'
+                                : 'Vazio. Arraste arquivos aqui.',
+                        liveRegion: true,
+                        child:
+                            files.isNotEmpty
+                                ? FilesStack(droppedFiles: files)
+                                : const DropHit(),
                       ),
-                      if (hasFiles)
-                        Positioned(
-                          right: -2,
-                          top: -2,
-                          child: Container(
-                            padding: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              shape: BoxShape.circle,
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 20,
-                              minHeight: 20,
-                            ),
-                            child: Center(
-                              child: Text(
-                                context
-                                    .select<FilesProvider, int>(
-                                      (p) => p.files.length,
-                                    )
-                                    .toString(),
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                ),
+
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  child: Semantics(
+                    label: AppTexts.close,
+                    button: true,
+                    child: CloseButton(onPressed: () => SystemHelper.hide()),
+                  ),
+                ),
+
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: _buildAnimatedButton(
+                    visible: hasFiles,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Semantics(
+                          label: AppTexts.share,
+                          hint:
+                              hasFiles
+                                  ? 'Compartilhar ${filesProvider.files.length} arquivos'
+                                  : 'Nenhum arquivo para compartilhar',
+                          button: true,
+                          child: ShareButton(
+                            key: _buttonKey,
+                            onPressed:
+                                () => filesProvider.shared(
+                                  position: _getButtonPosition(),
+                                ),
+                          ),
+                        ),
+                        if (hasFiles)
+                          Positioned(
+                            right: -2,
+                            top: -2,
+                            child: Container(
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              constraints: const BoxConstraints(
+                                minWidth: 20,
+                                minHeight: 20,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  context
+                                      .select<FilesProvider, int>(
+                                        (p) => p.files.length,
+                                      )
+                                      .toString(),
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: _buildAnimatedButton(
-                  visible: hasFiles,
-                  child: RemoveButton(
-                    onPressed: () => _confirmAndClear(filesProvider),
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: _buildAnimatedButton(
+                    visible: hasFiles,
+                    child: Semantics(
+                      label: AppTexts.removeAll,
+                      hint:
+                          hasFiles
+                              ? 'Remover ${filesProvider.files.length} arquivos'
+                              : 'Nenhum arquivo para remover',
+                      button: true,
+                      child: RemoveButton(
+                        onPressed: () => _confirmAndClear(filesProvider),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
