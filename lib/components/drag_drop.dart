@@ -140,6 +140,7 @@ class _DragDropState extends State<DragDrop> {
           ),
           child: Stack(
             alignment: Alignment.center,
+            fit: StackFit.expand,
             children: [
               Selector<FilesProvider, List<FileReference>>(
                 selector: (_, p) => p.files,
