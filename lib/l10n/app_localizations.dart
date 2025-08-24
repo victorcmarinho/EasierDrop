@@ -1,142 +1,276 @@
 import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
 
-/// Manual localization legacy (pt-BR, en, es).
-/// TODO: Remover após migração completa para gen_l10n (usar ARB gerado).
-class AppLocalizations {
-  final Locale locale;
-  AppLocalizations(this.locale);
+import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
+import 'app_localizations_pt.dart';
 
-  static const supportedLocales = [
-    Locale('en'),
-    Locale('pt', 'BR'),
-    Locale('es'),
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
   ];
 
-  static const _localizedValues = <String, Map<String, String>>{
-    'en': {
-      'app.title': 'Easier Drop',
-      'drop.here': 'Drop files here',
-      'drag.none': 'No files to drag.',
-      'share': 'Share',
-      'remove.all': 'Remove files',
-      'close': 'Close',
-      'kept.on.copy': 'Kept (copy)',
-      'dialog.clear.title': 'Clear files?',
-      'dialog.clear.message': 'This will remove all collected files.',
-      'dialog.clear.cancel': 'Cancel',
-      'dialog.clear.confirm': 'Clear',
-      'tooltip.share': 'Share (Cmd+Shift+C)',
-      'tooltip.clear': 'Clear (Cmd+Backspace)',
-      'sem.area.label': 'File collection area',
-      'sem.area.hint.empty': 'Empty. Drag files here.',
-      'sem.area.hint.has':
-          'Contains {count} file(s). Drag out to move or share.',
-      'sem.share.hint.none': 'No files to share',
-      'sem.share.hint.some': 'Share {count} file(s)',
-      'sem.remove.hint.none': 'No files to remove',
-      'sem.remove.hint.some': 'Remove {count} files',
-      'tray.files.none': '📂 No files',
-      'tray.files.count': '📁 Files: {count}',
-      'tray.exit': 'Quit application',
-      'tray.open': 'Open tray',
-      'tray.lang': 'Language:',
-      'tray.files.tooltip': 'Current count in tray',
-    },
-    'pt': {
-      'app.title': 'Easier Drop',
-      'drop.here': 'Jogue os arquivos aqui',
-      'drag.none': 'Nenhum arquivo para arrastar.',
-      'share': 'Compartilhar',
-      'remove.all': 'Remover arquivos',
-      'close': 'Fechar',
-      'kept.on.copy': 'Mantido por cópia',
-      'dialog.clear.title': 'Limpar arquivos?',
-      'dialog.clear.message': 'Essa ação removerá todos os arquivos coletados.',
-      'dialog.clear.cancel': 'Cancelar',
-      'dialog.clear.confirm': 'Limpar',
-      'tooltip.share': 'Compartilhar (Cmd+Shift+C)',
-      'tooltip.clear': 'Limpar (Cmd+Backspace)',
-      'sem.area.label': 'Área de colecionar arquivos',
-      'sem.area.hint.empty': 'Vazio. Arraste arquivos aqui.',
-      'sem.area.hint.has':
-          'Contém {count} arquivos. Arraste para fora para mover ou compartilhar.',
-      'sem.share.hint.none': 'Nenhum arquivo para compartilhar',
-      'sem.share.hint.some': 'Compartilhar {count} arquivos',
-      'sem.remove.hint.none': 'Nenhum arquivo para remover',
-      'sem.remove.hint.some': 'Remover {count} arquivos',
-      'tray.files.none': '📂 Sem arquivos',
-      'tray.files.count': '📁 Arquivos: {count}',
-      'tray.exit': 'Fechar o aplicativo',
-      'tray.open': 'Abrir bandeja',
-      'tray.lang': 'Idioma:',
-      'tray.files.tooltip': 'Quantidade atual na bandeja',
-    },
-    'es': {
-      'app.title': 'Easier Drop',
-      'drop.here': 'Suelta los archivos aquí',
-      'drag.none': 'No hay archivos para arrastrar.',
-      'share': 'Compartir',
-      'remove.all': 'Eliminar archivos',
-      'close': 'Cerrar',
-      'kept.on.copy': 'Mantenido por copia',
-      'dialog.clear.title': '¿Limpiar archivos?',
-      'dialog.clear.message':
-          'Esta acción eliminará todos los archivos recolectados.',
-      'dialog.clear.cancel': 'Cancelar',
-      'dialog.clear.confirm': 'Limpiar',
-      'tooltip.share': 'Compartir (Cmd+Shift+C)',
-      'tooltip.clear': 'Limpiar (Cmd+Backspace)',
-      'sem.area.label': 'Área de recolección de archivos',
-      'sem.area.hint.empty': 'Vacío. Arrastra archivos aquí.',
-      'sem.area.hint.has':
-          'Contiene {count} archivo(s). Arrastra para mover o compartir.',
-      'sem.share.hint.none': 'No hay archivos para compartir',
-      'sem.share.hint.some': 'Compartir {count} archivos',
-      'sem.remove.hint.none': 'No hay archivos para eliminar',
-      'sem.remove.hint.some': 'Eliminar {count} archivos',
-      'tray.files.none': '📂 Sin archivos',
-      'tray.files.count': '📁 Archivos: {count}',
-      'tray.exit': 'Cerrar la aplicación',
-      'tray.open': 'Abrir bandeja',
-      'tray.lang': 'Idioma:',
-      'tray.files.tooltip': 'Cantidad actual en la bandeja',
-    },
-  };
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('es'),
+    Locale('pt')
+  ];
 
-  String _langKey() =>
-      _localizedValues.containsKey(locale.languageCode)
-          ? locale.languageCode
-          : 'en';
+  /// No description provided for @appTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Easier Drop'**
+  String get appTitle;
 
-  String t(String key, {Map<String, String>? params}) {
-    final lang = _langKey();
-    final map = _localizedValues[lang]!;
-    String value = map[key] ?? _localizedValues['en']![key] ?? key;
-    if (params != null) {
-      params.forEach((k, v) => value = value.replaceAll('{$k}', v));
-    }
-    return value;
-  }
+  /// No description provided for @dropHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop files here'**
+  String get dropHere;
 
-  static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
-  }
+  /// No description provided for @clearFilesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear files?'**
+  String get clearFilesTitle;
+
+  /// No description provided for @clearFilesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove all collected files.'**
+  String get clearFilesMessage;
+
+  /// No description provided for @clearCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get clearCancel;
+
+  /// No description provided for @clearConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clearConfirm;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @removeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove files'**
+  String get removeAll;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @tooltipShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share (Cmd+Shift+C)'**
+  String get tooltipShare;
+
+  /// No description provided for @tooltipClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear (Cmd+Backspace)'**
+  String get tooltipClear;
+
+  /// No description provided for @semAreaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'File collection area'**
+  String get semAreaLabel;
+
+  /// No description provided for @semAreaHintEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty. Drag files here.'**
+  String get semAreaHintEmpty;
+
+  /// No description provided for @semAreaHintHas.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains {count, plural, one{# file} other{# files}}. Drag out to move or share.'**
+  String semAreaHintHas(int count);
+
+  /// No description provided for @semShareHintNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No files to share'**
+  String get semShareHintNone;
+
+  /// No description provided for @semShareHintSome.
+  ///
+  /// In en, this message translates to:
+  /// **'Share {count, plural, one{# file} other{# files}}'**
+  String semShareHintSome(int count);
+
+  /// No description provided for @semRemoveHintNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No files to remove'**
+  String get semRemoveHintNone;
+
+  /// No description provided for @semRemoveHintSome.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {count, plural, one{# file} other{# files}}'**
+  String semRemoveHintSome(int count);
+
+  /// No description provided for @trayFilesNone.
+  ///
+  /// In en, this message translates to:
+  /// **'📂 No files'**
+  String get trayFilesNone;
+
+  /// No description provided for @trayFilesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'📁 Files: {count}'**
+  String trayFilesCount(int count);
+
+  /// No description provided for @trayExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Quit application'**
+  String get trayExit;
+
+  /// No description provided for @openTray.
+  ///
+  /// In en, this message translates to:
+  /// **'Open tray'**
+  String get openTray;
+
+  /// No description provided for @filesCountTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Current number of files'**
+  String get filesCountTooltip;
+
+  /// No description provided for @languageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Language:'**
+  String get languageLabel;
 }
 
-class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
-  const AppLocalizationsDelegate();
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) =>
-      ['en', 'pt', 'es'].contains(locale.languageCode);
-
-  @override
-  Future<AppLocalizations> load(Locale locale) async {
-    return AppLocalizations(locale);
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
   }
 
   @override
-  bool shouldReload(covariant LocalizationsDelegate<AppLocalizations> old) =>
-      false;
+  bool isSupported(Locale locale) => <String>['en', 'es', 'pt'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'en': return AppLocalizationsEn();
+    case 'es': return AppLocalizationsEs();
+    case 'pt': return AppLocalizationsPt();
+  }
+
+  throw FlutterError(
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.'
+  );
 }

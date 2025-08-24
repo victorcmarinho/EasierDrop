@@ -75,12 +75,14 @@ Ainda NÃO implementa:
 - Ações de processamento (renomear, zipar, ações customizadas)
 - Persistência ou histórico de coleções
 - Suporte Windows / Linux (planejado)
-- Internacionalização (strings atualmente em pt-BR)
+
+Internacionalização: já possui base (pt-BR, en, es) com classe manual + ARB (migração `gen_l10n` em andamento). Seletor de idioma via tray.
 
 ## Roadmap Sugerido
 
 - [ ] Extrair serviço dedicado para drop / drag out (separar da UI)
-- [ ] Internacionalização com `intl`
+- [x] Internacionalização inicial (pt, pt-BR, es) + seletor no tray
+- [ ] Finalizar migração `gen_l10n` unificando fonte
 - [ ] Suporte Windows & Linux (plugins ou adaptações nativas equivalentes)
 - [ ] Múltiplas coleções (multi “shelves”) simultâneas
 - [ ] Ações rápidas (ex: copiar caminho, compactar, enviar)

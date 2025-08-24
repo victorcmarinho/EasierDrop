@@ -84,26 +84,20 @@ class _TrayState extends State<Tray> with TrayListener {
   }
 
   Future<void> _rebuildMenu() async {
-    final loc = AppLocalizations.of(context);
+    final loc = AppLocalizations.of(context)!;
     final count = _lastCount;
     final settings = SettingsService.instance;
-    final current = settings.localeCode ?? loc.locale.languageCode;
+    final current = settings.localeCode ?? loc.localeName.split('_').first;
     final menu = Menu(
       items: [
-        MenuItem(key: 'show_window', label: loc.t('tray.open')),
+        MenuItem(key: 'show_window', label: loc.openTray),
         MenuItem(
           key: 'files_count',
-          label:
-              count > 0
-                  ? loc.t(
-                    'tray.files.count',
-                    params: {'count': count.toString()},
-                  )
-                  : loc.t('tray.files.none'),
-          toolTip: loc.t('tray.files.tooltip'),
+          label: count > 0 ? loc.trayFilesCount(count) : loc.trayFilesNone,
+          toolTip: loc.filesCountTooltip,
         ),
         MenuItem.separator(),
-        MenuItem(key: 'lang_label', label: loc.t('tray.lang')),
+        MenuItem(key: 'lang_label', label: loc.languageLabel),
         MenuItem(
           key: 'lang_en',
           label: current == 'en' ? '• English' : 'English',
@@ -120,7 +114,7 @@ class _TrayState extends State<Tray> with TrayListener {
           label: current == 'es' ? '• Español' : 'Español',
         ),
         MenuItem.separator(),
-        MenuItem(key: 'exit_app', label: loc.t('tray.exit')),
+        MenuItem(key: 'exit_app', label: loc.trayExit),
       ],
     );
     await trayManager.setContextMenu(menu);

@@ -131,22 +131,16 @@ class _DragDropState extends State<DragDrop> {
       context: context,
       builder:
           (ctx) => AlertDialog(
-            title: Text(AppLocalizations.of(context).t('dialog.clear.title')),
-            content: Text(
-              AppLocalizations.of(context).t('dialog.clear.message'),
-            ),
+            title: Text(AppLocalizations.of(context)!.clearFilesTitle),
+            content: Text(AppLocalizations.of(context)!.clearFilesMessage),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: Text(
-                  AppLocalizations.of(context).t('dialog.clear.cancel'),
-                ),
+                child: Text(AppLocalizations.of(context)!.clearCancel),
               ),
               FilledButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: Text(
-                  AppLocalizations.of(context).t('dialog.clear.confirm'),
-                ),
+                child: Text(AppLocalizations.of(context)!.clearConfirm),
               ),
             ],
           ),
@@ -162,7 +156,7 @@ class _DragDropState extends State<DragDrop> {
     final hasFiles = context.select<FilesProvider, bool>(
       (p) => p.files.isNotEmpty,
     );
-    final loc = AppLocalizations.of(context);
+    final loc = AppLocalizations.of(context)!;
 
     return FocusTraversalGroup(
       policy: OrderedTraversalPolicy(),
@@ -215,13 +209,10 @@ class _DragDropState extends State<DragDrop> {
                   builder: (context, files, _) {
                     final hint =
                         files.isEmpty
-                            ? loc.t('sem.area.hint.empty')
-                            : loc.t(
-                              'sem.area.hint.has',
-                              params: {'count': files.length.toString()},
-                            );
+                            ? loc.semAreaHintEmpty
+                            : loc.semAreaHintHas(files.length);
                     return Semantics(
-                      label: loc.t('sem.area.label'),
+                      label: loc.semAreaLabel,
                       hint: hint,
                       liveRegion: true,
                       child:
@@ -236,7 +227,7 @@ class _DragDropState extends State<DragDrop> {
                   left: 0,
                   top: 0,
                   child: Semantics(
-                    label: AppLocalizations.of(context).t('close'),
+                    label: AppLocalizations.of(context)!.close,
                     button: true,
                     child: CloseButton(onPressed: () => SystemHelper.hide()),
                   ),
@@ -251,20 +242,15 @@ class _DragDropState extends State<DragDrop> {
                       clipBehavior: Clip.none,
                       children: [
                         Tooltip(
-                          message: loc.t('tooltip.share'),
+                          message: loc.tooltipShare,
                           child: Semantics(
-                            label: loc.t('share'),
+                            label: loc.share,
                             hint:
                                 hasFiles
-                                    ? loc.t(
-                                      'sem.share.hint.some',
-                                      params: {
-                                        'count':
-                                            filesProvider.files.length
-                                                .toString(),
-                                      },
+                                    ? loc.semShareHintSome(
+                                      filesProvider.files.length,
                                     )
-                                    : loc.t('sem.share.hint.none'),
+                                    : loc.semShareHintNone,
                             button: true,
                             child: ShareButton(
                               key: _buttonKey,
@@ -316,19 +302,15 @@ class _DragDropState extends State<DragDrop> {
                   child: _buildAnimatedButton(
                     visible: hasFiles,
                     child: Tooltip(
-                      message: loc.t('tooltip.clear'),
+                      message: loc.tooltipClear,
                       child: Semantics(
-                        label: loc.t('remove.all'),
+                        label: loc.removeAll,
                         hint:
                             hasFiles
-                                ? loc.t(
-                                  'sem.remove.hint.some',
-                                  params: {
-                                    'count':
-                                        filesProvider.files.length.toString(),
-                                  },
+                                ? loc.semRemoveHintSome(
+                                  filesProvider.files.length,
                                 )
-                                : loc.t('sem.remove.hint.none'),
+                                : loc.semRemoveHintNone,
                         button: true,
                         child: RemoveButton(
                           onPressed: () => _confirmAndClear(filesProvider),

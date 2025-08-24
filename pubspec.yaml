@@ -69,9 +69,18 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
+  # App assets (tray icon, etc.)
   assets:
     - assets/images/icon.icns
+
+l10n:
+  arb-dir: lib/l10n
+  template-arb-file: app_en.arb
+  output-localization-file: app_localizations.dart
+  output-class: AppLocalizations
+  untranslated-messages-file: l10n_untranslated.txt
+  synthetic-package: false
+  nullable-getter: false
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

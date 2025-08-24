@@ -11,9 +11,10 @@ class FilesStack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (droppedFiles.isEmpty) {
+      final loc = AppLocalizations.of(context)!;
       return Center(
         child: Text(
-          AppLocalizations.of(context).t('drop.here'),
+          loc.dropHere,
           style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
       );

@@ -6,7 +6,7 @@ class DropHit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context);
+    final loc = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -18,7 +18,7 @@ class DropHit extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            loc.t('drop.here'),
+            loc.dropHere,
             style: const TextStyle(fontSize: 16, color: Colors.grey),
           ),
         ],

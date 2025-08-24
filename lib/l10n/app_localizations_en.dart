@@ -1,0 +1,108 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appTitle => 'Easier Drop';
+
+  @override
+  String get dropHere => 'Drop files here';
+
+  @override
+  String get clearFilesTitle => 'Clear files?';
+
+  @override
+  String get clearFilesMessage => 'This will remove all collected files.';
+
+  @override
+  String get clearCancel => 'Cancel';
+
+  @override
+  String get clearConfirm => 'Clear';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get removeAll => 'Remove files';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get tooltipShare => 'Share (Cmd+Shift+C)';
+
+  @override
+  String get tooltipClear => 'Clear (Cmd+Backspace)';
+
+  @override
+  String get semAreaLabel => 'File collection area';
+
+  @override
+  String get semAreaHintEmpty => 'Empty. Drag files here.';
+
+  @override
+  String semAreaHintHas(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# files',
+      one: '# file',
+    );
+    return 'Contains $_temp0. Drag out to move or share.';
+  }
+
+  @override
+  String get semShareHintNone => 'No files to share';
+
+  @override
+  String semShareHintSome(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# files',
+      one: '# file',
+    );
+    return 'Share $_temp0';
+  }
+
+  @override
+  String get semRemoveHintNone => 'No files to remove';
+
+  @override
+  String semRemoveHintSome(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# files',
+      one: '# file',
+    );
+    return 'Remove $_temp0';
+  }
+
+  @override
+  String get trayFilesNone => '📂 No files';
+
+  @override
+  String trayFilesCount(int count) {
+    return '📁 Files: $count';
+  }
+
+  @override
+  String get trayExit => 'Quit application';
+
+  @override
+  String get openTray => 'Open tray';
+
+  @override
+  String get filesCountTooltip => 'Current number of files';
+
+  @override
+  String get languageLabel => 'Language:';
+}

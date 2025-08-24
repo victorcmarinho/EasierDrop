@@ -62,15 +62,19 @@ class SystemHelper with WindowListener {
   }
 
   static Future<void> _configureTray() async {
-    await trayManager.setIcon('assets/images/icon.icns');
-    // Menu inicial mínimo; Tray widget irá reconstruir com contagem e checked real
+    try {
+      await trayManager.setIcon('assets/images/icon.icns');
+    } catch (e) {
+      AppLogger.warn('Falha ao carregar ícone da tray: $e');
+    }
+    // Menu inicial mínimo; será substituído pelo widget/traduções após build.
     await trayManager.setContextMenu(
       Menu(
         items: [
-          MenuItem(key: 'show_window', label: 'Abrir bandeja'),
-          MenuItem(key: 'files_count', label: '📂 Sem arquivos'),
+          MenuItem(key: 'show_window', label: 'Open tray'),
+          MenuItem(key: 'files_count', label: '\uD83D\uDCC2 No files'),
           MenuItem.separator(),
-          MenuItem(key: 'exit_app', label: 'Fechar o aplicativo'),
+          MenuItem(key: 'exit_app', label: 'Quit application'),
         ],
       ),
     );
