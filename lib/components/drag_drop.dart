@@ -64,7 +64,12 @@ class _DragDropState extends State<DragDrop> {
           'Drag finalizado (inbound). Operação: ${op ?? 'desconhecida'}',
           tag: 'DragDrop',
         );
-        context.read<FilesProvider>().clear();
+        final provider = context.read<FilesProvider>();
+        final removed = provider.files.length;
+        provider.clear();
+        if (mounted && removed > 0) {
+          _showUndoSnackbar(removed);
+        }
       }
       return null;
     });
@@ -78,7 +83,12 @@ class _DragDropState extends State<DragDrop> {
           tag: 'DragDrop',
         );
         // Limpa a lista após arrastar para fora
-        context.read<FilesProvider>().clear();
+        final provider = context.read<FilesProvider>();
+        final removed = provider.files.length;
+        provider.clear();
+        if (mounted && removed > 0) {
+          _showUndoSnackbar(removed, dragOut: true);
+        }
       }
       return null;
     });
@@ -109,6 +119,60 @@ class _DragDropState extends State<DragDrop> {
     }
     await DragOutService.instance.beginDrag(files);
     AppLogger.info('Drag externo iniciado', tag: 'DragDrop');
+  }
+
+  Future<void> _confirmAndClear(FilesProvider provider) async {
+    if (provider.files.isEmpty) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Limpar arquivos?'),
+            content: const Text(
+              'Essa ação removerá todos os arquivos coletados.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Cancelar'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('Limpar'),
+              ),
+            ],
+          ),
+    );
+    if (confirmed == true) {
+      final count = provider.files.length;
+      provider.clear();
+      if (mounted) _showUndoSnackbar(count);
+    }
+  }
+
+  void _showUndoSnackbar(int removed, {bool dragOut = false}) {
+    final provider = context.read<FilesProvider>();
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            dragOut
+                ? '$removed arquivo(s) movidos. Desfazer?'
+                : '$removed arquivo(s) removidos. Desfazer?',
+          ),
+          action:
+              provider.canUndo
+                  ? SnackBarAction(
+                    label: 'DESFAZER',
+                    onPressed: () {
+                      provider.undoClear();
+                    },
+                  )
+                  : null,
+          duration: const Duration(seconds: 5),
+        ),
+      );
   }
 
   @override
@@ -212,7 +276,9 @@ class _DragDropState extends State<DragDrop> {
                 bottom: 0,
                 child: _buildAnimatedButton(
                   visible: hasFiles,
-                  child: RemoveButton(onPressed: filesProvider.clear),
+                  child: RemoveButton(
+                    onPressed: () => _confirmAndClear(filesProvider),
+                  ),
                 ),
               ),
             ],

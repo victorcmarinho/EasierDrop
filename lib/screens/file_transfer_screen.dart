@@ -13,6 +13,10 @@ class ShareFilesIntent extends Intent {
   const ShareFilesIntent();
 }
 
+class UndoFilesIntent extends Intent {
+  const UndoFilesIntent();
+}
+
 class FileTransferScreen extends StatelessWidget {
   const FileTransferScreen({super.key});
 
@@ -37,11 +41,15 @@ class FileTransferScreen extends StatelessWidget {
         // Cmd+Enter para compartilhar
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.enter):
             const ShareFilesIntent(),
+        // Cmd+Z para desfazer última limpeza
+        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyZ):
+            const UndoFilesIntent(),
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
           ClearFilesIntent: CallbackAction<ClearFilesIntent>(
             onInvoke: (intent) {
+              if (filesProvider.files.isEmpty) return null;
               filesProvider.clear();
               return null;
             },
@@ -49,6 +57,14 @@ class FileTransferScreen extends StatelessWidget {
           ShareFilesIntent: CallbackAction<ShareFilesIntent>(
             onInvoke: (intent) {
               filesProvider.shared();
+              return null;
+            },
+          ),
+          UndoFilesIntent: CallbackAction<UndoFilesIntent>(
+            onInvoke: (intent) {
+              if (filesProvider.canUndo) {
+                filesProvider.undoClear();
+              }
               return null;
             },
           ),

@@ -13,6 +13,8 @@ class FilesProvider with ChangeNotifier {
   final Map<String, FileReference> _files = {};
   static const int _maxFiles = 100; // Limite de arquivos
 
+  List<FileReference>? _lastCleared; // snapshot para undo
+
   List<FileReference> get files => _files.values.toList(growable: false);
 
   List<XFile> get xfiles => _files.values
@@ -109,10 +111,24 @@ class FilesProvider with ChangeNotifier {
   }
 
   void clear() {
+    if (_files.isEmpty) return;
+    _lastCleared = _files.values.toList(growable: false);
     final count = _files.length;
     _files.clear();
     _scheduleNotify();
     AppLogger.info('$count arquivos removidos', tag: 'FilesProvider');
+  }
+
+  bool get canUndo => _lastCleared != null && _lastCleared!.isNotEmpty;
+
+  void undoClear() {
+    if (!canUndo) return;
+    for (final f in _lastCleared!) {
+      _files[f.pathname] = f;
+    }
+    _lastCleared = null;
+    _scheduleNotify();
+    AppLogger.info('Restauração concluída', tag: 'FilesProvider');
   }
 
   Future<Object> shared({Offset? position}) async {
