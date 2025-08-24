@@ -66,12 +66,10 @@ class _DragDropState extends State<DragDrop> {
           'Drag finalizado (inbound). Operação: ${op ?? 'desconhecida'}',
           tag: 'DragDrop',
         );
-        // Auto limpar desativado permanentemente: não limpa após drag-in.
       }
       return null;
     });
 
-    // Handler para callbacks do drag-out
     DragOutService.instance.setHandler((call) async {
       if (call.method == PlatformChannels.fileDroppedCallback) {
         final op = call.arguments as String?; // copy | move
@@ -79,7 +77,6 @@ class _DragDropState extends State<DragDrop> {
           'Drag finalizado (outbound). Operação: ${op ?? 'desconhecida'}',
           tag: 'DragDrop',
         );
-        // Se a operação for cópia (segurando Cmd no início do drag), mantém arquivos
         if (op == 'copy') {
           AppLogger.info(
             'Operação de cópia detectada. Arquivos mantidos na bandeja.',
@@ -87,7 +84,6 @@ class _DragDropState extends State<DragDrop> {
           );
           return null;
         }
-        // Caso contrário (move ou desconhecida) limpa a lista
         final provider = context.read<FilesProvider>();
         final removed = provider.files.length;
         if (removed > 0) {
@@ -123,7 +119,6 @@ class _DragDropState extends State<DragDrop> {
     }
     setState(() => _draggingOut = true);
     await DragOutService.instance.beginDrag(files);
-    // Pequeno atraso para permitir overlay durante arraste
     Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted) setState(() => _draggingOut = false);
     });

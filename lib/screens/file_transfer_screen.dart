@@ -19,26 +19,21 @@ class FileTransferScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final filesProvider = context.read<FilesProvider>();
-    // Locale selector removido do app (agora no tray)
 
     return Shortcuts(
       shortcuts: <LogicalKeySet, Intent>{
-        // Cmd+Backspace ou Cmd+Delete para limpar
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.backspace):
             const ClearFilesIntent(),
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.delete):
             const ClearFilesIntent(),
-        // Cmd+Shift+C para compartilhar (C de compartilhar / copy like)
         LogicalKeySet(
               LogicalKeyboardKey.meta,
               LogicalKeyboardKey.shift,
               LogicalKeyboardKey.keyC,
             ):
             const ShareFilesIntent(),
-        // Cmd+Enter para compartilhar
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.enter):
             const ShareFilesIntent(),
-        // Cmd+Z originalmente era desfazer limpeza – funcionalidade removida
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
@@ -57,7 +52,6 @@ class FileTransferScreen extends StatelessWidget {
           ),
         },
         child: Focus(
-          // garante foco para receber atalhos
           autofocus: true,
           child: Scaffold(
             body: Stack(

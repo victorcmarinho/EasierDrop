@@ -20,7 +20,6 @@ class _TrayState extends State<Tray> with TrayListener {
   void initState() {
     super.initState();
     trayManager.addListener(this);
-    // Ouve mudanças de arquivos para atualizar menu (file count)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<FilesProvider>();
       provider.addListener(_onFilesChanged);
@@ -104,7 +103,6 @@ class _TrayState extends State<Tray> with TrayListener {
           toolTip: 'Quantidade atual na bandeja',
         ),
         MenuItem.separator(),
-        // Seleção de idioma (flat, sem submenu pois children não suportado)
         MenuItem(key: 'lang_label', label: 'Idioma:'),
         MenuItem(
           key: 'lang_en',
