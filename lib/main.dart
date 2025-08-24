@@ -83,7 +83,6 @@ class EasierDrop extends StatelessWidget {
                       ? Locale(parts[0], parts[1])
                       : Locale(parts[0]);
             }
-            final home = const FileTransferScreen();
             return MacosApp(
               navigatorKey: navigatorKey,
               title: AppLocalizations.of(context)?.appTitle ?? 'Easier Drop',
@@ -93,8 +92,9 @@ class EasierDrop extends StatelessWidget {
               locale: forced,
               theme: MacosThemeData.light(),
               darkTheme: MacosThemeData.dark(),
-              home: MacosWindow(
-                child: Padding(padding: const EdgeInsets.all(8.0), child: home),
+              home: const MacosWindow(
+                // Removido padding para que a área de drag ocupe 100% da janela.
+                child: FileTransferScreen(),
               ),
             );
           },

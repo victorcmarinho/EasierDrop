@@ -53,12 +53,7 @@ class FileTransferScreen extends StatelessWidget {
         },
         child: Focus(
           autofocus: true,
-          child: Stack(
-            children: [
-              Row(children: const [Expanded(child: DragDrop())]),
-              const Tray(),
-            ],
-          ),
+          child: const Stack(children: [DragDrop(), Tray()]),
         ),
       ),
     );
