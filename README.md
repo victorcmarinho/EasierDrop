@@ -2,7 +2,7 @@
 
 # Easier Drop
 
-Uma pequena ferramenta desktop (atualmente macOS) feita em Flutter para tornar o fluxo de mover arquivos entre pastas mais rápido e fluido.
+Aplicativo desktop nativo para **macOS** (exclusivo) feito em Flutter + macos_ui para acelerar o fluxo de juntar temporariamente vários arquivos e arrastá‑los em lote para um destino.
 
 </div>
 
@@ -51,14 +51,16 @@ Essa separação garante que a lógica de entrada (drag in) e saída (drag out) 
 
 Adicionar screenshots / GIF demonstrando fluxo quando finalizado.
 
-## Arquitetura
+## Arquitetura (resumo)
 
-- Flutter + Provider para estado simples (`FilesProvider`)
-- Canais de plataforma (`file_drop_channel`, `file_icon_channel`) para:
-  - Receber eventos de arquivos soltos
-  - Obter ícones de arquivos do macOS
-- Cache LRU por extensão para ícones (limite configurado em `FileIconHelper`)
-- Janela configurada com `window_manager` e ícone de tray via `tray_manager`
+- Flutter + Provider (`FilesProvider`) para estado.
+- UI 100% macOS com `macos_ui` (sem camada Material, app é exclusivo macOS).
+- Canais nativos (Swift) dedicados:
+  - `file_drop_channel`: eventos de arquivos arrastados para dentro.
+  - `file_drag_out_channel`: inicia sessão de drag out (copy/move).
+  - `file_icon_channel`: resolve / cacheia ícones reais.
+- Cache LRU para ícones de arquivos.
+- Tray via `tray_manager`; gerenciamento de janela com `window_manager`.
 
 ## Status Atual
 
@@ -76,19 +78,25 @@ Ainda NÃO implementa:
 - Persistência ou histórico de coleções
 - Suporte Windows / Linux (planejado)
 
-Internacionalização: já possui base (pt-BR, en, es) com classe manual + ARB (migração `gen_l10n` em andamento). Seletor de idioma via tray.
+Internacionalização: concluída via `gen_l10n` (en, pt-BR, es). Seletor de idioma via tray.
 
-## Roadmap Sugerido
+## Roadmap (alto nível)
 
-- [ ] Extrair serviço dedicado para drop / drag out (separar da UI)
-- [x] Internacionalização inicial (pt, pt-BR, es) + seletor no tray
-- [ ] Finalizar migração `gen_l10n` unificando fonte
-- [ ] Suporte Windows & Linux (plugins ou adaptações nativas equivalentes)
-- [ ] Múltiplas coleções (multi “shelves”) simultâneas
-- [ ] Ações rápidas (ex: copiar caminho, compactar, enviar)
-- [ ] Histórico / recentes
-- [ ] Opções de tema avançadas / transparência
-- [ ] Testes automatizados (unidade e integração de canal)
+Curto prazo:
+
+- Feedback limite de arquivos (UI) e testes de i18n adicionais.
+- Tratamento estruturado de erros nos canais Swift.
+
+Médio prazo:
+
+- Pausar monitor quando janela oculta.
+- CI (analyze/test/build) e métricas básicas de uso (opt‑in).
+
+Longo prazo:
+
+- Multi "shelves".
+- Port para Windows/Linux (exigirá abstração de canais).
+- Ações rápidas pluginizadas.
 
 ## Como Rodar (macOS)
 

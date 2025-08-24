@@ -1,13 +1,12 @@
 import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/screens/file_transfer_screen.dart';
-import 'package:easier_drop/theme/app_theme.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:macos_ui/macos_ui.dart';
+import 'package:provider/provider.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -84,24 +83,19 @@ class EasierDrop extends StatelessWidget {
                       ? Locale(parts[0], parts[1])
                       : Locale(parts[0]);
             }
-            return MaterialApp(
+            final home = const FileTransferScreen();
+            return MacosApp(
               navigatorKey: navigatorKey,
-              onGenerateTitle: (ctx) => AppLocalizations.of(ctx)!.appTitle,
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: ThemeMode.system,
+              title: AppLocalizations.of(context)?.appTitle ?? 'Easier Drop',
               debugShowCheckedModeBanner: false,
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
               locale: forced,
-              scrollBehavior: const MaterialScrollBehavior().copyWith(
-                dragDevices: {
-                  PointerDeviceKind.mouse,
-                  PointerDeviceKind.trackpad,
-                  PointerDeviceKind.touch,
-                },
+              theme: MacosThemeData.light(),
+              darkTheme: MacosThemeData.dark(),
+              home: MacosWindow(
+                child: Padding(padding: const EdgeInsets.all(8.0), child: home),
               ),
-              home: const FileTransferScreen(),
             );
           },
         ),

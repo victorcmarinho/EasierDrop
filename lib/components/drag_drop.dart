@@ -11,7 +11,12 @@ import 'package:easier_drop/services/drag_out_service.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/constants.dart';
 import 'package:easier_drop/services/logger.dart';
-import 'package:flutter/material.dart';
+import 'package:easier_drop/services/settings_service.dart';
+import 'package:flutter/widgets.dart';
+import 'package:macos_ui/macos_ui.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'hover_icon_button.dart';
 import 'package:provider/provider.dart';
 
 class DragDrop extends StatefulWidget {
@@ -100,13 +105,12 @@ class _DragDropState extends State<DragDrop> {
     return renderBox?.localToGlobal(Offset.zero);
   }
 
-  Widget _buildAnimatedButton({required bool visible, required Widget child}) {
-    return AnimatedOpacity(
-      duration: const Duration(milliseconds: 300),
-      opacity: visible ? 1.0 : 0.0,
-      child: visible ? child : const SizedBox(width: 40, height: 40),
-    );
-  }
+  Widget _buildAnimatedButton({required bool visible, required Widget child}) =>
+      AnimatedOpacity(
+        duration: const Duration(milliseconds: 300),
+        opacity: visible ? 1.0 : 0.0,
+        child: visible ? child : const SizedBox(width: 40, height: 40),
+      );
 
   Future<void> _handleDragOut() async {
     AppLogger.debug('Iniciando drag out', tag: 'DragDrop');
@@ -127,22 +131,25 @@ class _DragDropState extends State<DragDrop> {
 
   Future<void> _confirmAndClear(FilesProvider provider) async {
     if (provider.files.isEmpty) return;
-    final confirmed = await showDialog<bool>(
+    final loc = AppLocalizations.of(context)!;
+    final confirmed = await showMacosAlertDialog<bool>(
       context: context,
       builder:
-          (ctx) => AlertDialog(
-            title: Text(AppLocalizations.of(context)!.clearFilesTitle),
-            content: Text(AppLocalizations.of(context)!.clearFilesMessage),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(AppLocalizations.of(context)!.clearCancel),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(AppLocalizations.of(context)!.clearConfirm),
-              ),
-            ],
+          (_) => MacosAlertDialog(
+            appIcon: const MacosIcon(CupertinoIcons.trash),
+            title: Text(loc.clearFilesTitle),
+            message: Text(loc.clearFilesMessage),
+            primaryButton: PushButton(
+              controlSize: ControlSize.regular,
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(loc.clearConfirm),
+            ),
+            secondaryButton: PushButton(
+              secondary: true,
+              controlSize: ControlSize.regular,
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(loc.clearCancel),
+            ),
           ),
     );
     if (confirmed == true) {
@@ -156,6 +163,12 @@ class _DragDropState extends State<DragDrop> {
     final hasFiles = context.select<FilesProvider, bool>(
       (p) => p.files.isNotEmpty,
     );
+    final limitHitAt = context.select<FilesProvider, DateTime?>(
+      (p) => p.lastLimitHit,
+    );
+    final showLimit =
+        limitHitAt != null &&
+        DateTime.now().difference(limitHitAt) < const Duration(seconds: 2);
     final loc = AppLocalizations.of(context)!;
 
     return FocusTraversalGroup(
@@ -168,14 +181,12 @@ class _DragDropState extends State<DragDrop> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 160),
             decoration: BoxDecoration(
-              color: Colors.transparent,
+              color: MacosTheme.of(context).canvasColor.withOpacity(0.05),
               border: Border.all(
                 color:
                     _hovering
-                        ? Theme.of(
-                          context,
-                        ).colorScheme.primary.withValues(alpha: 0.6)
-                        : Colors.transparent,
+                        ? MacosTheme.of(context).primaryColor.withOpacity(0.6)
+                        : MacosTheme.of(context).primaryColor.withOpacity(0.0),
                 width: 2,
               ),
               borderRadius: BorderRadius.circular(8),
@@ -191,16 +202,44 @@ class _DragDropState extends State<DragDrop> {
                       duration: const Duration(milliseconds: 120),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(
+                          color: MacosTheme.of(
                             context,
-                          ).colorScheme.surface.withValues(alpha: 0.95),
+                          ).canvasColor.withOpacity(0.9),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: MacosTheme.of(context).primaryColor,
                             width: 2,
                           ),
                         ),
                         padding: const EdgeInsets.all(16),
+                      ),
+                    ),
+                  ),
+                if (showLimit)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: AnimatedOpacity(
+                        opacity: showLimit ? 1 : 0,
+                        duration: const Duration(milliseconds: 150),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: MacosTheme.of(
+                              context,
+                            ).primaryColor.withOpacity(0.85),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            'Limite de ${SettingsService.instance.maxFiles} arquivos atingido',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: MacosColors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -229,7 +268,11 @@ class _DragDropState extends State<DragDrop> {
                   child: Semantics(
                     label: AppLocalizations.of(context)!.close,
                     button: true,
-                    child: CloseButton(onPressed: () => SystemHelper.hide()),
+                    child: HoverIconButton(
+                      icon: const MacosIcon(CupertinoIcons.clear_thick),
+                      onPressed: () => SystemHelper.hide(),
+                      addSemantics: false,
+                    ),
                   ),
                 ),
 
@@ -241,7 +284,7 @@ class _DragDropState extends State<DragDrop> {
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        Tooltip(
+                        MacosTooltip(
                           message: loc.tooltipShare,
                           child: Semantics(
                             label: loc.share,
@@ -268,7 +311,7 @@ class _DragDropState extends State<DragDrop> {
                             child: Container(
                               padding: const EdgeInsets.all(3),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
+                                color: MacosTheme.of(context).primaryColor,
                                 shape: BoxShape.circle,
                               ),
                               constraints: const BoxConstraints(
@@ -282,9 +325,9 @@ class _DragDropState extends State<DragDrop> {
                                         (p) => p.files.length,
                                       )
                                       .toString(),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
-                                    color: Colors.white,
+                                    color: MacosColors.white,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -301,7 +344,7 @@ class _DragDropState extends State<DragDrop> {
                   bottom: 0,
                   child: _buildAnimatedButton(
                     visible: hasFiles,
-                    child: Tooltip(
+                    child: MacosTooltip(
                       message: loc.tooltipClear,
                       child: Semantics(
                         label: loc.removeAll,

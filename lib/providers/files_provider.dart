@@ -6,17 +6,15 @@ import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
-/// Provider responsável apenas por gerenciar o estado (coleção de arquivos) e
-/// disparar notificações. Regras de ícone e validação simples permanecem aqui
-/// dado o pequeno escopo do app.
 class FilesProvider with ChangeNotifier {
-  // Mantém ordem de inserção determinística
   final Map<String, FileReference> _files = {};
   int get _maxFiles => SettingsService.instance.maxFiles;
+  DateTime? _lastLimitHit;
+  DateTime? get lastLimitHit => _lastLimitHit;
+  bool get recentlyAtLimit =>
+      _lastLimitHit != null &&
+      DateTime.now().difference(_lastLimitHit!) < const Duration(seconds: 2);
 
-  // Funcionalidade de desfazer removida: não mantemos snapshot dos arquivos.
-
-  // Timer de monitoramento opcional para remover arquivos que deixaram de existir
   Timer? _monitorTimer;
   static const Duration _monitorInterval = Duration(seconds: 5);
   bool _monitoringEnabled = true;
@@ -59,7 +57,12 @@ class FilesProvider with ChangeNotifier {
   Future<void> addFile(FileReference file) async {
     try {
       if (_files.length >= _maxFiles) {
-        AppLogger.warn('Limite de arquivos atingido', tag: 'FilesProvider');
+        _lastLimitHit = DateTime.now();
+        AppLogger.warn(
+          'Limite de arquivos atingido ($_maxFiles)',
+          tag: 'FilesProvider',
+        );
+        _scheduleNotify();
         return;
       }
       if (!await file.isValidAsync()) {
@@ -80,7 +83,6 @@ class FilesProvider with ChangeNotifier {
       _files[file.pathname] = file;
       _scheduleNotify();
 
-      // Busca ícone (não bloqueia primeira pintura do item)
       final iconData = await FileIconHelper.getFileIcon(file.pathname);
       if (iconData != null) {
         final current = _files[file.pathname];
@@ -100,9 +102,7 @@ class FilesProvider with ChangeNotifier {
 
   Future<void> addFiles(Iterable<FileReference> files) async {
     for (final f in files) {
-      await addFile(
-        f,
-      ); // mantém validações; poderia otimizar removendo notifies intermediários futuramente
+      await addFile(f);
     }
   }
 
@@ -176,7 +176,6 @@ class FilesProvider with ChangeNotifier {
     }
   }
 
-  // Revalida arquivos existentes; remove os que não são mais válidos (excluídos ou sem permissão)
   void _rescanInternal() {
     if (_files.isEmpty) return;
     final toRemove = <String>[];
@@ -196,6 +195,5 @@ class FilesProvider with ChangeNotifier {
     );
   }
 
-  /// API pública para testes ou acionamento manual.
   void rescanNow() => _rescanInternal();
 }

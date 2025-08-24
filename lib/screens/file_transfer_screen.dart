@@ -1,8 +1,8 @@
 import 'package:easier_drop/components/drag_drop.dart';
 import 'package:easier_drop/components/tray.dart';
 import 'package:easier_drop/providers/files_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class ClearFilesIntent extends Intent {
@@ -53,13 +53,11 @@ class FileTransferScreen extends StatelessWidget {
         },
         child: Focus(
           autofocus: true,
-          child: Scaffold(
-            body: Stack(
-              children: [
-                Row(children: [Expanded(child: DragDrop())]),
-                Tray(),
-              ],
-            ),
+          child: Stack(
+            children: [
+              Row(children: const [Expanded(child: DragDrop())]),
+              const Tray(),
+            ],
           ),
         ),
       ),

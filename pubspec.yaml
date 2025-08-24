@@ -11,6 +11,8 @@ dependencies:
   provider: ^6.1.2
   share_plus: ^11.1.0
   tray_manager: ^0.5.1
+  cupertino_icons: ^1.0.6
+  macos_ui: ^2.0.0
   flutter:
     sdk: flutter
   flutter_localizations:

@@ -24,7 +24,6 @@ class SettingsService with ChangeNotifier {
   bool _loaded = false;
   bool get isLoaded => _loaded;
 
-  // Preferências (autoClearInbound legado fixado como false)
   static const _kAutoClearInbound = 'autoClearInbound';
   bool get autoClearInbound => false;
   int maxFiles = 100;
@@ -32,7 +31,7 @@ class SettingsService with ChangeNotifier {
   double? windowY;
   double? windowW;
   double? windowH;
-  String? localeCode; // e.g. 'en', 'pt_BR', 'es'
+  String? localeCode;
 
   Timer? _debounce;
   static const _debounceDuration = Duration(milliseconds: 250);
@@ -45,7 +44,6 @@ class SettingsService with ChangeNotifier {
         final raw = await file.readAsString();
         if (raw.trim().isNotEmpty) {
           final map = jsonDecode(raw) as Map<String, dynamic>;
-          // autoClearInbound ignorado (legado)
           if (map[_kMaxFiles] is int) maxFiles = map[_kMaxFiles] as int;
           windowX = (map[_kWinX] as num?)?.toDouble();
           windowY = (map[_kWinY] as num?)?.toDouble();
@@ -58,10 +56,6 @@ class SettingsService with ChangeNotifier {
     } catch (e) {
       AppLogger.warn('Falha ao carregar settings: $e');
     }
-  }
-
-  void setAutoClearInbound(bool value) {
-    // noop (legado)
   }
 
   void setMaxFiles(int value) {
@@ -90,7 +84,6 @@ class SettingsService with ChangeNotifier {
       final file = await _file();
       final map = <String, dynamic>{
         _kSchemaVersion: _currentSchemaVersion,
-        // Persistimos false para compatibilidade
         _kAutoClearInbound: false,
         _kMaxFiles: maxFiles,
         if (localeCode != null) _kLocale: localeCode,
