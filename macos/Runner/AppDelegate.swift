@@ -3,22 +3,23 @@ import FlutterMacOS
 
 @main
 class AppDelegate: FlutterAppDelegate {
-  override func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-    return true
-  }
-
-  override func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
-    return true
-  }
-
-  override func applicationDidFinishLaunching(_ notification: Notification) {
-    guard let controller = mainFlutterWindow?.contentViewController as? FlutterViewController else {
-      fatalError("FlutterViewController não encontrado")
+    override func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true
     }
 
-    MacOSFileIconChannel.setup(for: controller)
-    MacOSFileDropChannel.setup(for: controller)
+    override func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+        return true
+    }
 
-    super.applicationDidFinishLaunching(notification)
-  }
+    override func applicationDidFinishLaunching(_ notification: Notification) {
+        guard let controller = mainFlutterWindow?.contentViewController as? FlutterViewController else {
+            fatalError("FlutterViewController not found")
+        }
+        
+        // Setup communication channels
+        MacOSFileIconChannel.shared.setup(binaryMessenger: controller.engine.binaryMessenger)
+        MacOSFileDropChannel.shared.setup(binaryMessenger: controller.engine.binaryMessenger)
+        
+        super.applicationDidFinishLaunching(notification)
+    }
 }

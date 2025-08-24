@@ -28,8 +28,6 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  super_clipboard: ^0.9.1
-  super_drag_and_drop: ^0.9.1
   window_manager: ^0.5.1
   provider: ^6.1.2
   share_plus: ^11.1.0

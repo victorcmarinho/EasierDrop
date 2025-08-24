@@ -1,68 +1,52 @@
-//
-//  MacOSFileIconChannel.swift
-//  Runner
-//
-//  Created by Victor Marinho on 15/03/25.
-//
 import Cocoa
 import FlutterMacOS
 
-class MacOSFileIconChannel {
-    private static var channel: FlutterMethodChannel?
-    private static let iconCache = NSCache<NSString, NSImage>()
+class MacOSFileIconChannel: NSObject {
+    static let shared = MacOSFileIconChannel()
+    private var channel: FlutterMethodChannel?
     
-    static func setup(for controller: FlutterViewController) {
+    private override init() {
+        super.init()
+    }
+    
+    func setup(binaryMessenger: FlutterBinaryMessenger) {
         channel = FlutterMethodChannel(
             name: "file_icon_channel",
-            binaryMessenger: controller.engine.binaryMessenger)
-        
-        channel?.setMethodCallHandler { call, result in
-            switch call.method {
-            case "getFileIcon":
-                handleGetFileIcon(arguments: call.arguments, result: result)
-            default:
-                result(FlutterMethodNotImplemented)
-            }
+            binaryMessenger: binaryMessenger
+        )
+        channel?.setMethodCallHandler(handleMethodCall)
+    }
+    
+    private func handleMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if call.method == "getFileIcon" {
+            getFileIcon(call, result)
+        } else {
+            result(FlutterMethodNotImplemented)
         }
     }
-
-    private static func handleGetFileIcon(arguments: Any?, result: @escaping FlutterResult) {
-        guard let path = arguments as? String else {
-            result(FlutterError(
-                code: "INVALID_ARGS",
-                message: "Caminho do arquivo não fornecido",
-                details: nil
-            ))
+    
+    private func getFileIcon(_ call: FlutterMethodCall, _ result: FlutterResult) {
+        guard let filePath = call.arguments as? String else {
+            result(FlutterError(code: "INVALID_ARGUMENTS",
+                              message: "Argumentos inválidos: o caminho do arquivo é esperado",
+                              details: nil))
             return
         }
-
-        if let iconData = getIconForFile(path: path) {
-            result(iconData)
-        } else {
-            result(FlutterError(
-                code: "ICON_ERROR",
-                message: "Não foi possível obter o ícone para: \(path)",
-                details: nil
-            ))
-        }
-    }
-
-    private static func getIconForFile(path: String) -> FlutterStandardTypedData? {
-        let pathKey = path as NSString
         
-        // Verifica no cache primeiro
-        if let cachedIcon = iconCache.object(forKey: pathKey),
-           let tiffData = cachedIcon.tiffRepresentation {
-            return FlutterStandardTypedData(bytes: tiffData)
+        // Obter o ícone do arquivo
+        let icon = NSWorkspace.shared.icon(forFile: filePath)
+        
+        // Converter para PNG
+        guard let tiffData = icon.tiffRepresentation,
+              let bitmap = NSBitmapImageRep(data: tiffData),
+              let pngData = bitmap.representation(using: NSBitmapImageRep.FileType.png, properties: [:]) else {
+            result(FlutterError(code: "ICON_CONVERSION_FAILED",
+                              message: "Falha ao converter ícone",
+                              details: nil))
+            return
         }
         
-        // Se não estiver no cache, carrega o ícone
-        let fileURL = URL(fileURLWithPath: path)
-        let icon = NSWorkspace.shared.icon(forFile: fileURL.path)
-        
-        // Armazena no cache
-        iconCache.setObject(icon, forKey: pathKey)
-        
-        return icon.tiffRepresentation.map { FlutterStandardTypedData(bytes: $0) }
+        // Retornar os bytes do PNG
+        result(FlutterStandardTypedData(bytes: pngData))
     }
 }

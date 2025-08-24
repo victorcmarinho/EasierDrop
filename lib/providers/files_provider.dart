@@ -1,3 +1,4 @@
+import 'package:easier_drop/helpers/macos/file_icon_helper.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
@@ -34,6 +35,19 @@ class FilesProvider with ChangeNotifier {
 
       notifyListeners();
 
+      // Fetch icon after adding the file to update the UI with the icon
+      final iconData = await FileIconHelper.getFileIcon(file.pathname);
+      if (iconData != null) {
+        final fileWithIcon = FileReference(
+          pathname: file.pathname,
+          iconData: iconData,
+        );
+        // Replace the file reference in the set
+        _files.remove(file);
+        _files.add(fileWithIcon);
+        notifyListeners();
+      }
+
       final fileSize = await file.size;
       debugPrint('Arquivo adicionado: ${file.fileName} (${fileSize} bytes)');
     } catch (e) {
@@ -61,26 +75,33 @@ class FilesProvider with ChangeNotifier {
         return;
       }
 
-      final addedCount = newFiles.where(_files.add).length;
-      if (addedCount > 0) {
+      final addedFiles = newFiles.where((file) => _files.add(file)).toList();
+
+      if (addedFiles.isNotEmpty) {
         notifyListeners();
-        debugPrint('$addedCount arquivos adicionados');
+        debugPrint('${addedFiles.length} arquivos adicionados');
+
+        // Fetch icons for all new files
+        await Future.wait(
+          addedFiles.map((file) async {
+            final iconData = await FileIconHelper.getFileIcon(file.pathname);
+            if (iconData != null) {
+              final updatedFile = FileReference(
+                pathname: file.pathname,
+                iconData: iconData,
+              );
+              _files.remove(file);
+              _files.add(updatedFile);
+            }
+          }),
+        );
+        notifyListeners();
       } else {
         debugPrint('Nenhum arquivo novo para adicionar');
       }
     } catch (e) {
       debugPrint('Erro ao adicionar arquivos: $e');
     }
-  }
-
-  List<FileReference> _getDifference(List<FileReference> files) {
-    final List<FileReference> difference = [];
-    for (final file in files) {
-      if (!_files.any((f) => f.pathname == file.pathname)) {
-        difference.add(file);
-      }
-    }
-    return difference;
   }
 
   Future<void> removeFile(FileReference file) async {
@@ -95,6 +116,21 @@ class FilesProvider with ChangeNotifier {
       debugPrint('Arquivo removido: ${file.fileName}');
     } catch (e) {
       debugPrint('Erro ao remover arquivo: $e');
+    }
+  }
+
+  void removeByPath(String pathname) {
+    try {
+      final file = _files.firstWhere(
+        (file) => file.pathname == pathname,
+        orElse: () => throw Exception('Arquivo não encontrado'),
+      );
+
+      _files.remove(file);
+      notifyListeners();
+      debugPrint('Arquivo removido: $pathname');
+    } catch (e) {
+      debugPrint('Erro ao remover arquivo por path: $e');
     }
   }
 
