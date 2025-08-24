@@ -125,4 +125,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareError => 'Error sharing files';
+
+  @override
+  String fileLabelSingle(String name) {
+    return '$name';
+  }
+
+  @override
+  String fileLabelMultiple(int count) {
+    return '$count files';
+  }
+
+  @override
+  String get genericFileName => 'file';
 }

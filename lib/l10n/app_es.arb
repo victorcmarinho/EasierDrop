@@ -34,4 +34,9 @@
   "@limitReached": {"placeholders": {"max": {"type": "int"}}},
   "shareNone": "No hay archivos para compartir",
   "shareError": "Error al compartir archivos"
+  ,"fileLabelSingle": "{name}",
+  "fileLabelMultiple": "{count} archivos",
+  "genericFileName": "archivo"
+  ,"@fileLabelSingle": {"placeholders": {"name": {"type": "String"}}}
+  ,"@fileLabelMultiple": {"placeholders": {"count": {"type": "int"}}}
 }

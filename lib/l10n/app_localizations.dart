@@ -276,6 +276,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error sharing files'**
   String get shareError;
+
+  /// No description provided for @fileLabelSingle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}'**
+  String fileLabelSingle(String name);
+
+  /// No description provided for @fileLabelMultiple.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} files'**
+  String fileLabelMultiple(int count);
+
+  /// No description provided for @genericFileName.
+  ///
+  /// In en, this message translates to:
+  /// **'file'**
+  String get genericFileName;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

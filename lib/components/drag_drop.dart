@@ -138,13 +138,13 @@ class _DragDropState extends State<DragDrop> {
             title: Text(loc.clearFilesTitle),
             message: Text(loc.clearFilesMessage),
             primaryButton: PushButton(
-              controlSize: ControlSize.regular,
+              controlSize: ControlSize.large,
               onPressed: () => Navigator.of(context).pop(true),
               child: Text(loc.clearConfirm),
             ),
             secondaryButton: PushButton(
               secondary: true,
-              controlSize: ControlSize.regular,
+              controlSize: ControlSize.large,
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(loc.clearCancel),
             ),
@@ -297,14 +297,47 @@ class _DragDropState extends State<DragDrop> {
                               files.isEmpty
                                   ? loc.semAreaHintEmpty
                                   : loc.semAreaHintHas(files.length);
+                          final fileNameLabel = () {
+                            if (files.isEmpty) return '';
+                            if (files.length == 1) {
+                              final name = files.first.fileName;
+                              return loc.fileLabelSingle(name);
+                            }
+                            // plural
+                            return loc.fileLabelMultiple(files.length);
+                          }();
                           return Semantics(
                             label: loc.semAreaLabel,
                             hint: hint,
                             liveRegion: true,
-                            child:
-                                files.isNotEmpty
-                                    ? FilesStack(droppedFiles: files)
-                                    : const DropHit(),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child:
+                                      files.isNotEmpty
+                                          ? FilesStack(droppedFiles: files)
+                                          : const DropHit(),
+                                ),
+                                if (fileNameLabel.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 4,
+                                      bottom: 6,
+                                    ),
+                                    child: Text(
+                                      fileNameLabel,
+                                      style:
+                                          MacosTheme.of(
+                                            context,
+                                          ).typography.caption1,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           );
                         },
                       ),
