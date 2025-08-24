@@ -3,10 +3,10 @@ import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
 class FilesProvider with ChangeNotifier {
-  final List<FileReference> _files = [];
+  final Set<FileReference> _files = {};
   static const int _maxFiles = 100; // Limite de arquivos
 
-  List<FileReference> get files => List.unmodifiable(_files);
+  List<FileReference> get files => _files.toList();
 
   List<XFile> get xfiles {
     return _files
@@ -17,7 +17,7 @@ class FilesProvider with ChangeNotifier {
 
   Future<void> addFile(FileReference file) async {
     try {
-      if (!file.isValid()) {
+      if (!await file.isValidAsync()) {
         debugPrint('Arquivo inválido: ${file.pathname}');
         return;
       }
@@ -27,13 +27,11 @@ class FilesProvider with ChangeNotifier {
         return;
       }
 
-      final hasValue = _files.contains(file);
-      if (hasValue) {
+      if (!_files.add(file)) {
         debugPrint('Arquivo já existe: ${file.pathname}');
         return;
       }
 
-      _files.add(file);
       notifyListeners();
 
       final fileSize = await file.size;
@@ -50,22 +48,26 @@ class FilesProvider with ChangeNotifier {
         return;
       }
 
-      final validFiles = files.where((file) => file.isValid()).toList();
-      if (validFiles.isEmpty) {
+      final validFiles = await Future.wait(
+        files.map((file) async {
+          if (await file.isValidAsync()) return file;
+          return null;
+        }),
+      );
+
+      final newFiles = validFiles.whereType<FileReference>().toList();
+      if (newFiles.isEmpty) {
         debugPrint('Nenhum arquivo válido para adicionar');
         return;
       }
 
-      final difference = _getDifference(validFiles);
-      if (difference.isEmpty) {
+      final addedCount = newFiles.where(_files.add).length;
+      if (addedCount > 0) {
+        notifyListeners();
+        debugPrint('$addedCount arquivos adicionados');
+      } else {
         debugPrint('Nenhum arquivo novo para adicionar');
-        return;
       }
-
-      _files.addAll(difference);
-      notifyListeners();
-
-      debugPrint('${difference.length} arquivos adicionados');
     } catch (e) {
       debugPrint('Erro ao adicionar arquivos: $e');
     }
