@@ -1,6 +1,6 @@
-import 'dart:async';
 import 'package:easier_drop/helpers/system.dart';
-import 'package:easier_drop/services/constants.dart';
+import 'package:provider/provider.dart';
+import 'package:easier_drop/providers/files_provider.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tray_manager/tray_manager.dart';
 
@@ -12,14 +12,24 @@ class Tray extends StatefulWidget {
 }
 
 class _TrayState extends State<Tray> with TrayListener {
+  int _lastCount = 0;
+
   @override
   void initState() {
     super.initState();
     trayManager.addListener(this);
+    // Ouve mudanças de arquivos para atualizar menu (file count)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<FilesProvider>();
+      provider.addListener(_onFilesChanged);
+      _lastCount = provider.files.length;
+      _rebuildMenu();
+    });
   }
 
   @override
   void dispose() {
+    context.read<FilesProvider>().removeListener(_onFilesChanged);
     trayManager.removeListener(this);
     super.dispose();
   }
@@ -36,27 +46,6 @@ class _TrayState extends State<Tray> with TrayListener {
         case 'show_window':
           await SystemHelper.open();
           break;
-        case 'toggle_autoclear_in':
-          FeatureFlags.autoClearInbound = !FeatureFlags.autoClearInbound;
-          // Persiste alteração
-          unawaited(FeatureFlags.persist());
-          // Atualiza visual do menu marcado
-          await trayManager.setContextMenu(
-            Menu(
-              items: [
-                MenuItem(key: 'show_window', label: 'Abrir bandeja'),
-                MenuItem.separator(),
-                MenuItem(
-                  key: 'toggle_autoclear_in',
-                  label: 'Auto limpar entrada',
-                  checked: FeatureFlags.autoClearInbound,
-                ),
-                MenuItem.separator(),
-                MenuItem(key: 'exit_app', label: 'Fechar o aplicativo'),
-              ],
-            ),
-          );
-          break;
         case 'exit_app':
           await SystemHelper.exit();
           break;
@@ -71,5 +60,32 @@ class _TrayState extends State<Tray> with TrayListener {
   @override
   Widget build(BuildContext context) {
     return Container();
+  }
+
+  void _onFilesChanged() {
+    final provider = context.read<FilesProvider>();
+    final count = provider.files.length;
+    if (count == _lastCount) return;
+    _lastCount = count;
+    _rebuildMenu();
+  }
+
+  Future<void> _rebuildMenu() async {
+    await trayManager.setContextMenu(_buildMenu(_lastCount));
+  }
+
+  Menu _buildMenu(int count) {
+    return Menu(
+      items: [
+        MenuItem(key: 'show_window', label: 'Abrir bandeja'),
+        MenuItem(
+          key: 'files_count',
+          label: count > 0 ? '📁 Arquivos: $count' : '📂 Sem arquivos',
+          toolTip: 'Quantidade atual na bandeja',
+        ),
+        MenuItem.separator(),
+        MenuItem(key: 'exit_app', label: 'Fechar o aplicativo'),
+      ],
+    );
   }
 }

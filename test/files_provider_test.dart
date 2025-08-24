@@ -36,19 +36,6 @@ void main() {
       expect(provider.files.length, 1);
     });
 
-    test('undoClear restaura', () async {
-      final f1 = await createFile('c1.txt');
-      final f2 = await createFile('c2.txt');
-      await provider.addFile(FileReference(pathname: f1.path));
-      await provider.addFile(FileReference(pathname: f2.path));
-      expect(provider.files.length, 2);
-      provider.clear();
-      expect(provider.files.length, 0);
-      expect(provider.canUndo, true);
-      provider.undoClear();
-      expect(provider.files.length, 2);
-    });
-
     test('rescan remove arquivo deletado', () async {
       final f = await createFile('d.txt');
       await provider.addFile(FileReference(pathname: f.path));

@@ -25,6 +25,7 @@ class _DragDropState extends State<DragDrop> {
 
   StreamSubscription? _dropSubscription;
   bool _hovering = false;
+  bool _draggingOut = false;
 
   @override
   void initState() {
@@ -64,14 +65,7 @@ class _DragDropState extends State<DragDrop> {
           'Drag finalizado (inbound). Operação: ${op ?? 'desconhecida'}',
           tag: 'DragDrop',
         );
-        if (FeatureFlags.autoClearInbound) {
-          final provider = context.read<FilesProvider>();
-          final removed = provider.files.length;
-          provider.clear();
-          if (mounted && removed > 0) {
-            _showUndoSnackbar(removed);
-          }
-        }
+        // Auto limpar desativado permanentemente: não limpa após drag-in.
       }
       return null;
     });
@@ -97,9 +91,6 @@ class _DragDropState extends State<DragDrop> {
         final removed = provider.files.length;
         if (removed > 0) {
           provider.clear();
-          if (mounted) {
-            _showUndoSnackbar(removed, dragOut: true);
-          }
         }
       }
       return null;
@@ -129,7 +120,12 @@ class _DragDropState extends State<DragDrop> {
       AppLogger.warn('Nenhum arquivo para arrastar', tag: 'DragDrop');
       return;
     }
+    setState(() => _draggingOut = true);
     await DragOutService.instance.beginDrag(files);
+    // Pequeno atraso para permitir overlay durante arraste
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (mounted) setState(() => _draggingOut = false);
+    });
     AppLogger.info('Drag externo iniciado', tag: 'DragDrop');
   }
 
@@ -156,35 +152,8 @@ class _DragDropState extends State<DragDrop> {
           ),
     );
     if (confirmed == true) {
-      final count = provider.files.length;
       provider.clear();
-      if (mounted) _showUndoSnackbar(count);
     }
-  }
-
-  void _showUndoSnackbar(int removed, {bool dragOut = false}) {
-    final provider = context.read<FilesProvider>();
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(
-            dragOut
-                ? '$removed arquivo(s) movidos. Desfazer?'
-                : '$removed arquivo(s) removidos. Desfazer?',
-          ),
-          action:
-              provider.canUndo
-                  ? SnackBarAction(
-                    label: 'DESFAZER',
-                    onPressed: () {
-                      provider.undoClear();
-                    },
-                  )
-                  : null,
-          duration: const Duration(seconds: 5),
-        ),
-      );
   }
 
   @override
@@ -220,6 +189,26 @@ class _DragDropState extends State<DragDrop> {
               alignment: Alignment.center,
               fit: StackFit.expand,
               children: [
+                if (_draggingOut)
+                  IgnorePointer(
+                    child: AnimatedOpacity(
+                      opacity: 0.9,
+                      duration: const Duration(milliseconds: 120),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surface.withValues(alpha: 0.95),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(16),
+                      ),
+                    ),
+                  ),
                 Selector<FilesProvider, List<FileReference>>(
                   selector: (_, p) => p.files,
                   builder:
@@ -255,19 +244,22 @@ class _DragDropState extends State<DragDrop> {
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        Semantics(
-                          label: AppTexts.share,
-                          hint:
-                              hasFiles
-                                  ? 'Compartilhar ${filesProvider.files.length} arquivos'
-                                  : 'Nenhum arquivo para compartilhar',
-                          button: true,
-                          child: ShareButton(
-                            key: _buttonKey,
-                            onPressed:
-                                () => filesProvider.shared(
-                                  position: _getButtonPosition(),
-                                ),
+                        Tooltip(
+                          message: 'Compartilhar (Cmd+Shift+C)',
+                          child: Semantics(
+                            label: AppTexts.share,
+                            hint:
+                                hasFiles
+                                    ? 'Compartilhar ${filesProvider.files.length} arquivos'
+                                    : 'Nenhum arquivo para compartilhar',
+                            button: true,
+                            child: ShareButton(
+                              key: _buttonKey,
+                              onPressed:
+                                  () => filesProvider.shared(
+                                    position: _getButtonPosition(),
+                                  ),
+                            ),
                           ),
                         ),
                         if (hasFiles)
@@ -310,15 +302,18 @@ class _DragDropState extends State<DragDrop> {
                   bottom: 0,
                   child: _buildAnimatedButton(
                     visible: hasFiles,
-                    child: Semantics(
-                      label: AppTexts.removeAll,
-                      hint:
-                          hasFiles
-                              ? 'Remover ${filesProvider.files.length} arquivos'
-                              : 'Nenhum arquivo para remover',
-                      button: true,
-                      child: RemoveButton(
-                        onPressed: () => _confirmAndClear(filesProvider),
+                    child: Tooltip(
+                      message: 'Limpar (Cmd+Backspace)',
+                      child: Semantics(
+                        label: AppTexts.removeAll,
+                        hint:
+                            hasFiles
+                                ? 'Remover ${filesProvider.files.length} arquivos'
+                                : 'Nenhum arquivo para remover',
+                        button: true,
+                        child: RemoveButton(
+                          onPressed: () => _confirmAndClear(filesProvider),
+                        ),
                       ),
                     ),
                   ),

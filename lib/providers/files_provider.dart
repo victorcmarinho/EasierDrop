@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:easier_drop/helpers/macos/file_icon_helper.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/services/logger.dart';
+import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -11,9 +12,9 @@ import 'package:share_plus/share_plus.dart';
 class FilesProvider with ChangeNotifier {
   // Mantém ordem de inserção determinística
   final Map<String, FileReference> _files = {};
-  static const int _maxFiles = 100; // Limite de arquivos
+  int get _maxFiles => SettingsService.instance.maxFiles;
 
-  List<FileReference>? _lastCleared; // snapshot para undo
+  // Funcionalidade de desfazer removida: não mantemos snapshot dos arquivos.
 
   // Timer de monitoramento opcional para remover arquivos que deixaram de existir
   Timer? _monitorTimer;
@@ -97,6 +98,14 @@ class FilesProvider with ChangeNotifier {
     }
   }
 
+  Future<void> addFiles(Iterable<FileReference> files) async {
+    for (final f in files) {
+      await addFile(
+        f,
+      ); // mantém validações; poderia otimizar removendo notifies intermediários futuramente
+    }
+  }
+
   Future<void> removeFile(FileReference file) async {
     try {
       if (_files.remove(file.pathname) != null) {
@@ -127,23 +136,10 @@ class FilesProvider with ChangeNotifier {
 
   void clear() {
     if (_files.isEmpty) return;
-    _lastCleared = _files.values.toList(growable: false);
     final count = _files.length;
     _files.clear();
     _scheduleNotify();
     AppLogger.info('$count arquivos removidos', tag: 'FilesProvider');
-  }
-
-  bool get canUndo => _lastCleared != null && _lastCleared!.isNotEmpty;
-
-  void undoClear() {
-    if (!canUndo) return;
-    for (final f in _lastCleared!) {
-      _files[f.pathname] = f;
-    }
-    _lastCleared = null;
-    _scheduleNotify();
-    AppLogger.info('Restauração concluída', tag: 'FilesProvider');
   }
 
   Future<Object> shared({Offset? position}) async {
