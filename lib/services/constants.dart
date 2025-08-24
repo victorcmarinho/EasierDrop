@@ -12,7 +12,4 @@ class PlatformChannels {
   static const String fileDroppedCallback = 'fileDropped';
 }
 
-// Textos migraram para AppLocalizations (ver l10n/app_localizations.dart)
-
-/// Flags de comportamento (poderiam futuramente vir de prefs).
-// FeatureFlags migrou para SettingsService (ver settings_service.dart)
+// Textos migraram para AppLocalizations.
