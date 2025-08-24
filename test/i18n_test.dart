@@ -1,63 +1,62 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('Loads English strings', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        localizationsDelegates: [
-          AppLocalizationsDelegate(),
-          DefaultWidgetsLocalizations.delegate,
-          DefaultMaterialLocalizations.delegate,
-          DefaultCupertinoLocalizations.delegate,
-        ],
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: Locale('en'),
         home: SizedBox.shrink(),
       ),
     );
     final ctx = tester.element(find.byType(SizedBox));
-    expect(AppLocalizations.of(ctx).t('share'), 'Share');
+    expect(AppLocalizations.of(ctx)!.share, 'Share');
   });
 
   testWidgets('Loads Portuguese strings', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        localizationsDelegates: [
-          AppLocalizationsDelegate(),
-          DefaultWidgetsLocalizations.delegate,
-          DefaultMaterialLocalizations.delegate,
-          DefaultCupertinoLocalizations.delegate,
-        ],
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        locale: Locale('pt', 'BR'),
+        locale: Locale('pt'),
         home: SizedBox.shrink(),
       ),
     );
     final ctx = tester.element(find.byType(SizedBox));
-    expect(AppLocalizations.of(ctx).t('share'), 'Compartilhar');
+    expect(AppLocalizations.of(ctx)!.share, 'Compartilhar');
   });
 
-  testWidgets('Interpolation works', (tester) async {
+  testWidgets('Pluralization (English) works', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        localizationsDelegates: [
-          AppLocalizationsDelegate(),
-          DefaultWidgetsLocalizations.delegate,
-          DefaultMaterialLocalizations.delegate,
-          DefaultCupertinoLocalizations.delegate,
-        ],
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: Locale('en'),
         home: SizedBox.shrink(),
       ),
     );
     final ctx = tester.element(find.byType(SizedBox));
-    final text = AppLocalizations.of(
-      ctx,
-    ).t('sem.share.hint.some', params: {'count': '3'});
-    expect(text, contains('3'));
+    final loc = AppLocalizations.of(ctx)!;
+    expect(loc.semShareHintSome(1), contains('1 file'));
+    expect(loc.semShareHintSome(3), contains('3 files'));
+  });
+
+  testWidgets('Pluralization (Portuguese) works', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: Locale('pt'),
+        home: SizedBox.shrink(),
+      ),
+    );
+    final ctx = tester.element(find.byType(SizedBox));
+    final loc = AppLocalizations.of(ctx)!;
+    // Em pt a forma normalmente não muda (arquivo / arquivos), validamos número presente.
+    expect(loc.semShareHintSome(1), contains('1'));
+    expect(loc.semShareHintSome(2), contains('2'));
   });
 }

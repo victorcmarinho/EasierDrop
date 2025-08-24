@@ -52,8 +52,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# files',
-      one: '# file',
+      other: '$count files',
+      one: '$count file',
     );
     return 'Contains $_temp0. Drag out to move or share.';
   }
@@ -66,8 +66,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# files',
-      one: '# file',
+      other: '$count files',
+      one: '$count file',
     );
     return 'Share $_temp0';
   }
@@ -80,8 +80,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# files',
-      one: '# file',
+      other: '$count files',
+      one: '$count file',
     );
     return 'Remove $_temp0';
   }

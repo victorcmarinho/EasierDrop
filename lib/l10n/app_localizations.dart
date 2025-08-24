@@ -178,7 +178,7 @@ abstract class AppLocalizations {
   /// No description provided for @semAreaHintHas.
   ///
   /// In en, this message translates to:
-  /// **'Contains {count, plural, one{# file} other{# files}}. Drag out to move or share.'**
+  /// **'Contains {count, plural, one{{count} file} other{{count} files}}. Drag out to move or share.'**
   String semAreaHintHas(int count);
 
   /// No description provided for @semShareHintNone.
@@ -190,7 +190,7 @@ abstract class AppLocalizations {
   /// No description provided for @semShareHintSome.
   ///
   /// In en, this message translates to:
-  /// **'Share {count, plural, one{# file} other{# files}}'**
+  /// **'Share {count, plural, one{{count} file} other{{count} files}}'**
   String semShareHintSome(int count);
 
   /// No description provided for @semRemoveHintNone.
@@ -202,7 +202,7 @@ abstract class AppLocalizations {
   /// No description provided for @semRemoveHintSome.
   ///
   /// In en, this message translates to:
-  /// **'Remove {count, plural, one{# file} other{# files}}'**
+  /// **'Remove {count, plural, one{{count} file} other{{count} files}}'**
   String semRemoveHintSome(int count);
 
   /// No description provided for @trayFilesNone.
