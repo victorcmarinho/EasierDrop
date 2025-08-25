@@ -26,7 +26,7 @@ class FileNameBadge extends StatelessWidget {
               ).primaryColor.withValues(alpha: 0.30),
               width: 1,
             ),
-            color: MacosTheme.of(context).canvasColor.withValues(alpha: 0.45),
+            color: MacosTheme.of(context).primaryColor.withValues(alpha: 0.15),
           ),
           child: MarqueeText(
             text: label,
