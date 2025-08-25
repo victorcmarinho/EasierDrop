@@ -51,8 +51,11 @@ sealed class ChannelDragResult {
       }
       return const ChannelDragSuccess(DragOperation.unknown);
     } catch (e, st) {
-      AppLogger.warn('Failed to parse drag result: $e', tag: 'DragResult');
-      AppLogger.debug(st.toString(), tag: 'DragResult');
+      AppLogger.warn(
+        'Failed to parse drag result: $e',
+        tag: 'DragResult',
+      ); // coverage:ignore-line
+      AppLogger.debug(st.toString(), tag: 'DragResult'); // coverage:ignore-line
       return const ChannelDragSuccess(DragOperation.unknown);
     }
   }

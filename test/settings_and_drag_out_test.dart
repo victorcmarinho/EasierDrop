@@ -46,6 +46,40 @@ void main() {
       expect(decoded['schemaVersion'], isNotNull);
       expect(decoded['autoClearInbound'], isFalse);
     });
+
+    test('setMaxFiles persists after debounce', () async {
+      SettingsService.instance.setMaxFiles(250);
+      // advance fake async time by debounce duration
+      await Future.delayed(const Duration(milliseconds: 300));
+      final file = File('${dir.path}/settings.json');
+      expect(await file.exists(), isTrue);
+      final decoded =
+          jsonDecode(await file.readAsString()) as Map<String, dynamic>;
+      expect(decoded['maxFiles'], 250);
+    });
+
+    test('window bounds persisted', () async {
+      SettingsService.instance.setWindowBounds(x: 10, y: 20, w: 800, h: 600);
+      await Future.delayed(const Duration(milliseconds: 300));
+      final file = File('${dir.path}/settings.json');
+      final decoded =
+          jsonDecode(await file.readAsString()) as Map<String, dynamic>;
+      expect(decoded['windowX'], 10);
+      expect(decoded['windowY'], 20);
+      expect(decoded['windowW'], 800);
+      expect(decoded['windowH'], 600);
+    });
+
+    test('locale persisted', () async {
+      SettingsService.instance.setLocale('pt');
+      await Future.delayed(const Duration(milliseconds: 300));
+      final file = File('${dir.path}/settings.json');
+      final decoded =
+          jsonDecode(await file.readAsString()) as Map<String, dynamic>;
+      expect(decoded['locale'], 'pt');
+      // set same value again -> no additional write change in memory (not asserted here)
+      SettingsService.instance.setLocale('pt');
+    });
   });
 
   group('Drag out copy logic', () {

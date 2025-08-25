@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 /// Anima texto horizontalmente (marquee) quando excede o espaço disponível.
@@ -24,6 +25,13 @@ class _MarqueeTextState extends State<MarqueeText>
       _textWidth != null &&
       _availableWidth != null &&
       _textWidth! > _availableWidth!;
+
+  @visibleForTesting
+  bool get shouldScroll => _shouldScroll;
+  @visibleForTesting
+  double? get measuredTextWidth => _textWidth;
+  @visibleForTesting
+  double? get availableWidth => _availableWidth;
 
   @override
   void initState() {
@@ -93,11 +101,17 @@ class _MarqueeTextState extends State<MarqueeText>
         animation: _controller,
         builder: (context, _) {
           final dx = _controller.value * (_textWidth! + _gap);
+          final row = Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [text, const SizedBox(width: _gap), text],
+          );
           final moving = Transform.translate(
             offset: Offset(-dx, 0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [text, const SizedBox(width: _gap), text],
+            child: OverflowBox(
+              alignment: Alignment.centerLeft,
+              minWidth: _textWidth! * 2 + _gap,
+              maxWidth: _textWidth! * 2 + _gap,
+              child: row,
             ),
           );
           return ShaderMask(

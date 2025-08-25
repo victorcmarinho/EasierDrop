@@ -1,3 +1,5 @@
+// coverage:ignore-file
+// Arquivo gerado automaticamente pelo intl, excluído da cobertura.
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';

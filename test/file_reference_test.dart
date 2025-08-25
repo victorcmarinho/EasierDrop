@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -34,6 +35,22 @@ void main() {
       final ref = FileReference(pathname: dir.path);
       expect(ref.isValidSync(), isFalse);
       expect(await ref.isValidAsync(), isFalse);
+    });
+
+    test('extension, size and withIcon/equality', () async {
+      final f = File('${tmp.path}/b.data.long');
+      await f.writeAsBytes(List.generate(10, (i) => i));
+      final ref = FileReference(pathname: f.path);
+      expect(ref.extension, 'long');
+      final sz = await ref.size;
+      expect(sz, 10);
+      final ref2 = ref.withIcon(Uint8List.fromList([1, 2, 3]));
+      expect(ref2.iconData, isNotNull);
+      expect(ref2.pathname, ref.pathname);
+      expect(
+        ref,
+        equals(FileReference(pathname: f.path)),
+      ); // equality by pathname
     });
   });
 }

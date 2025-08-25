@@ -45,6 +45,7 @@ class FileActionsBar extends StatelessWidget {
                     ? MacosTooltip(
                       message: loc.tooltipShare,
                       child: Semantics(
+                        key: const ValueKey('shareSem'),
                         label: loc.share,
                         hint:
                             hasFiles
@@ -76,6 +77,7 @@ class FileActionsBar extends StatelessWidget {
                     ? MacosTooltip(
                       message: loc.tooltipClear,
                       child: Semantics(
+                        key: const ValueKey('removeSem'),
                         label: loc.removeAll,
                         hint:
                             hasFiles

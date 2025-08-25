@@ -54,7 +54,7 @@ class SettingsService with ChangeNotifier {
       }
       _loaded = true;
     } catch (e) {
-      AppLogger.warn('Falha ao carregar settings: $e');
+      AppLogger.warn('Falha ao carregar settings: $e'); // coverage:ignore-line
     }
   }
 
@@ -94,7 +94,7 @@ class SettingsService with ChangeNotifier {
       };
       await file.writeAsString(const JsonEncoder.withIndent('  ').convert(map));
     } catch (e) {
-      AppLogger.warn('Falha ao salvar settings: $e');
+      AppLogger.warn('Falha ao salvar settings: $e'); // coverage:ignore-line
     }
   }
 

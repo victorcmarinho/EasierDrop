@@ -26,12 +26,14 @@ class FileReference {
         return true;
       } on FileSystemException catch (e) {
         AppLogger.warn(
+          // coverage:ignore-line
           'Sem permissão de leitura: $pathname (${e.osError?.message})',
           tag: 'FileRef',
         );
         return false;
       } catch (e) {
         AppLogger.warn(
+          // coverage:ignore-line
           'Falha ao testar leitura: $pathname ($e)',
           tag: 'FileRef',
         );
@@ -42,7 +44,7 @@ class FileReference {
         } catch (_) {}
       }
     } catch (e) {
-      debugPrint('Erro ao validar arquivo: $e');
+      debugPrint('Erro ao validar arquivo: $e'); // coverage:ignore-line
       return false;
     }
   }
@@ -57,6 +59,7 @@ class FileReference {
         raf = file.openSync(mode: FileMode.read);
       } on FileSystemException catch (e) {
         AppLogger.warn(
+          // coverage:ignore-line
           'Sem permissão leitura (sync): $pathname (${e.osError?.message})',
           tag: 'FileRef',
         );

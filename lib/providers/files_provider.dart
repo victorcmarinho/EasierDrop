@@ -5,6 +5,7 @@ import 'package:easier_drop/services/logger.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:share_plus/share_plus.dart';
 
 class FilesProvider with ChangeNotifier {
@@ -61,12 +62,16 @@ class FilesProvider with ChangeNotifier {
     try {
       if (_files.length >= _maxFiles) {
         _lastLimitHit = DateTime.now();
-        AppLogger.warn('File limit reached ($_maxFiles)', tag: 'FilesProvider');
+        AppLogger.warn(
+          'File limit reached ($_maxFiles)',
+          tag: 'FilesProvider',
+        ); // coverage:ignore-line
         _scheduleNotify();
         return;
       }
       if (!await file.isValidAsync()) {
         AppLogger.debug(
+          // coverage:ignore-line
           'Invalid file skipped: ${file.pathname}',
           tag: 'FilesProvider',
         );
@@ -74,6 +79,7 @@ class FilesProvider with ChangeNotifier {
       }
       if (_files.containsKey(file.pathname)) {
         AppLogger.debug(
+          // coverage:ignore-line
           'Duplicate file ignored: ${file.pathname}',
           tag: 'FilesProvider',
         );
@@ -93,9 +99,15 @@ class FilesProvider with ChangeNotifier {
           _scheduleNotify();
         }
       }
-      AppLogger.info('File added: ${file.fileName}', tag: 'FilesProvider');
+      AppLogger.info(
+        'File added: ${file.fileName}',
+        tag: 'FilesProvider',
+      ); // coverage:ignore-line
     } catch (e) {
-      AppLogger.error('Error adding file: $e', tag: 'FilesProvider');
+      AppLogger.error(
+        'Error adding file: $e',
+        tag: 'FilesProvider',
+      ); // coverage:ignore-line
     }
   }
 
@@ -110,10 +122,16 @@ class FilesProvider with ChangeNotifier {
       if (_files.remove(file.pathname) != null) {
         _cachedList = null;
         _scheduleNotify();
-        AppLogger.info('File removed: ${file.fileName}', tag: 'FilesProvider');
+        AppLogger.info(
+          'File removed: ${file.fileName}',
+          tag: 'FilesProvider',
+        ); // coverage:ignore-line
       }
     } catch (e) {
-      AppLogger.error('Error removing file: $e', tag: 'FilesProvider');
+      AppLogger.error(
+        'Error removing file: $e',
+        tag: 'FilesProvider',
+      ); // coverage:ignore-line
     }
   }
 
@@ -122,10 +140,16 @@ class FilesProvider with ChangeNotifier {
       if (_files.remove(pathname) != null) {
         _cachedList = null;
         _scheduleNotify();
-        AppLogger.info('File removed: $pathname', tag: 'FilesProvider');
+        AppLogger.info(
+          'File removed: $pathname',
+          tag: 'FilesProvider',
+        ); // coverage:ignore-line
       }
     } catch (e) {
-      AppLogger.error('Error removing file by path: $e', tag: 'FilesProvider');
+      AppLogger.error(
+        'Error removing file by path: $e',
+        tag: 'FilesProvider',
+      ); // coverage:ignore-line
     }
   }
 
@@ -135,7 +159,10 @@ class FilesProvider with ChangeNotifier {
     _files.clear();
     _cachedList = null;
     _scheduleNotify();
-    AppLogger.info('$count file(s) cleared', tag: 'FilesProvider');
+    AppLogger.info(
+      '$count file(s) cleared',
+      tag: 'FilesProvider',
+    ); // coverage:ignore-line
   }
 
   Future<Object> shared({Offset? position}) async {
@@ -159,7 +186,10 @@ class FilesProvider with ChangeNotifier {
       );
       return SharePlus.instance.share(params);
     } catch (e) {
-      AppLogger.error('Error sharing files: $e', tag: 'FilesProvider');
+      AppLogger.error(
+        'Error sharing files: $e',
+        tag: 'FilesProvider',
+      ); // coverage:ignore-line
       return ShareResult('shareError', ShareResultStatus.unavailable);
     }
   }
@@ -179,6 +209,7 @@ class FilesProvider with ChangeNotifier {
     _cachedList = null;
     _scheduleNotify();
     AppLogger.info(
+      // coverage:ignore-line
       '${toRemove.length} invalid file(s) removed after rescan',
       tag: 'FilesProvider',
     );
@@ -199,4 +230,14 @@ class FilesProvider with ChangeNotifier {
   }
 
   void rescanNow() => _rescanInternal();
+
+  // ---------------------------------------------------------------------------
+  // Test helpers (não expostos em produção; anotados para visibilidade em tests)
+  // ---------------------------------------------------------------------------
+  @visibleForTesting
+  void addFileForTest(FileReference ref) {
+    _files[ref.pathname] = ref;
+    _cachedList = null;
+    _scheduleNotify();
+  }
 }

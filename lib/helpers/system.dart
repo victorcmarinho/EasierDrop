@@ -1,3 +1,5 @@
+// coverage:ignore-file
+// Motivo: integrações de plataforma (window_manager, tray_manager) difíceis de simular em testes unitários.
 import 'package:flutter/material.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
