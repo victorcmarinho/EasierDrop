@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:provider/provider.dart';
 // window_manager não necessário aqui (usado no WindowHandle)
@@ -128,32 +128,9 @@ class _DragDropState extends State<DragDrop> {
     AppLogger.info('External drag started', tag: 'DragDrop');
   }
 
-  Future<void> _confirmAndClear(FilesProvider provider) async {
+  void _clearImmediate(FilesProvider provider) {
     if (provider.files.isEmpty) return;
-    final loc = AppLocalizations.of(context)!;
-    final confirmed = await showMacosAlertDialog<bool>(
-      context: context,
-      builder:
-          (_) => MacosAlertDialog(
-            appIcon: const MacosIcon(CupertinoIcons.trash),
-            title: Text(loc.clearFilesTitle),
-            message: Text(loc.clearFilesMessage),
-            primaryButton: PushButton(
-              controlSize: ControlSize.large,
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text(loc.clearConfirm),
-            ),
-            secondaryButton: PushButton(
-              secondary: true,
-              controlSize: ControlSize.large,
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(loc.clearCancel),
-            ),
-          ),
-    );
-    if (confirmed == true) {
-      provider.clear();
-    }
+    provider.clear();
   }
 
   @override
@@ -184,7 +161,7 @@ class _DragDropState extends State<DragDrop> {
             onHoverChanged: (h) => setState(() => _hovering = h),
             onDragCheck: (dy) => dy > _handleGestureHeight,
             onDragRequest: _handleDragOut,
-            onClear: () => _confirmAndClear(filesProvider),
+            onClear: () => _clearImmediate(filesProvider),
             getButtonPosition: _getButtonPosition,
             filesProvider: filesProvider,
           ),
