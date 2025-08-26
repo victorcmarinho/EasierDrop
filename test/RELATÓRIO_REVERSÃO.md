@@ -2,18 +2,18 @@
 
 ## Resumo
 
-Foi realizada a reversão da consolidação dos testes do projeto EasierDrop para restaurar 
+Foi realizada a reversão da consolidação dos testes do projeto EasierDrop para restaurar
 a cobertura de testes original, que havia sido reduzida durante o processo de consolidação.
 
 ## Motivo da Reversão
 
-A consolidação dos testes, embora tenha organizado melhor a estrutura de diretórios, 
+A consolidação dos testes, embora tenha organizado melhor a estrutura de diretórios,
 resultou em uma queda significativa na cobertura de testes:
 
 - **Cobertura com testes consolidados**: 54.3% das linhas de código
 - **Cobertura com testes originais**: 74.9% das linhas de código
 
-Essa redução de aproximadamente 20% na cobertura representa uma perda significativa 
+Essa redução de aproximadamente 20% na cobertura representa uma perda significativa
 na qualidade da verificação do código.
 
 ## Processo de Reversão
@@ -31,7 +31,7 @@ na qualidade da verificação do código.
 
 ## Estrutura Atual
 
-A estrutura atual de testes voltou ao original, com cada aspecto de um componente 
+A estrutura atual de testes voltou ao original, com cada aspecto de um componente
 sendo testado em arquivos separados, o que resulta em maior cobertura de código.
 
 ## Causas Prováveis da Queda de Cobertura
