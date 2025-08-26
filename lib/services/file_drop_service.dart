@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'constants.dart';
 
 class FileDropService {
@@ -46,4 +47,15 @@ class FileDropService {
   ) {
     _channel.setMethodCallHandler(handler);
   }
+
+  // Apenas para testes: injeta evento diretamente no stream sem depender de EventChannel.
+  // coverage:ignore-start
+  @visibleForTesting
+  void pushTestEvent(List<String> paths) {
+    if (!_filesController.isClosed) {
+      _filesController.add(paths);
+    }
+  }
+
+  // coverage:ignore-end
 }

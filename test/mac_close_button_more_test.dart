@@ -24,11 +24,9 @@ void main() {
     final center = tester.getCenter(btn);
     tester.binding.handlePointerEvent(PointerHoverEvent(position: center));
     await tester.pump(const Duration(milliseconds: 50));
-    // Press sequence
-    await tester.startGesture(center);
-    await tester.pump(const Duration(milliseconds: 20));
-    await tester.tap(btn); // triggers onTapUp + onTap
-    await tester.pump();
+    // Clique simples
+    await tester.tap(btn);
+    await tester.pumpAndSettle();
     expect(taps, 1);
     // Move pointer out
     tester.binding.handlePointerEvent(

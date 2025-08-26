@@ -8,7 +8,13 @@ class FileReference {
   const FileReference({this.iconData, required this.pathname});
 
   String get fileName => pathname.split(Platform.pathSeparator).last;
-  String get extension => pathname.split('.').last.toLowerCase();
+  String get extension {
+    final base = fileName;
+    final idx = base.lastIndexOf('.');
+    if (idx <= 0 || idx == base.length - 1) return base.toLowerCase();
+    return base.substring(idx + 1).toLowerCase();
+  }
+
   Future<int> get size async => File(pathname).length();
 
   Future<bool> isValidAsync() async {
