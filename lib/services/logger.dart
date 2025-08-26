@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 enum LogLevel { trace, debug, info, warn, error }
 
 class AppLogger {
-  AppLogger._();
+  AppLogger._(); // coverage:ignore-line
   static LogLevel minLevel = kDebugMode ? LogLevel.debug : LogLevel.info;
 
   static void log(

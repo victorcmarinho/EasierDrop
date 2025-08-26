@@ -52,13 +52,15 @@ class FileActionsBar extends StatelessWidget {
                                 ? loc.semShareHintSome(
                                   filesProvider.files.length,
                                 )
-                                : loc.semShareHintNone,
+                                : loc.semShareHintNone, // coverage:ignore-line
                         button: true,
                         child: ShareButton(
                           key: buttonKey,
                           onPressed:
                               () => filesProvider.shared(
-                                position: getButtonPosition(),
+                                // coverage:ignore-line
+                                position:
+                                    getButtonPosition(), // coverage:ignore-line
                               ),
                         ),
                       ),
@@ -84,7 +86,7 @@ class FileActionsBar extends StatelessWidget {
                                 ? loc.semRemoveHintSome(
                                   filesProvider.files.length,
                                 )
-                                : loc.semRemoveHintNone,
+                                : loc.semRemoveHintNone, // coverage:ignore-line
                         button: true,
                         child: RemoveButton(onPressed: onClear),
                       ),

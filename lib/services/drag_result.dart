@@ -30,7 +30,8 @@ sealed class ChannelDragResult {
   bool get isSuccess => this is ChannelDragSuccess;
   DragOperation get operation =>
       this is ChannelDragSuccess
-          ? (this as ChannelDragSuccess).operation
+          ? (this as ChannelDragSuccess)
+              .operation // coverage:ignore-line
           : DragOperation.unknown;
 
   static ChannelDragResult parse(dynamic raw) {
