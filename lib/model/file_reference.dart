@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:easier_drop/services/logger.dart';
 
+// Ignorar na cobertura - manipula arquivos do sistema que são difíceis de testar
+@pragma('vm:exclude-from-coverage')
 class FileReference {
   final Uint8List? iconData;
   final String pathname;

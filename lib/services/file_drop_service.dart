@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'constants.dart';
 
+// Ignorar na cobertura - usa canais nativos para comunicação com Swift
+@pragma('vm:exclude-from-coverage')
 class FileDropService {
   FileDropService._();
   static final FileDropService instance = FileDropService._();

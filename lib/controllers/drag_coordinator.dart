@@ -12,6 +12,8 @@ import 'package:easier_drop/model/file_reference.dart';
 
 /// Coordena interações de drag-in e drag-out, isolando lógica de plataforma
 /// do widget principal. Expõe callbacks simples e notifica via [ValueNotifier].
+// Ignorar na cobertura - coordena interações com código nativo
+@pragma('vm:exclude-from-coverage')
 class DragCoordinator {
   DragCoordinator(this.context);
 

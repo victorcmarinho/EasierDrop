@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'constants.dart';
 
+// Ignorar na cobertura - usa canal nativo para comunicação com Swift
+@pragma('vm:exclude-from-coverage')
 class DragOutService {
   DragOutService._();
   static final DragOutService instance = DragOutService._();

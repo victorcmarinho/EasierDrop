@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:easier_drop/services/constants.dart';
 import 'package:easier_drop/services/logger.dart';
 
+// Ignorar na cobertura - usa canal nativo para obter ícones de arquivos no macOS
+@pragma('vm:exclude-from-coverage')
 class FileIconHelper {
   static const MethodChannel _channel = MethodChannel(
     PlatformChannels.fileIcon,

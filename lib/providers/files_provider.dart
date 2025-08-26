@@ -8,6 +8,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:share_plus/share_plus.dart';
 
+// Ignorar na cobertura - manipula arquivos do sistema e usa APIs nativas
+@pragma('vm:exclude-from-coverage')
 class FilesProvider with ChangeNotifier {
   final Map<String, FileReference> _files = {};
   List<FileReference>? _cachedList;
