@@ -10,10 +10,10 @@ import 'package:easier_drop/services/logger.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 
+// coverage:ignore-file
 /// Coordena interações de drag-in e drag-out, isolando lógica de plataforma
 /// do widget principal. Expõe callbacks simples e notifica via [ValueNotifier].
 // Ignorar na cobertura - coordena interações com código nativo
-@pragma('vm:exclude-from-coverage')
 class DragCoordinator {
   DragCoordinator(this.context);
 
