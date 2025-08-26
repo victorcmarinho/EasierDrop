@@ -17,8 +17,8 @@ class _MarqueeTextState extends State<MarqueeText>
   late final AnimationController _controller;
   double? _textWidth;
   double? _availableWidth;
-  static const double _gap = 32.0; // Espaço entre repetições
-  static const double _pps = 22.0; // Pixels por segundo
+  static const double _gap = 32.0;
+  static const double _pps = 22.0;
 
   bool get _shouldScroll =>
       _textWidth != null &&
