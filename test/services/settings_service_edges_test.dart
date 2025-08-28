@@ -24,7 +24,14 @@ void main() {
 
     tearDown(() async {
       PathProviderPlatform.instance = original;
-      await dir.delete(recursive: true);
+      try {
+        if (await dir.exists()) {
+          await dir.delete(recursive: true);
+        }
+      } catch (e) {
+        // Ignore deletion errors in tearDown
+        print('Warning: Could not delete temp dir: $e');
+      }
     });
 
     test('setMaxFiles ignores non-positive and same value', () async {

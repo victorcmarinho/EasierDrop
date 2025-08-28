@@ -9,6 +9,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/model/file_reference.dart';
+import 'package:easier_drop/services/settings_service.dart';
 
 // Mock para o FilesProvider
 class MockFilesProvider extends Mock implements FilesProvider {}
@@ -24,6 +25,9 @@ class MockSystemHelper extends Mock implements SystemHelper {
   static Future<void> open() async {}
   static Future<void> exit() async {}
 }
+
+// Mock para o SettingsService
+class MockSettingsService extends Mock implements SettingsService {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -197,5 +201,164 @@ void main() {
 
     // Verificamos se pode criar o state
     expect(tray.createState(), isA<State<Tray>>());
+  });
+
+  testWidgets('Tray funciona com TrayListener implementação', (tester) async {
+    final filesProvider = MockFilesProvider();
+    when(() => filesProvider.files).thenReturn([]);
+    when(() => filesProvider.addListener(any())).thenReturn(null);
+
+    await tester.pumpWidget(buildWidget(filesProvider));
+    await tester.pumpAndSettle();
+
+    // Verificar se o widget foi criado corretamente
+    expect(find.byType(Tray), findsOneWidget);
+
+    // Simular interações com o tray através do widget
+    // Esses métodos são chamados pelo tray_manager, então testamos indiretamente
+    expect(find.byType(Tray), findsOneWidget);
+  });
+
+  testWidgets('Tray responde a mudanças de contagem de arquivos', (tester) async {
+    final filesProvider = MockFilesProvider();
+    final List<FileReference> files = [];
+
+    when(() => filesProvider.files).thenReturn(files);
+    when(() => filesProvider.addListener(any())).thenReturn(null);
+    when(() => filesProvider.removeListener(any())).thenReturn(null);
+
+    await tester.pumpWidget(buildWidget(filesProvider));
+    await tester.pumpAndSettle();
+
+    // Captura o callback do listener
+    final callback =
+        verify(() => filesProvider.addListener(captureAny())).captured.first
+            as Function;
+
+    // Testar sem mudança na contagem de arquivos
+    callback();
+    await tester.pumpAndSettle();
+
+    // Adicionar arquivos para mudar a contagem
+    final mockFile = MockFileReference();
+    when(() => mockFile.pathname).thenReturn('/path/to/file.txt');
+    files.add(mockFile);
+
+    // Chamar novamente para testar a mudança
+    callback();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(Tray), findsOneWidget);
+  });
+
+  testWidgets('Tray funciona com múltiplos arquivos', (tester) async {
+    final filesProvider = MockFilesProvider();
+    final List<FileReference> files = [];
+
+    when(() => filesProvider.files).thenReturn(files);
+    when(() => filesProvider.addListener(any())).thenReturn(null);
+
+    await tester.pumpWidget(buildWidget(filesProvider));
+    await tester.pumpAndSettle();
+
+    // Adicionar múltiplos arquivos para testar diferentes contagens
+    for (int i = 0; i < 5; i++) {
+      final mockFile = MockFileReference();
+      when(() => mockFile.pathname).thenReturn('/path/to/file$i.txt');
+      files.add(mockFile);
+    }
+
+    // Simular mudança através do callback
+    final callback =
+        verify(() => filesProvider.addListener(captureAny())).captured.first
+            as Function;
+    callback();
+
+    await tester.pumpAndSettle();
+    expect(find.byType(Tray), findsOneWidget);
+  });
+
+  testWidgets('Tray testa inicialização completa', (tester) async {
+    final filesProvider = MockFilesProvider();
+    when(() => filesProvider.files).thenReturn([]);
+    when(() => filesProvider.addListener(any())).thenReturn(null);
+
+    await tester.pumpWidget(buildWidget(filesProvider));
+    
+    // Pump múltiplas vezes para garantir que todos os post frame callbacks executem
+    await tester.pump();
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(Tray), findsOneWidget);
+    
+    // Verificar que o listener foi adicionado
+    verify(() => filesProvider.addListener(any())).called(greaterThanOrEqualTo(1));
+  });
+
+  testWidgets('Tray testa dispose com diferentes estados', (tester) async {
+    final filesProvider = MockFilesProvider();
+    when(() => filesProvider.files).thenReturn([]);
+    when(() => filesProvider.addListener(any())).thenReturn(null);
+    when(() => filesProvider.removeListener(any())).thenReturn(null);
+
+    await tester.pumpWidget(buildWidget(filesProvider));
+    await tester.pumpAndSettle();
+
+    // Testar dispose em diferentes momentos
+    await tester.pumpWidget(Container());
+    await tester.pumpAndSettle();
+
+    // Verificar que removeListener foi chamado
+    verify(() => filesProvider.removeListener(any())).called(greaterThanOrEqualTo(1));
+  });
+
+  testWidgets('Tray funciona com provider vazio e cheio', (tester) async {
+    final filesProvider = MockFilesProvider();
+    final List<FileReference> files = [];
+
+    when(() => filesProvider.files).thenReturn(files);
+    when(() => filesProvider.addListener(any())).thenReturn(null);
+
+    await tester.pumpWidget(buildWidget(filesProvider));
+    await tester.pumpAndSettle();
+
+    // Testar com lista vazia
+    final callback =
+        verify(() => filesProvider.addListener(captureAny())).captured.first
+            as Function;
+    
+    callback();
+    await tester.pumpAndSettle();
+
+    // Adicionar arquivos
+    for (int i = 0; i < 3; i++) {
+      final mockFile = MockFileReference();
+      when(() => mockFile.pathname).thenReturn('/test/file$i.txt');
+      files.add(mockFile);
+    }
+
+    // Testar com arquivos
+    callback();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(Tray), findsOneWidget);
+  });
+
+  testWidgets('Tray verifica dispose seguro', (tester) async {
+    final filesProvider = MockFilesProvider();
+    when(() => filesProvider.files).thenReturn([]);
+    when(() => filesProvider.addListener(any())).thenReturn(null);
+    when(() => filesProvider.removeListener(any())).thenReturn(null);
+
+    await tester.pumpWidget(buildWidget(filesProvider));
+    await tester.pumpAndSettle();
+
+    // Remove o widget para testar dispose
+    await tester.pumpWidget(Container());
+    await tester.pumpAndSettle();
+
+    // Deve executar sem erros
+    expect(true, isTrue);
   });
 }

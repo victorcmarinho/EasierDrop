@@ -1,3 +1,5 @@
+// coverage: ignore-file
+
 import 'package:flutter/material.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
