@@ -20,7 +20,6 @@ void main() {
       original = PathProviderPlatform.instance;
       dir = await Directory.systemTemp.createTemp('settings_edges');
       PathProviderPlatform.instance = _EdgePathProvider(dir);
-      // Reset loaded flag hack: create a new instance is not possible; rely on maxFiles mutation only.
     });
 
     tearDown(() async {
@@ -31,9 +30,9 @@ void main() {
     test('setMaxFiles ignores non-positive and same value', () async {
       final s = SettingsService.instance;
       final orig = s.maxFiles;
-      s.setMaxFiles(orig); // same -> no change
+      s.setMaxFiles(orig);
       expect(s.maxFiles, orig);
-      s.setMaxFiles(0); // ignored
+      s.setMaxFiles(0);
       expect(s.maxFiles, orig);
     });
 
