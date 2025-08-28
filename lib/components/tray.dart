@@ -6,8 +6,6 @@ import 'package:flutter/widgets.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 
-// coverage:ignore-file
-// Ignorar na cobertura - usa recursos nativos de tray que são difíceis de testar
 class Tray extends StatefulWidget {
   const Tray({super.key});
 

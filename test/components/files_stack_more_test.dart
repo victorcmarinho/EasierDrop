@@ -18,10 +18,8 @@ void main() {
     );
     await tester.pump();
 
-    // Obter localização para texto esperado
     final loc = await AppLocalizations.delegate.load(const Locale('en'));
 
-    // Verificar mensagem de placeholder
     expect(find.text(loc.dropHere), findsOneWidget);
   });
 
@@ -101,7 +99,6 @@ void main() {
       0x82,
     ]);
 
-    // Criar arquivos com e sem ícones
     final files = [
       const FileReference(pathname: '/path/to/file1.txt'),
       FileReference(pathname: '/path/to/file2.jpg', iconData: mockIcon),
@@ -124,18 +121,14 @@ void main() {
     );
     await tester.pump();
 
-    // Verificar a presença de ícones de placeholder para arquivos sem iconData
     expect(find.byIcon(Icons.insert_drive_file), findsNWidgets(2));
 
-    // Verificar a presença de imagens para arquivos com iconData
     expect(find.byType(Image), findsOneWidget);
 
-    // Verificar AnimatedContainer para transformação
     expect(find.byType(AnimatedContainer), findsNWidgets(3));
   });
 
   testWidgets('FilesStack handles single file correctly', (tester) async {
-    // Um único arquivo não deve ter rotação nem deslocamento
     final files = [const FileReference(pathname: '/path/to/single.txt')];
 
     await tester.pumpWidget(
@@ -154,15 +147,11 @@ void main() {
     );
     await tester.pump();
 
-    // Verificar que o ícone existe
     expect(find.byIcon(Icons.insert_drive_file), findsOneWidget);
 
-    // Verificar AnimatedContainer
     final containerFinder = find.byType(AnimatedContainer);
     expect(containerFinder, findsOneWidget);
 
-    // Não podemos acessar diretamente a matriz de transformação para verificar rotação
-    // Então vamos verificar apenas que o AnimatedContainer existe
     final AnimatedContainer container = tester.widget(containerFinder);
     expect(container, isNotNull);
   });

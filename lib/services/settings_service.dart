@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'logger.dart';
 
 class SettingsService with ChangeNotifier {
-  SettingsService._(); // coverage:ignore-line
+  SettingsService._();
   static final SettingsService instance = SettingsService._();
 
   static const _fileName = 'settings.json';
@@ -25,7 +25,7 @@ class SettingsService with ChangeNotifier {
   bool get isLoaded => _loaded;
 
   static const _kAutoClearInbound = 'autoClearInbound';
-  bool get autoClearInbound => false; // coverage:ignore-line
+  bool get autoClearInbound => false;
   int maxFiles = 100;
   double? windowX;
   double? windowY;
@@ -43,21 +43,18 @@ class SettingsService with ChangeNotifier {
       if (await file.exists()) {
         final raw = await file.readAsString();
         if (raw.trim().isNotEmpty) {
-          final map =
-              jsonDecode(raw) as Map<String, dynamic>; // coverage:ignore-line
-          if (map[_kMaxFiles] is int)
-            maxFiles = map[_kMaxFiles] as int; // coverage:ignore-line
-          windowX = (map[_kWinX] as num?)?.toDouble(); // coverage:ignore-line
-          windowY = (map[_kWinY] as num?)?.toDouble(); // coverage:ignore-line
-          windowW = (map[_kWinW] as num?)?.toDouble(); // coverage:ignore-line
-          windowH = (map[_kWinH] as num?)?.toDouble(); // coverage:ignore-line
-          if (map[_kLocale] is String)
-            localeCode = map[_kLocale] as String; // coverage:ignore-line
+          final map = jsonDecode(raw) as Map<String, dynamic>;
+          if (map[_kMaxFiles] is int) maxFiles = map[_kMaxFiles] as int;
+          windowX = (map[_kWinX] as num?)?.toDouble();
+          windowY = (map[_kWinY] as num?)?.toDouble();
+          windowW = (map[_kWinW] as num?)?.toDouble();
+          windowH = (map[_kWinH] as num?)?.toDouble();
+          if (map[_kLocale] is String) localeCode = map[_kLocale] as String;
         }
       }
       _loaded = true;
     } catch (e) {
-      AppLogger.warn('Falha ao carregar settings: $e'); // coverage:ignore-line
+      AppLogger.warn('Falha ao carregar settings: $e');
     }
   }
 
@@ -97,7 +94,7 @@ class SettingsService with ChangeNotifier {
       };
       await file.writeAsString(const JsonEncoder.withIndent('  ').convert(map));
     } catch (e) {
-      AppLogger.warn('Falha ao salvar settings: $e'); // coverage:ignore-line
+      AppLogger.warn('Falha ao salvar settings: $e');
     }
   }
 

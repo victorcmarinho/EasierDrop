@@ -1,5 +1,3 @@
-// coverage:ignore-file
-// Motivo: integrações de plataforma (window_manager, tray_manager) difíceis de simular em testes unitários.
 import 'package:flutter/material.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
@@ -70,9 +68,7 @@ class SystemHelper with WindowListener {
       AppLogger.warn('Failed to load tray icon: $e');
     }
 
-    // Tenta obter locale preferido antes de buildar menu inicial
     final code = SettingsService.instance.localeCode;
-    // Fallback para 'en'
     final locale =
         code != null
             ? (code.contains('_')

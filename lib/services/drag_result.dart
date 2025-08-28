@@ -1,7 +1,5 @@
 import 'package:easier_drop/services/logger.dart';
 
-/// Supported drag operations returned by native layer.
-/// Falls back to [DragOperation.unknown] when parsing fails.
 enum DragOperation { copy, move, unknown }
 
 extension DragOperationX on DragOperation {
@@ -23,15 +21,13 @@ extension DragOperationX on DragOperation {
   };
 }
 
-/// Structured result coming from a drag completion callback (inbound/outbound).
 sealed class ChannelDragResult {
   const ChannelDragResult();
 
   bool get isSuccess => this is ChannelDragSuccess;
   DragOperation get operation =>
       this is ChannelDragSuccess
-          ? (this as ChannelDragSuccess)
-              .operation // coverage:ignore-line
+          ? (this as ChannelDragSuccess).operation
           : DragOperation.unknown;
 
   static ChannelDragResult parse(dynamic raw) {
@@ -46,17 +42,13 @@ sealed class ChannelDragResult {
           message: raw['message']?.toString() ?? 'Unknown drag error',
         );
       }
-      // Legacy: platform sent just the operation string (copy|move)
       if (raw is String) {
         return ChannelDragSuccess(DragOperationX.parse(raw));
       }
       return const ChannelDragSuccess(DragOperation.unknown);
     } catch (e, st) {
-      AppLogger.warn(
-        'Failed to parse drag result: $e',
-        tag: 'DragResult',
-      ); // coverage:ignore-line
-      AppLogger.debug(st.toString(), tag: 'DragResult'); // coverage:ignore-line
+      AppLogger.warn('Failed to parse drag result: $e', tag: 'DragResult');
+      AppLogger.debug(st.toString(), tag: 'DragResult');
       return const ChannelDragSuccess(DragOperation.unknown);
     }
   }

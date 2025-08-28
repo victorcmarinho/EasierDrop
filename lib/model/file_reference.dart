@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:easier_drop/services/logger.dart';
 
-// coverage:ignore-file
-// Ignorar na cobertura - manipula arquivos do sistema que são difíceis de testar
 class FileReference {
   final Uint8List? iconData;
   final String pathname;
@@ -34,14 +32,12 @@ class FileReference {
         return true;
       } on FileSystemException catch (e) {
         AppLogger.warn(
-          // coverage:ignore-line
           'Sem permissão de leitura: $pathname (${e.osError?.message})',
           tag: 'FileRef',
         );
         return false;
       } catch (e) {
         AppLogger.warn(
-          // coverage:ignore-line
           'Falha ao testar leitura: $pathname ($e)',
           tag: 'FileRef',
         );
@@ -52,7 +48,7 @@ class FileReference {
         } catch (_) {}
       }
     } catch (e) {
-      debugPrint('Erro ao validar arquivo: $e'); // coverage:ignore-line
+      debugPrint('Erro ao validar arquivo: $e');
       return false;
     }
   }
@@ -67,7 +63,6 @@ class FileReference {
         raf = file.openSync(mode: FileMode.read);
       } on FileSystemException catch (e) {
         AppLogger.warn(
-          // coverage:ignore-line
           'Sem permissão leitura (sync): $pathname (${e.osError?.message})',
           tag: 'FileRef',
         );

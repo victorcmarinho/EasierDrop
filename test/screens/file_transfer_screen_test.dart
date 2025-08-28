@@ -9,7 +9,6 @@ import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import '../mocks/mock_drag_drop.dart';
 
-// Gerador de mocks
 @GenerateNiceMocks([MockSpec<FilesProvider>()])
 import 'file_transfer_screen_test.mocks.dart';
 

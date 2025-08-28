@@ -14,11 +14,8 @@ class ShareFilesIntent extends Intent {
 }
 
 class FileTransferScreen extends StatelessWidget {
-  /// Flag para habilitar o modo de teste, que não renderiza componentes que podem
-  /// causar problemas em testes, como o Tray
   final bool testMode;
 
-  // Componentes alternativos para o modo de teste
   final Widget? testDragDrop;
 
   const FileTransferScreen({
@@ -66,13 +63,10 @@ class FileTransferScreen extends StatelessWidget {
           autofocus: true,
           child: Stack(
             children: [
-              // Usar o DragDrop de teste se estiver em modo de teste e fornecido
               if (testMode && testDragDrop != null)
                 testDragDrop!
               else
                 const DragDrop(),
-
-              // Só renderiza o Tray quando não estiver em modo de teste
               if (!testMode) const Tray(),
             ],
           ),

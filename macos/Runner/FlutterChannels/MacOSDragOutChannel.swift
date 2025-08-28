@@ -5,7 +5,6 @@ final class MacOSDragOutChannel: NSObject, NSDraggingSource {
 	static let shared = MacOSDragOutChannel()
 	private var channel: FlutterMethodChannel?
 	private weak var view: NSView?
-	// Se o usuário iniciou o drag segurando CMD, forçamos tratar como cópia
 	private var forceCopyFromCmd: Bool = false
 
 	func setup(view: NSView, messenger: FlutterBinaryMessenger) {
@@ -58,20 +57,17 @@ final class MacOSDragOutChannel: NSObject, NSDraggingSource {
 			return
 		}
 
-		// Captura se CMD estava pressionado no início do drag
 		forceCopyFromCmd = event.modifierFlags.contains(.command)
 
 		view.beginDraggingSession(with: items, event: event, source: self)
 		result(nil)
 	}
 
-	// MARK: - NSDraggingSource
 	func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
 		return [.copy, .move]
 	}
 
 	func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
-		// Se foi iniciado com CMD forçamos copy mesmo que o sistema reporte move
 		let effectiveOp: NSDragOperation = forceCopyFromCmd ? .copy : operation
 		let op = effectiveOp == .move ? "move" : "copy"
 		channel?.invokeMethod("fileDropped", arguments: op)

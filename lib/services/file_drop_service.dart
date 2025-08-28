@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'constants.dart';
 
-// coverage:ignore-file
-// Ignorar na cobertura - usa canais nativos para comunicação com Swift
 class FileDropService {
   FileDropService._();
   static final FileDropService instance = FileDropService._();
@@ -50,14 +48,10 @@ class FileDropService {
     _channel.setMethodCallHandler(handler);
   }
 
-  // Apenas para testes: injeta evento diretamente no stream sem depender de EventChannel.
-  // coverage:ignore-start
   @visibleForTesting
   void pushTestEvent(List<String> paths) {
     if (!_filesController.isClosed) {
       _filesController.add(paths);
     }
   }
-
-  // coverage:ignore-end
 }

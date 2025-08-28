@@ -1,5 +1,3 @@
-// coverage:ignore-file
-// Este arquivo contém código de inicialização do aplicativo que é difícil de testar
 import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/screens/file_transfer_screen.dart';

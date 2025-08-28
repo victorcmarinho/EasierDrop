@@ -40,7 +40,6 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Verificar se o widget foi construído corretamente
     expect(find.byType(WindowHandle), findsOneWidget);
     expect(find.byType(GestureDetector), findsAtLeastNWidgets(1));
 

@@ -32,12 +32,8 @@ class FilesStack extends StatelessWidget {
         final maxSide = math.min(constraints.maxWidth, constraints.maxHeight);
         final iconSize = maxSide * 0.78;
         final count = droppedFiles.length;
-        // Limit number of visible layers for performance/clarity
         final visible = droppedFiles.take(6).toList();
-        final spread = math.min(
-          14.0,
-          maxSide * 0.12,
-        ); // max horizontal offset span
+        final spread = math.min(14.0, maxSide * 0.12);
 
         return RepaintBoundary(
           child: Stack(
@@ -65,14 +61,12 @@ class FilesStack extends StatelessWidget {
   }
 
   double _rotationForIndex(int i) {
-    // Symmetric small rotations e.g. -6, -3, 0, 3, 6...
-    const base = 3.0; // degrees delta
-    return (i - 2) * base; // centering around middle (approx for up to 6)
+    const base = 3.0;
+    return (i - 2) * base;
   }
 
   double _offsetForIndex(int i, int len, double spread) {
     if (len == 1) return 0;
-    // Map index to [-0.5, 0.5]
     final norm = (i / (len - 1)) - 0.5;
     return norm * spread;
   }

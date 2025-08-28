@@ -24,7 +24,7 @@
 // - drag_result_error_test.dart - Testa erros de operações nativas
 // - drag_result_exception_test.dart - Testa exceções de operações nativas
 
-// Os componentes relacionados foram marcados com // coverage:ignore-file
+// Os componentes relacionados foram marcados com
 // para que não sejam considerados na análise de cobertura de código.
 
 // Classes marcadas para exclusão da cobertura:

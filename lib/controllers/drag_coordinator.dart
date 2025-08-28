@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
-import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:easier_drop/services/file_drop_service.dart';
 import 'package:easier_drop/services/drag_out_service.dart';
@@ -10,10 +9,6 @@ import 'package:easier_drop/services/logger.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 
-// coverage:ignore-file
-/// Coordena interações de drag-in e drag-out, isolando lógica de plataforma
-/// do widget principal. Expõe callbacks simples e notifica via [ValueNotifier].
-// Ignorar na cobertura - coordena interações com código nativo
 class DragCoordinator {
   DragCoordinator(this.context);
 
@@ -43,13 +38,11 @@ class DragCoordinator {
     hovering.dispose();
   }
 
-  // --- Inbound (drag-in) ---
   void _setupInbound() {
     FileDropService.instance.setMethodCallHandler((call) async {
       if (call.method == PlatformChannels.fileDroppedCallback) {
         final op = call.arguments as String?;
         AppLogger.info(
-          // coverage:ignore-line
           'Drag finished (inbound). Operation: ${op ?? 'unknown'}',
           tag: 'DragCoordinator',
         );
@@ -58,7 +51,6 @@ class DragCoordinator {
     });
   }
 
-  // --- Outbound (drag-out) ---
   void _setupOutbound() {
     DragOutService.instance.setHandler((call) async {
       if (call.method == PlatformChannels.fileDroppedCallback) {
@@ -71,16 +63,12 @@ class DragCoordinator {
   void _handleOutboundResult(dynamic raw) {
     final result = ChannelDragResult.parse(raw);
     if (!result.isSuccess) {
-      AppLogger.warn(
-        'Drag finished with error',
-        tag: 'DragCoordinator',
-      ); // coverage:ignore-line
+      AppLogger.warn('Drag finished with error', tag: 'DragCoordinator');
       return;
     }
     switch (result.operation) {
       case DragOperation.copy:
         AppLogger.info(
-          // coverage:ignore-line
           'Copy detected; retaining files',
           tag: 'DragCoordinator',
         );
@@ -90,16 +78,11 @@ class DragCoordinator {
         if (provider.files.isNotEmpty) provider.clear();
         break;
       case DragOperation.unknown:
-        AppLogger.info(
-          'Unknown op; retaining files',
-          tag: 'DragCoordinator',
-        ); // coverage:ignore-line
+        AppLogger.info('Unknown op; retaining files', tag: 'DragCoordinator');
         break;
     }
   }
 
-  /// Exposto apenas para testes unitários a fim de validar lógica de limpeza
-  /// baseada na operação de drag-out recebida do canal nativo.
   @visibleForTesting
   void handleOutboundTest(dynamic raw) => _handleOutboundResult(raw);
 
@@ -107,10 +90,7 @@ class DragCoordinator {
     final filesProvider = context.read<FilesProvider>();
     final files = filesProvider.files.map((f) => f.pathname).toList();
     if (files.isEmpty) {
-      AppLogger.warn(
-        'No files to drag',
-        tag: 'DragCoordinator',
-      ); // coverage:ignore-line
+      AppLogger.warn('No files to drag', tag: 'DragCoordinator');
       return;
     }
     draggingOut.value = true;
@@ -118,10 +98,7 @@ class DragCoordinator {
     Future.delayed(const Duration(milliseconds: 400), () {
       draggingOut.value = false;
     });
-    AppLogger.info(
-      'External drag started',
-      tag: 'DragCoordinator',
-    ); // coverage:ignore-line
+    AppLogger.info('External drag started', tag: 'DragCoordinator');
   }
 
   void setHover(bool value) => hovering.value = value;

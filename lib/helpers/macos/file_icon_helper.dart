@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:easier_drop/services/constants.dart';
 import 'package:easier_drop/services/logger.dart';
 
-// coverage:ignore-file
-// Ignorar na cobertura - usa canal nativo para obter ícones de arquivos no macOS
 class FileIconHelper {
   static const MethodChannel _channel = MethodChannel(
     PlatformChannels.fileIcon,

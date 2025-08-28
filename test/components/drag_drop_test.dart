@@ -11,7 +11,6 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
-// Gerador de mocks
 @GenerateNiceMocks([MockSpec<FilesProvider>(), MockSpec<DragCoordinator>()])
 import 'drag_drop_test.mocks.dart';
 
@@ -30,7 +29,6 @@ class TestFileReference extends FileReference {
   const TestFileReference(String path) : super(pathname: path);
 }
 
-// Um widget que envolve o widget de teste com todos os provedores necessários
 class TestWrapper extends StatelessWidget {
   final Widget child;
   final MockFilesProvider filesProvider;
@@ -68,7 +66,6 @@ void main() {
   setUp(() {
     mockFilesProvider = MockFilesProvider();
 
-    // Configurar o comportamento do mock
     when(mockFilesProvider.files).thenReturn([]);
     when(mockFilesProvider.lastLimitHit).thenReturn(null);
   });
@@ -85,22 +82,18 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Verificar se o widget foi construído corretamente
     expect(find.byType(DragDrop), findsOneWidget);
 
-    // Forçar descarte
     await tester.pumpWidget(Container());
   });
 
   testWidgets('DragDrop limpa os arquivos quando há arquivos', (tester) async {
-    // Configurar o mock para ter arquivos
     final files = [
       const TestFileReference('/path/to/file1.txt'),
       const TestFileReference('/path/to/file2.txt'),
     ];
     when(mockFilesProvider.files).thenReturn(files);
 
-    // Criar um wrapper para acessar o contexto e chamar métodos
     bool clearCalled = false;
 
     await tester.pumpWidget(
@@ -110,7 +103,6 @@ void main() {
           body: const DragDrop(),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              // Chamar clear via provider
               final provider = Provider.of<FilesProvider>(
                 tester.element(find.byType(DragDrop)),
                 listen: false,
@@ -127,17 +119,14 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Acionar o botão que simula a limpeza
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
 
-    // Verificar que a limpeza foi chamada
     expect(clearCalled, true);
     verify(mockFilesProvider.clear()).called(1);
   });
 
   testWidgets('DragDrop não limpa quando não há arquivos', (tester) async {
-    // Configurar o mock para não ter arquivos
     when(mockFilesProvider.files).thenReturn([]);
 
     bool clearAttempted = false;
@@ -149,7 +138,6 @@ void main() {
           body: const DragDrop(),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              // Simular o comportamento de _clearImmediate
               final provider = Provider.of<FilesProvider>(
                 tester.element(find.byType(DragDrop)),
                 listen: false,
@@ -166,11 +154,9 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Acionar o botão que simula a tentativa de limpeza
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
 
-    // Verificar que a tentativa foi feita, mas clear não foi chamado
     expect(clearAttempted, true);
     verifyNever(mockFilesProvider.clear());
   });
@@ -178,7 +164,6 @@ void main() {
   testWidgets('DragDrop mostra o limite quando lastLimitHit é recente', (
     tester,
   ) async {
-    // Configurar o mock para mostrar limite
     final now = DateTime.now();
     when(mockFilesProvider.lastLimitHit).thenReturn(now);
 
@@ -191,7 +176,6 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Verificar que o widget foi renderizado
     expect(find.byType(DragDrop), findsOneWidget);
   });
 }

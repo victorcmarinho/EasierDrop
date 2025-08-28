@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
 
-/// Anima texto horizontalmente (marquee) quando excede o espaço disponível.
 class MarqueeText extends StatefulWidget {
   const MarqueeText({super.key, required this.text, required this.style});
 

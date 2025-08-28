@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 
-/// Replica simplificada do botão vermelho de fechar janela do macOS.
 class MacCloseButton extends StatefulWidget {
   const MacCloseButton({
     super.key,
@@ -51,7 +50,7 @@ class _MacCloseButtonState extends State<MacCloseButton> {
             child: CustomPaint(
               painter: _CloseCrossPainter(
                 color: hoverIcon,
-                strokeWidth: (size / 14) * 1.2, // escala leve
+                strokeWidth: (size / 14) * 1.2,
               ),
             ),
           ),
@@ -72,9 +71,8 @@ class _MacCloseButtonState extends State<MacCloseButton> {
         onEnter: (_) => setState(() => _hover = true),
         onExit:
             (_) => setState(() {
-              // coverage:ignore-line
-              _hover = false; // coverage:ignore-line
-              _pressed = false; // coverage:ignore-line
+              _hover = false;
+              _pressed = false;
             }),
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
@@ -102,7 +100,7 @@ class _CloseCrossPainter extends CustomPainter {
           ..strokeWidth = strokeWidth
           ..strokeCap = StrokeCap.round
           ..style = PaintingStyle.stroke;
-    final offset = strokeWidth; // margem mínima
+    final offset = strokeWidth;
     final p1 = Offset(offset, offset);
     final p2 = Offset(size.width - offset, size.height - offset);
     final p3 = Offset(size.width - offset, offset);
