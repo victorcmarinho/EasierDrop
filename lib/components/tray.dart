@@ -16,21 +16,28 @@ class Tray extends StatefulWidget {
 class _TrayState extends State<Tray> with TrayListener {
   int _lastCount = 0;
 
+  // Guardar referência ao provider para evitar acesso ao context durante dispose
+  FilesProvider? _filesProvider;
+
   @override
   void initState() {
     super.initState();
     trayManager.addListener(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<FilesProvider>();
-      provider.addListener(_onFilesChanged);
-      _lastCount = provider.files.length;
+      _filesProvider = context.read<FilesProvider>();
+      _filesProvider?.addListener(_onFilesChanged);
+      _lastCount = _filesProvider?.files.length ?? 0;
       _rebuildMenu();
     });
   }
 
   @override
   void dispose() {
-    context.read<FilesProvider>().removeListener(_onFilesChanged);
+    // Usar a referência salva em vez de acessar o context durante dispose
+    if (_filesProvider != null) {
+      _filesProvider!.removeListener(_onFilesChanged);
+      _filesProvider = null;
+    }
     trayManager.removeListener(this);
     super.dispose();
   }
