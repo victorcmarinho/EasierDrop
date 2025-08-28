@@ -6,14 +6,12 @@ import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 
-// Mocks
 class MockFilesProvider extends Mock implements FilesProvider {}
 
 class MockFileReference extends Mock implements FileReference {}
 
 class MockAppLocalizations extends Mock implements AppLocalizations {}
 
-// Construímos nossa própria versão simplificada do componente para teste
 class TestFileActionsBar extends StatelessWidget {
   final bool hasFiles;
   final VoidCallback onShare;
@@ -95,13 +93,11 @@ void main() {
     mockLoc = MockAppLocalizations();
     mockFiles = [MockFileReference(), MockFileReference()];
 
-    // Configurar comportamento dos mocks
     when(() => mockFilesProvider.files).thenReturn(mockFiles);
     when(
       () => mockFilesProvider.shared(position: any(named: 'position')),
     ).thenAnswer((_) async => "shared");
 
-    // Configurar strings de localização
     when(() => mockLoc.share).thenReturn('Share');
     when(() => mockLoc.removeAll).thenReturn('Remove All');
     when(() => mockLoc.tooltipShare).thenReturn('Share Files');
@@ -116,7 +112,6 @@ void main() {
   testWidgets(
     'FileActionsBar deve exibir corretamente quando não há arquivos',
     (tester) async {
-      // Indicar que não há arquivos para este teste
       when(() => mockFilesProvider.files).thenReturn([]);
 
       await tester.pumpWidget(
@@ -134,14 +129,12 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Verifique se os botões estão ocultos quando não há arquivos
       final shareOpacity = find.byType(AnimatedOpacity).at(0);
       final removeOpacity = find.byType(AnimatedOpacity).at(1);
 
       expect(shareOpacity, findsOneWidget);
       expect(removeOpacity, findsOneWidget);
 
-      // Verificar se há SizedBox (usado quando não há arquivos)
       final sizedBox = find.byType(SizedBox);
       expect(sizedBox, findsWidgets);
     },
@@ -168,19 +161,16 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Encontre os widgets Semantics
       final shareSemantics = find.byKey(const ValueKey('shareSem'));
       final removeSemantics = find.byKey(const ValueKey('removeSem'));
 
       expect(shareSemantics, findsOneWidget);
       expect(removeSemantics, findsOneWidget);
 
-      // Testar ação do botão share
       await tester.tap(shareSemantics);
       await tester.pumpAndSettle();
       expect(shareCalled, true);
 
-      // Testar ação do botão remove
       await tester.tap(removeSemantics);
       await tester.pumpAndSettle();
       expect(clearCalled, true);
@@ -205,7 +195,6 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Verificar opacidade
       final shareOpacity = tester.widget<AnimatedOpacity>(
         find.byType(AnimatedOpacity).at(0),
       );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Versão simplificada de DragDrop para testes
 class MockDragDrop extends StatelessWidget {
   const MockDragDrop({Key? key}) : super(key: key);
 

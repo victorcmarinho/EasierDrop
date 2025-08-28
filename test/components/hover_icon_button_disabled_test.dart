@@ -20,7 +20,7 @@ void main() {
               onPressed: () => pressed = true,
               semanticsLabel: 'Test Button',
               semanticsHint: 'Test Hint',
-              enabled: false, // Botão desabilitado
+              enabled: false,
             ),
           ),
         ),
@@ -28,24 +28,19 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Encontre o FocusableActionDetector
       final focusableActionDetector = find.byType(FocusableActionDetector);
       expect(focusableActionDetector, findsOneWidget);
 
-      // Teste tap no botão desabilitado
       await tester.tap(find.byType(HoverIconButton));
       await tester.pumpAndSettle();
 
-      // Verifique que o callback não foi chamado
       expect(pressed, false);
 
-      // Simule hover
       final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
       await gesture.addPointer(location: Offset.zero);
       await gesture.moveTo(tester.getCenter(focusableActionDetector));
       await tester.pumpAndSettle();
 
-      // Agora mude para um botão habilitado
       await tester.pumpWidget(
         MacosApp(
           theme: MacosThemeData.light(),
@@ -56,7 +51,7 @@ void main() {
               onPressed: () => pressed = true,
               semanticsLabel: 'Test Button',
               semanticsHint: 'Test Hint',
-              enabled: true, // Agora está habilitado
+              enabled: true,
             ),
           ),
         ),
@@ -64,17 +59,14 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Simule showHoverHighlight manualmente para cobrir a linha com onShowHoverHighlight
       final focusableActionDetectorWidget = tester
           .widget<FocusableActionDetector>(focusableActionDetector);
       focusableActionDetectorWidget.onShowHoverHighlight!(true);
       await tester.pumpAndSettle();
 
-      // Agora toque no botão habilitado
       await tester.tap(find.byType(HoverIconButton));
       await tester.pumpAndSettle();
 
-      // Verifique que o callback foi chamado
       expect(pressed, true);
     },
   );

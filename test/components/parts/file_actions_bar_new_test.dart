@@ -5,14 +5,12 @@ import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 
-// Mocks
 class MockFilesProvider extends Mock implements FilesProvider {}
 
 class MockFileReference extends Mock implements FileReference {}
 
 class MockAppLocalizations extends Mock implements AppLocalizations {}
 
-// Componente FileActionsBar simplificado para testes
 class TestFileActionsBar extends StatelessWidget {
   final bool hasFiles;
   final VoidCallback onShare;
@@ -94,13 +92,11 @@ void main() {
     mockLoc = MockAppLocalizations();
     mockFiles = [MockFileReference(), MockFileReference()];
 
-    // Configurar comportamento dos mocks
     when(() => mockFilesProvider.files).thenReturn(mockFiles);
     when(
       () => mockFilesProvider.shared(position: any(named: 'position')),
     ).thenAnswer((_) async => "shared");
 
-    // Configurar strings de localização
     when(() => mockLoc.share).thenReturn('Share');
     when(() => mockLoc.removeAll).thenReturn('Remove All');
     when(() => mockLoc.tooltipShare).thenReturn('Share Files');
@@ -140,7 +136,6 @@ void main() {
 
     await tester.pump();
 
-    // Inicialmente, os botões estão ocultos com opacidade zero
     final shareOpacity = tester.widget<AnimatedOpacity>(
       find.byType(AnimatedOpacity).at(0),
     );
@@ -151,14 +146,13 @@ void main() {
     expect(shareOpacity.opacity, 0.0);
     expect(removeOpacity.opacity, 0.0);
 
-    // Adicionando arquivos
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: StatefulBuilder(
             builder: (context, setState) {
               return TestFileActionsBar(
-                hasFiles: true, // agora tem arquivos
+                hasFiles: true,
                 onShare: () {},
                 onClear: () {
                   setState(() {
@@ -173,17 +167,14 @@ void main() {
       ),
     );
 
-    // Aguardar a animação
     await tester.pump(const Duration(milliseconds: 350));
 
-    // Agora os botões devem estar visíveis
     final shareButton = find.byKey(const ValueKey('shareSem'));
     final removeButton = find.byKey(const ValueKey('removeSem'));
 
     expect(shareButton, findsOneWidget);
     expect(removeButton, findsOneWidget);
 
-    // Verificar apenas os textos em vez da semântica completa
     final shareButtonText = find.descendant(
       of: shareButton,
       matching: find.text('Share'),
@@ -219,19 +210,16 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Encontre os widgets Semantics
     final shareSemantics = find.byKey(const ValueKey('shareSem'));
     final removeSemantics = find.byKey(const ValueKey('removeSem'));
 
     expect(shareSemantics, findsOneWidget);
     expect(removeSemantics, findsOneWidget);
 
-    // Testar ação do botão share
     await tester.tap(shareSemantics);
     await tester.pumpAndSettle();
     expect(shareCalled, true);
 
-    // Testar ação do botão remove
     await tester.tap(removeSemantics);
     await tester.pumpAndSettle();
     expect(clearCalled, true);

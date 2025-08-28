@@ -28,7 +28,7 @@ void main() {
       expect(calls.first.method, PlatformChannels.beginDrag);
       final args = calls.first.arguments as Map;
       expect(args['items'], ['a', 'b']);
-      // While internal flag resets after 100ms, immediate second call should be ignored
+
       await DragOutService.instance.beginDrag(['c']);
       expect(calls.length, 1, reason: 'Second call suppressed during drag');
       await Future.delayed(const Duration(milliseconds: 120));
@@ -53,12 +53,10 @@ void main() {
               return null;
             },
           );
-      // Mock event channel stream
+
       const eventChannel = EventChannel(PlatformChannels.fileDropEvents);
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMessageHandler(eventChannel.name, (message) async {
-            // decode method channel listen call then emit events
-            // Immediately emit encoded events list
             Timer(const Duration(milliseconds: 10), () {
               TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
                   .handlePlatformMessage(

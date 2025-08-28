@@ -24,10 +24,7 @@ void main() {
       original = PathProviderPlatform.instance;
       dir = await Directory.systemTemp.createTemp('easier_drop_test');
       PathProviderPlatform.instance = _FakePathProvider(dir);
-      // Reset load state
-      // autoClearInbound removido (sempre false); apenas asseguramos limpeza de arquivo.
-      // Force reload next ensureLoaded by resetting private field via reflection not possible.
-      // Workaround: delete file and rely on not loaded state.
+
       final f = File('${dir.path}/settings.json');
       if (await f.exists()) await f.delete();
     });
@@ -49,7 +46,7 @@ void main() {
 
     test('setMaxFiles persists after debounce', () async {
       SettingsService.instance.setMaxFiles(250);
-      // advance fake async time by debounce duration
+
       await Future.delayed(const Duration(milliseconds: 300));
       final file = File('${dir.path}/settings.json');
       expect(await file.exists(), isTrue);
@@ -77,14 +74,13 @@ void main() {
       final decoded =
           jsonDecode(await file.readAsString()) as Map<String, dynamic>;
       expect(decoded['locale'], 'pt');
-      // set same value again -> no additional write change in memory (not asserted here)
+
       SettingsService.instance.setLocale('pt');
     });
   });
 
   group('Drag out copy logic', () {
     test('Does not clear on copy operation (logic side)', () async {
-      // Simula callback de drag-out: apenas verificamos a condição (não temos provider aqui)
       const op = 'copy';
       expect(op == 'copy', isTrue);
     });

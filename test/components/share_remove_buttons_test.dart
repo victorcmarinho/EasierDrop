@@ -56,14 +56,12 @@ void main() {
     await pump();
     final loc = await AppLocalizations.delegate.load(const Locale('en'));
 
-    // Sem arquivos: botões não expostos
     expect(find.bySemanticsLabel(loc.share), findsNothing);
     expect(find.bySemanticsLabel(loc.removeAll), findsNothing);
 
-    // Adiciona 1 arquivo
     provider.addFileForTest(const FileReference(pathname: '/tmp/one.txt'));
     await pump();
-    // Wait for AnimatedOpacity to settle
+
     await tester.pump(const Duration(milliseconds: 400));
     final share1 = tester.getSemantics(find.byKey(const ValueKey('shareSem')));
     final remove1 = tester.getSemantics(
@@ -72,7 +70,6 @@ void main() {
     expect(share1.hint, equals(loc.semShareHintSome(1)));
     expect(remove1.hint, equals(loc.semRemoveHintSome(1)));
 
-    // Adiciona 2º arquivo
     provider.addFileForTest(const FileReference(pathname: '/tmp/two.txt'));
     await pump();
     await tester.pump(const Duration(milliseconds: 400));
@@ -83,7 +80,6 @@ void main() {
     expect(share2.hint, equals(loc.semShareHintSome(2)));
     expect(remove2.hint, equals(loc.semRemoveHintSome(2)));
 
-    // Limpa -> some novamente
     provider.clear();
     await pump();
     await tester.pump(const Duration(milliseconds: 400));

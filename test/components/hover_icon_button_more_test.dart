@@ -13,7 +13,7 @@ void main() {
         home: Center(
           child: HoverIconButton(
             icon: const Icon(CupertinoIcons.globe),
-            onPressed: null, // Disabled for this test
+            onPressed: null,
             semanticsLabel: 'Custom Button',
             semanticsHint: 'Tooltip text',
             baseColor: customColor,
@@ -24,11 +24,9 @@ void main() {
     );
     await tester.pump();
 
-    // Verificar semântica
     final semantics = find.bySemanticsLabel('Custom Button');
     expect(semantics, findsOneWidget);
 
-    // Verificar tamanho
     final buttonFinder = find.byType(HoverIconButton);
     final Size size = tester.getSize(buttonFinder);
     expect(size.width, 32.0);
@@ -50,16 +48,13 @@ void main() {
     );
     await tester.pump();
 
-    // Verificar estado inicial
     final buttonFinder = find.byType(HoverIconButton);
     expect(buttonFinder, findsOneWidget);
 
-    // Testar tap
     await tester.tap(buttonFinder);
     await tester.pump();
     expect(taps, 1);
 
-    // Verificar que o botão ainda existe após o tap
     expect(find.byType(HoverIconButton), findsOneWidget);
   });
 
@@ -77,10 +72,8 @@ void main() {
     );
     await tester.pump();
 
-    // Verificar que não há semântica com o label especificado
     expect(find.bySemanticsLabel('Delete'), findsNothing);
 
-    // Verificar que o botão está presente
     expect(find.byType(HoverIconButton), findsOneWidget);
   });
 }

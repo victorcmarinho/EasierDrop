@@ -8,11 +8,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   group('FilesProvider icon integration', () {
     test('adds icon after file insert', () async {
-      // Ajusta maxFiles para não limitar
       SettingsService.instance.maxFiles = 10;
-      // Monkey patch: usa zone para interceptar static? Não trivial. Em vez disso, testamos efeito indireto:
-      // Estratégia: criar arquivo com extensão única e garantir que FileIconHelper retorne algo via channel mock.
-      // Simplificação: chamaremos addFile e aceitar que ícone pode vir nulo (dependência de channel). Como fallback, validamos que continuação não quebra.
+
       final dir = await Directory.systemTemp.createTemp('icon_case');
       final f = File('${dir.path}/sample.zzzz')..writeAsStringSync('1');
       final ref = FileReference(pathname: f.path);

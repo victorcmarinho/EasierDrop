@@ -22,7 +22,7 @@ void main() {
       await p.addFile(FileReference(pathname: f3.path));
       expect(p.files.length, 2);
       expect(p.recentlyAtLimit, isTrue);
-      settings.maxFiles = prev; // restore
+      settings.maxFiles = prev;
     });
 
     test('duplicate path not added twice', () async {

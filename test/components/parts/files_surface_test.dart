@@ -63,7 +63,7 @@ void main() {
 
     provider.addFileForTest(const FileReference(pathname: '/tmp/a.txt'));
     await tester.pump();
-    // Need rebuild to update hasFiles flag at constructor time
+
     await tester.pumpWidget(
       _wrapWithApp(
         provider: provider,

@@ -15,13 +15,13 @@ void main() {
             const MethodChannel(PlatformChannels.fileDragOut),
             (call) async {
               invokes++;
-              // simulate slow platform call
+
               await Future.delayed(const Duration(milliseconds: 50));
               return null;
             },
           );
       final s = DragOutService.instance;
-      // Fire two calls quickly; second should be ignored due to guard
+
       s.beginDrag(['a']);
       s.beginDrag(['b']);
       await Future.delayed(const Duration(milliseconds: 200));
@@ -29,7 +29,6 @@ void main() {
     });
 
     test('FileDropService stop no-op when not started', () async {
-      // No mock handler required because stop will early return
       await FileDropService.instance.stop();
       expect(FileDropService.instance.isMonitoring, isFalse);
     });

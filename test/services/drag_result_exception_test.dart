@@ -9,7 +9,7 @@ class _WeirdObject {
 void main() {
   test('parse gracefully handles unexpected object', () {
     final r = ChannelDragResult.parse(_WeirdObject());
-    expect(r.isSuccess, isTrue); // falls back to success unknown
+    expect(r.isSuccess, isTrue);
     expect(r.operation, DragOperation.unknown);
   });
 }

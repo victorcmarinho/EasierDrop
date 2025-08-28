@@ -59,16 +59,16 @@ void main() {
       ),
     );
     await tester.pump();
-    // Zero files -> share/remove buttons hidden (opacity 0 placeholder size boxes)
+
     expect(find.text(loc!.share), findsNothing);
-    // Add one file
+
     provider.addFileForTest(const FileReference(pathname: '/tmp/one.txt'));
     await tester.pump();
     await tester.pumpWidget(
       _wrap(provider, child: Builder(builder: (c) => _surface(c, provider))),
     );
     await tester.pump();
-    // Badge should include filename (localized prefix may exist, just search substring)
+
     expect(find.textContaining('one.txt'), findsOneWidget);
   });
 
@@ -87,8 +87,8 @@ void main() {
       ),
     );
     await tester.pump();
-    await provider.shared(); // empty -> ShareResult with key shareNone
-    // raw é ShareResult, convertemos via toString para pegar label; resolvemos key manualmente
+    await provider.shared();
+
     final msg = FilesProvider.resolveShareMessage('shareNone', loc!);
     expect(msg, equals(loc!.shareNone));
   });

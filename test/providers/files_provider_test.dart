@@ -10,7 +10,7 @@ void main() {
 
     setUp(() async {
       tmpDir = await Directory.systemTemp.createTemp('easier_drop_test_');
-      provider = FilesProvider(enableMonitoring: false); // sem timer nos testes
+      provider = FilesProvider(enableMonitoring: false);
     });
 
     tearDown(() async {
@@ -47,7 +47,7 @@ void main() {
 
     test('share sem arquivos retorna unavailable', () async {
       final result = await provider.shared();
-      expect(result.toString(), contains('unavailable')); // fallback genérico
+      expect(result.toString(), contains('unavailable'));
     });
 
     test('ignora diretório', () async {
@@ -58,7 +58,6 @@ void main() {
     });
 
     test('respeita limite máximo de arquivos (100)', () async {
-      // cria 105 arquivos e tenta adicionar
       for (int i = 0; i < 105; i++) {
         final f = await createFile('f_$i.txt');
         await provider.addFile(FileReference(pathname: f.path));

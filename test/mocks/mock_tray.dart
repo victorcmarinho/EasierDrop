@@ -1,9 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:tray_manager/tray_manager.dart';
 
-// Esta classe é um mock para o componente Tray
-// O problema nos testes é que o Tray acessa o contexto durante o dispose
-// o que causa erros durante a desmontagem dos widgets nos testes
 class MockTrayManager implements TrayManager {
   @override
   List<TrayListener> get listeners => [];

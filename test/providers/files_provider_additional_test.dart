@@ -11,7 +11,6 @@ class CustomShareResult {
   CustomShareResult(this.raw, this.status);
 }
 
-// Classe helper para testes de localização
 class _TestLocalizations extends AppLocalizations {
   _TestLocalizations() : super('en');
 
@@ -138,7 +137,6 @@ void main() {
     test('addFiles adiciona múltiplos arquivos', () async {
       final provider = FilesProvider(enableMonitoring: false);
 
-      // Criar arquivos temporários reais
       final file1 = File('${tempDir.path}/file1.txt')
         ..writeAsStringSync('test1');
       final file2 = File('${tempDir.path}/file2.txt')
@@ -156,27 +154,22 @@ void main() {
       final provider = FilesProvider(enableMonitoring: false);
       final result = await provider.shared();
 
-      // Não podemos verificar tipo específico, mas podemos verificar a mensagem
       expect((result as dynamic).raw, 'shareNone');
     });
 
     test('dispose não causa exceções', () {
       final provider = FilesProvider(enableMonitoring: true);
       provider.dispose();
-      // Não temos como testar diretamente que o timer foi cancelado,
-      // mas o método não deve lançar exceção
     });
 
     test('duplicated files não são adicionados', () async {
       final provider = FilesProvider(enableMonitoring: false);
 
-      // Criar arquivo real
       final file = File('${tempDir.path}/file.txt')..writeAsStringSync('test');
 
       await provider.addFile(FileReference(pathname: file.path));
       expect(provider.files.length, 1);
 
-      // Tentar adicionar o mesmo arquivo novamente
       await provider.addFile(FileReference(pathname: file.path));
       expect(provider.files.length, 1);
     });
@@ -184,7 +177,6 @@ void main() {
     test('resolveShareMessage funciona com mensagens predefinidas', () {
       final testLoc = _TestLocalizations();
 
-      // Testar as mensagens
       expect(
         FilesProvider.resolveShareMessage('shareNone', testLoc),
         'No files to share',

@@ -21,13 +21,11 @@ void main() {
     final semFinder = find.bySemanticsLabel(loc.close);
     expect(semFinder, findsOneWidget);
 
-    // Hover
     final element = tester.getCenter(semFinder);
     final binding = tester.binding;
     binding.handlePointerEvent(PointerHoverEvent(position: element));
     await tester.pump(const Duration(milliseconds: 150));
 
-    // Press
     await tester.tap(semFinder);
     await tester.pump();
     expect(taps, 1);

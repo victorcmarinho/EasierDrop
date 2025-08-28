@@ -25,7 +25,6 @@ void main() {
     );
     await tester.pump();
 
-    // Testar tap - verificar que tap foi registrado
     await tester.tap(find.byKey(buttonKey));
     await tester.pump();
     expect(taps, 1);
@@ -52,11 +51,9 @@ void main() {
     );
     await tester.pump();
 
-    // Testar tap em botão desabilitado
     await tester.tap(find.byKey(buttonKey), warnIfMissed: false);
     await tester.pump();
 
-    // Botão desabilitado não deve registrar taps
     expect(taps, 0);
   });
 
@@ -82,7 +79,6 @@ void main() {
     );
     await tester.pump();
 
-    // Verificar que o botão usa a cor personalizada
     final container = tester.widget<AnimatedContainer>(
       find.descendant(
         of: find.byKey(buttonKey),
@@ -92,7 +88,6 @@ void main() {
 
     expect(container, isNotNull);
 
-    // Verificar que o IconTheme é aplicado corretamente
     expect(
       find.descendant(
         of: find.byKey(buttonKey),
@@ -120,7 +115,6 @@ void main() {
       );
       await tester.pump();
 
-      // Verificar que o FocusableActionDetector está presente
       expect(
         find.descendant(
           of: find.byKey(buttonKey),

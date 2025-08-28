@@ -60,15 +60,15 @@ void main() {
       },
     );
 
-    test('ChannelDragResult.parse deve lidar com exceção durante o parsing', () {
-      // Forçar uma exceção passando um tipo de dados que causará erro durante o parsing
-      final result = ChannelDragResult.parse(
-        123,
-      ); // Número em vez de Map ou String
+    test(
+      'ChannelDragResult.parse deve lidar com exceção durante o parsing',
+      () {
+        final result = ChannelDragResult.parse(123);
 
-      expect(result, isA<ChannelDragSuccess>());
-      expect(result.operation, DragOperation.unknown);
-    });
+        expect(result, isA<ChannelDragSuccess>());
+        expect(result.operation, DragOperation.unknown);
+      },
+    );
 
     test('operation getter deve retornar a operação correta', () {
       final success = ChannelDragSuccess(DragOperation.move);

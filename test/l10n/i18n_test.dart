@@ -55,7 +55,7 @@ void main() {
     );
     final ctx = tester.element(find.byType(SizedBox));
     final loc = AppLocalizations.of(ctx)!;
-    // Em pt a forma normalmente não muda (arquivo / arquivos), validamos número presente.
+
     expect(loc.semShareHintSome(1), contains('1'));
     expect(loc.semShareHintSome(2), contains('2'));
   });

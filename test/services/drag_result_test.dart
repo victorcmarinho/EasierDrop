@@ -55,10 +55,7 @@ void main() {
     });
     test('malformed map ignored', () {
       final r = ChannelDragResult.parse({'unexpected': 123});
-      expect(
-        r.isSuccess,
-        isFalse,
-      ); // missing status -> becomes error? (logic returns error branch)
+      expect(r.isSuccess, isFalse);
     });
   });
 

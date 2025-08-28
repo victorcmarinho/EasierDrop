@@ -19,7 +19,7 @@ void main() {
     }
     final intersection = keySets.reduce((a, b) => a.intersection(b));
     final union = keySets.reduce((a, b) => a.union(b));
-    // Parity: union and intersection must match
+
     expect(
       intersection,
       union,

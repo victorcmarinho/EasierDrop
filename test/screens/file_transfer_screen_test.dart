@@ -16,14 +16,12 @@ class TestFileReference extends FileReference {
   const TestFileReference(String path) : super(pathname: path);
 }
 
-// Um handler de atalhos que simula o comportamento do FileTransferScreen
 class KeyboardShortcutHandler {
   final FilesProvider filesProvider;
 
   KeyboardShortcutHandler(this.filesProvider);
 
   KeyEventResult handleKeyPress(Set<LogicalKeyboardKey> keysPressed) {
-    // Cmd+Backspace ou Cmd+Delete para limpar
     if ((keysPressed.contains(LogicalKeyboardKey.meta)) &&
         (keysPressed.contains(LogicalKeyboardKey.backspace) ||
             keysPressed.contains(LogicalKeyboardKey.delete))) {
@@ -33,7 +31,6 @@ class KeyboardShortcutHandler {
       return KeyEventResult.handled;
     }
 
-    // Cmd+Shift+C ou Cmd+Enter para compartilhar
     if ((keysPressed.contains(LogicalKeyboardKey.meta)) &&
         ((keysPressed.contains(LogicalKeyboardKey.shift) &&
                 keysPressed.contains(LogicalKeyboardKey.keyC)) ||
@@ -46,7 +43,6 @@ class KeyboardShortcutHandler {
   }
 }
 
-// Teste de widget simplificado para testar as ações e intenções
 class TestableFileTransferScreen extends StatelessWidget {
   final FilesProvider filesProvider;
 
@@ -106,7 +102,6 @@ void main() {
 
   group('FileTransferScreen handler', () {
     test('Cmd+Backspace limpa arquivos quando há arquivos', () {
-      // Configurar mock para ter arquivos
       when(
         mockFilesProvider.files,
       ).thenReturn([const TestFileReference('/path/to/file1.txt')]);
@@ -122,7 +117,6 @@ void main() {
     });
 
     test('Cmd+Backspace não limpa arquivos quando não há arquivos', () {
-      // Configurar mock para não ter arquivos
       when(mockFilesProvider.files).thenReturn([]);
 
       final keysPressed = {
@@ -136,7 +130,6 @@ void main() {
     });
 
     test('Cmd+Delete limpa arquivos quando há arquivos', () {
-      // Configurar mock para ter arquivos
       when(
         mockFilesProvider.files,
       ).thenReturn([const TestFileReference('/path/to/file1.txt')]);
@@ -173,7 +166,6 @@ void main() {
     testWidgets('ClearFilesIntent invoca clear quando há arquivos', (
       tester,
     ) async {
-      // Configurar mock para ter arquivos
       when(
         mockFilesProvider.files,
       ).thenReturn([const TestFileReference('/path/to/file1.txt')]);
@@ -188,7 +180,6 @@ void main() {
       await tester.pumpWidget(widget);
       await tester.pumpAndSettle();
 
-      // Disparar a ação diretamente
       await tester.sendKeyDownEvent(LogicalKeyboardKey.meta);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.backspace);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.backspace);
@@ -202,7 +193,6 @@ void main() {
     testWidgets('ClearFilesIntent não invoca clear quando não há arquivos', (
       tester,
     ) async {
-      // Configurar mock para não ter arquivos
       when(mockFilesProvider.files).thenReturn([]);
 
       final widget = MaterialApp(
@@ -215,7 +205,6 @@ void main() {
       await tester.pumpWidget(widget);
       await tester.pumpAndSettle();
 
-      // Disparar a ação diretamente
       await tester.sendKeyDownEvent(LogicalKeyboardKey.meta);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.backspace);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.backspace);
@@ -237,7 +226,6 @@ void main() {
       await tester.pumpWidget(widget);
       await tester.pumpAndSettle();
 
-      // Disparar a ação diretamente
       await tester.sendKeyDownEvent(LogicalKeyboardKey.meta);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.enter);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.enter);
@@ -251,7 +239,6 @@ void main() {
     testWidgets('FileTransferScreen real com testMode funciona corretamente', (
       tester,
     ) async {
-      // Configurar mock para ter arquivos
       when(
         mockFilesProvider.files,
       ).thenReturn([const TestFileReference('/path/to/file1.txt')]);
@@ -269,11 +256,9 @@ void main() {
       await tester.pumpWidget(widget);
       await tester.pumpAndSettle();
 
-      // Testa se a tela foi renderizada sem erros
       expect(find.byType(FileTransferScreen), findsOneWidget);
       expect(find.byType(MockDragDrop), findsOneWidget);
 
-      // Disparar a ação diretamente para limpar
       await tester.sendKeyDownEvent(LogicalKeyboardKey.meta);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.backspace);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.backspace);
@@ -281,10 +266,8 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Verifica se o método foi chamado
       verify(mockFilesProvider.clear()).called(1);
 
-      // Disparar a ação diretamente para compartilhar
       await tester.sendKeyDownEvent(LogicalKeyboardKey.meta);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.enter);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.enter);
@@ -292,19 +275,15 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Verifica se o método foi chamado
       verify(mockFilesProvider.shared()).called(1);
     });
 
-    // Teste direto com as Classes Intent
     test(
       'ClearFilesIntent e ShareFilesIntent classes são inicializadas corretamente',
       () {
-        // Testa a criação das classes Intent
         final clearIntent = const ClearFilesIntent();
         final shareIntent = const ShareFilesIntent();
 
-        // Verifica se são instâncias válidas
         expect(clearIntent, isA<ClearFilesIntent>());
         expect(shareIntent, isA<ShareFilesIntent>());
       },

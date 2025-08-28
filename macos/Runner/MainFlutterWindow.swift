@@ -15,16 +15,16 @@ class MainFlutterWindow: NSWindow, NSDraggingDestination {
             center()
         }
         
-        // Registrar a janela para aceitar tipos de arrastar de URL de arquivo
+        
         registerForDraggedTypes([.fileURL])
         
-        // Configurar o canal de comunicação
+        
         self.fileDropChannel = MacOSFileDropChannel.shared
         
         RegisterGeneratedPlugins(registry: flutterViewController)
     }
     
-    // MARK: - NSDraggingDestination
+    
     
     func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
         Swift.print("[MainFlutterWindow] Dragging Entered. Pasteboard types: \(sender.draggingPasteboard.types ?? [])")
@@ -53,7 +53,7 @@ class MainFlutterWindow: NSWindow, NSDraggingDestination {
         
         let pasteboard = sender.draggingPasteboard
         
-        // A forma mais confiável é ler os objetos como NSURL
+        
         guard let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL], !urls.isEmpty else {
             Swift.print("[MainFlutterWindow] Could not get file URLs from pasteboard.")
             return false
@@ -76,14 +76,14 @@ class MainFlutterWindow: NSWindow, NSDraggingDestination {
     }
 }
 
-// MARK: - NSDraggingSource
+
 extension MainFlutterWindow: NSDraggingSource {
     func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
         return .copy
     }
 
     func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
-        // This is called when the drag operation is finished.
+        
         print("[MainFlutterWindow] Dragging session ended.")
     }
 }

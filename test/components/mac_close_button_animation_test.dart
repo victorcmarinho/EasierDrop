@@ -23,15 +23,12 @@ void main() {
       final btn = find.bySemanticsLabel(loc.close);
       final center = tester.getCenter(btn);
 
-      // Verificar a presença do AnimatedOpacity e AnimatedContainer
       expect(find.byType(AnimatedOpacity), findsOneWidget);
       expect(find.byType(AnimatedContainer), findsOneWidget);
 
-      // Testar hover
       tester.binding.handlePointerEvent(PointerHoverEvent(position: center));
       await tester.pump();
 
-      // Testar press
       final gesture = await tester.createGesture(
         kind: PointerDeviceKind.mouse,
         pointer: 1,
@@ -40,10 +37,8 @@ void main() {
       await gesture.down(center);
       await tester.pump();
 
-      // Verificar Transform após o press
       expect(find.byType(Transform), findsOneWidget);
 
-      // Testar release e verificar contagem de taps
       await gesture.up();
       await tester.pump();
       await tester.pumpAndSettle();
@@ -68,7 +63,6 @@ void main() {
     final btn = find.bySemanticsLabel(loc.close);
     final center = tester.getCenter(btn);
 
-    // Hover, depois tap
     tester.binding.handlePointerEvent(PointerHoverEvent(position: center));
     await tester.pump();
     await tester.tap(btn);

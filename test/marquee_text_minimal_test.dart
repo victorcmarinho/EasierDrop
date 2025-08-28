@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:easier_drop/components/parts/marquee_text.dart';
 
 void main() {
-  // Função para ignorar erros de overflow e outros erros esperados
   void ignoreOverflowErrors() {
     FlutterError.onError = (FlutterErrorDetails details) {
       final String exception = details.exception.toString();
@@ -13,7 +12,6 @@ void main() {
           exception.contains('was not laid out') ||
           exception.contains('appears to be') ||
           exception.contains('Looking up a deactivated')) {
-        // Ignora erros esperados para o MarqueeText
         return;
       }
       FlutterError.presentError(details);
@@ -25,7 +23,6 @@ void main() {
     (WidgetTester tester) async {
       ignoreOverflowErrors();
 
-      // Começa com um texto longo
       const String longText =
           'Este é um texto muito longo que deve ser animado por causa do tamanho';
 
@@ -48,7 +45,6 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
-      // Agora muda para um texto curto que cabe no espaço
       const String shortText = 'Texto curto';
 
       await tester.pumpWidget(

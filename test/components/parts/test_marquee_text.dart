@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easier_drop/components/parts/marquee_text.dart';
 
-/// Uma versão do MarqueeText para testes que ignora os erros de overflow
 class TestMarqueeText extends StatelessWidget {
   final String text;
   final TextStyle style;
@@ -22,7 +21,6 @@ class TestMarqueeText extends StatelessWidget {
   }
 }
 
-/// Wrapper para testes do MarqueeText
 class TestMarqueeWrapper extends StatelessWidget {
   final double width;
   final String text;
@@ -55,7 +53,6 @@ class TestMarqueeWrapper extends StatelessWidget {
   }
 }
 
-/// Configura o teste para ignorar erros de overflow do Flutter
 void configureFlutterErrorsForMarqueeTests() {
   FlutterError.onError = (FlutterErrorDetails details) {
     final String exception = details.exception.toString();
@@ -64,10 +61,9 @@ void configureFlutterErrorsForMarqueeTests() {
         exception.contains('laid out to an infinite') ||
         exception.contains('was not laid out') ||
         exception.contains('depends on directionality')) {
-      // Ignora erros de overflow e layout (esperados para o MarqueeText)
       return;
     }
-    // Relata outros erros normalmente
+
     FlutterError.presentError(details);
   };
 }

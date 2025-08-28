@@ -12,7 +12,6 @@ void main() {
   testWidgets(
     'DragCoordinator init idempotent and dispose cancels monitoring',
     (tester) async {
-      // Mock start/stop counting
       int startCalls = 0;
       int stopCalls = 0;
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -38,10 +37,9 @@ void main() {
       final ctx = tester.element(find.byType(SizedBox));
       final coord = DragCoordinator(ctx);
       await coord.init();
-      await coord.init(); // idempotent second call
+      await coord.init();
       expect(startCalls, 1);
 
-      // Add path event to ensure subscription active
       final codec = const StandardMethodCodec();
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .handlePlatformMessage(

@@ -6,7 +6,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:macos_ui/macos_ui.dart';
 
-// Um wrapper para testar o WindowHandle
 class TestWrapper extends StatelessWidget {
   final Widget child;
 
@@ -43,7 +42,6 @@ void main() {
     expect(find.byType(WindowHandle), findsOneWidget);
     expect(find.byType(GestureDetector), findsAtLeastNWidgets(1));
 
-    // Usar find.descendant para encontrar o MouseRegion específico do WindowHandle
     expect(
       find.descendant(
         of: find.byType(WindowHandle),
@@ -62,20 +60,17 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Encontrar o MouseRegion específico dentro do WindowHandle
     final mouseRegion = find.descendant(
       of: find.byType(WindowHandle),
       matching: find.byType(MouseRegion),
     );
 
-    // Simular o mouse entrando na região
     final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await gesture.addPointer(location: Offset.zero);
     await gesture.moveTo(tester.getCenter(mouseRegion));
     await tester.pumpAndSettle();
 
-    // Verificar que o widget sofreu mudanças visíveis
-    await gesture.moveTo(const Offset(500, 500)); // Fora do widget
+    await gesture.moveTo(const Offset(500, 500));
     await tester.pumpAndSettle();
 
     await gesture.removePointer();
@@ -90,18 +85,14 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Encontrar o GestureDetector dentro do WindowHandle
     final gestureDetector = find.descendant(
       of: find.byType(WindowHandle),
       matching: find.byType(GestureDetector),
     );
 
-    // Simular o arrasto
     await tester.drag(gestureDetector, const Offset(10, 10));
     await tester.pumpAndSettle();
 
-    // Não podemos verificar o mock diretamente, mas podemos verificar que o widget
-    // mudou visualmente e que não houve erros
     expect(find.byType(WindowHandle), findsOneWidget);
   });
 
@@ -114,7 +105,6 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Verificar se o Semantics específico dentro do Center dentro do WindowHandle existe
     final semantics = find.descendant(
       of: find.descendant(
         of: find.byType(WindowHandle),
@@ -125,7 +115,6 @@ void main() {
 
     expect(semantics, findsOneWidget);
 
-    // Verificar label e hint
     final semanticsWidget = tester.widget(semantics) as Semantics;
     expect(semanticsWidget.properties.label, isNotNull);
     expect(semanticsWidget.properties.hint, isNotNull);

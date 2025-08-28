@@ -1,5 +1,3 @@
-// ignore_for_file: camel_case_types, use_super_parameters
-
 import 'dart:async' as _i6;
 import 'dart:ui' as _i7;
 

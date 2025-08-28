@@ -24,11 +24,11 @@ void main() {
     final center = tester.getCenter(btn);
     tester.binding.handlePointerEvent(PointerHoverEvent(position: center));
     await tester.pump(const Duration(milliseconds: 50));
-    // Clique simples
+
     await tester.tap(btn);
     await tester.pumpAndSettle();
     expect(taps, 1);
-    // Move pointer out
+
     tester.binding.handlePointerEvent(
       PointerHoverEvent(position: Offset(center.dx + 400, center.dy + 400)),
     );

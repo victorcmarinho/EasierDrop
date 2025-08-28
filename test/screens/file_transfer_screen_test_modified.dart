@@ -11,13 +11,12 @@ import 'package:provider/provider.dart';
 @GenerateNiceMocks([MockSpec<FilesProvider>()])
 import 'file_transfer_screen_test.mocks.dart';
 
-// Componentes mock para substituir componentes problemáticos
 class MockTray extends StatelessWidget {
   const MockTray({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(); // Widget vazio para substituir o Tray
+    return Container();
   }
 }
 
@@ -26,13 +25,10 @@ class MockDragDrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text('Mock DragDrop'),
-    ); // Widget simples para substituir o DragDrop
+    return Container(child: Text('Mock DragDrop'));
   }
 }
 
-// Versão mockada do FileTransferScreen para teste
 class MockedFileTransferScreen extends StatelessWidget {
   const MockedFileTransferScreen({Key? key}) : super(key: key);
 
@@ -103,10 +99,8 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      // Verifica se o componente mock foi renderizado
       expect(find.text('Mock DragDrop'), findsOneWidget);
 
-      // Teste do atalho Cmd+Enter
       when(mockFilesProvider.files).thenReturn([]);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.meta);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.enter);
@@ -114,14 +108,12 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.meta);
       await tester.pumpAndSettle();
 
-      // Verifica se o método foi chamado
       verify(mockFilesProvider.shared()).called(1);
     });
 
     testWidgets('ClearFilesIntent limpa arquivos quando existem', (
       tester,
     ) async {
-      // Configura o mock para ter arquivos
       when(
         mockFilesProvider.files,
       ).thenReturn([const TestFileReference('/path/to/file.txt')]);
@@ -136,21 +128,18 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      // Teste do atalho Cmd+Backspace
       await tester.sendKeyDownEvent(LogicalKeyboardKey.meta);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.backspace);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.backspace);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.meta);
       await tester.pumpAndSettle();
 
-      // Verifica se o método foi chamado
       verify(mockFilesProvider.clear()).called(1);
     });
 
     testWidgets('ClearFilesIntent não limpa quando não há arquivos', (
       tester,
     ) async {
-      // Configura o mock para não ter arquivos
       when(mockFilesProvider.files).thenReturn([]);
 
       final testWidget = MaterialApp(
@@ -163,19 +152,16 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      // Teste do atalho Cmd+Backspace
       await tester.sendKeyDownEvent(LogicalKeyboardKey.meta);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.backspace);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.backspace);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.meta);
       await tester.pumpAndSettle();
 
-      // Verifica que o método não foi chamado
       verifyNever(mockFilesProvider.clear());
     });
 
     testWidgets('Atalho Cmd+Delete limpa arquivos', (tester) async {
-      // Configura o mock para ter arquivos
       when(
         mockFilesProvider.files,
       ).thenReturn([const TestFileReference('/path/to/file.txt')]);
@@ -190,14 +176,12 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      // Teste do atalho Cmd+Delete
       await tester.sendKeyDownEvent(LogicalKeyboardKey.meta);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.delete);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.delete);
       await tester.sendKeyUpEvent(LogicalKeyboardKey.meta);
       await tester.pumpAndSettle();
 
-      // Verifica se o método foi chamado
       verify(mockFilesProvider.clear()).called(1);
     });
 
@@ -212,7 +196,6 @@ void main() {
       await tester.pumpWidget(testWidget);
       await tester.pumpAndSettle();
 
-      // Teste do atalho Cmd+Shift+C
       await tester.sendKeyDownEvent(LogicalKeyboardKey.meta);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.shift);
       await tester.sendKeyDownEvent(LogicalKeyboardKey.keyC);
@@ -221,19 +204,15 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.meta);
       await tester.pumpAndSettle();
 
-      // Verifica se o método foi chamado
       verify(mockFilesProvider.shared()).called(1);
     });
 
-    // Teste direto com as Classes Intent
     test(
       'ClearFilesIntent e ShareFilesIntent classes são inicializadas corretamente',
       () {
-        // Testa a criação das classes Intent
         final clearIntent = const ClearFilesIntent();
         final shareIntent = const ShareFilesIntent();
 
-        // Verifica se são instâncias válidas
         expect(clearIntent, isA<ClearFilesIntent>());
         expect(shareIntent, isA<ShareFilesIntent>());
       },

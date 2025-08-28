@@ -24,14 +24,12 @@ void main() {
     );
     await tester.pump();
 
-    // Verificar se o container existe
     final container = find.descendant(
       of: find.byType(MacCloseButton),
       matching: find.byType(AnimatedContainer),
     );
     expect(container, findsOneWidget);
 
-    // Verificar o comportamento do onPressed
     await tester.tap(find.byType(MacCloseButton));
     await tester.pump();
     expect(buttonPressed, isTrue);
@@ -43,16 +41,11 @@ void main() {
         locale: const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: Center(
-          child: MacCloseButton(
-            onPressed: () {}, // Callback vazio para este teste
-          ),
-        ),
+        home: Center(child: MacCloseButton(onPressed: () {})),
       ),
     );
     await tester.pump();
 
-    // Encontrar o GestureDetector e verificar sua presença
     final gestureDetector = find.descendant(
       of: find.byType(MacCloseButton),
       matching: find.byType(GestureDetector),
@@ -71,13 +64,10 @@ void main() {
     );
     await tester.pump();
 
-    // Obter as strings de localização
     final loc = await AppLocalizations.delegate.load(const Locale('en'));
 
-    // Verificar se a semântica é aplicada corretamente
     expect(find.bySemanticsLabel(loc.close), findsOneWidget);
 
-    // Verificar se o mouseRegion está configurado corretamente
     final mouseRegion = find.descendant(
       of: find.byType(MacCloseButton),
       matching: find.byType(MouseRegion),

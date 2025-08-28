@@ -26,7 +26,6 @@ void main() {
   testWidgets('FilesStack shows file icons with icons and placeholders', (
     tester,
   ) async {
-    // Criar ícone mock (1x1 pixel vermelho)
     final mockIcon = Uint8List.fromList([
       0x89,
       0x50,

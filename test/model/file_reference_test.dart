@@ -47,10 +47,7 @@ void main() {
       final ref2 = ref.withIcon(Uint8List.fromList([1, 2, 3]));
       expect(ref2.iconData, isNotNull);
       expect(ref2.pathname, ref.pathname);
-      expect(
-        ref,
-        equals(FileReference(pathname: f.path)),
-      ); // equality by pathname
+      expect(ref, equals(FileReference(pathname: f.path)));
     });
   });
 }

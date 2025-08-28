@@ -24,22 +24,19 @@ void main() {
       ),
     );
     await tester.pump();
-    // shareNone path
+
     final noneResult = await provider.shared();
-    expect(
-      noneResult,
-      isA(),
-    ); // dynamic ShareResult; just validate key resolution
+    expect(noneResult, isA());
     final msgNone = FilesProvider.resolveShareMessage('shareNone', loc!);
     expect(msgNone, loc!.shareNone);
-    // shareError path: force exception by injecting invalid XFile list? Simpler: call resolver directly.
+
     final msgErr = FilesProvider.resolveShareMessage('shareError', loc!);
     expect(msgErr, loc!.shareError);
   });
 
   test('rescan removes invalid files', () async {
     final provider = FilesProvider(enableMonitoring: false);
-    // Create a temp file then delete to simulate invalid later.
+
     final temp =
         await File(
           '${Directory.systemTemp.path}/ed_test_${DateTime.now().millisecondsSinceEpoch}',
@@ -50,7 +47,7 @@ void main() {
     expect(provider.files.length, 1);
     await temp.delete();
     provider.rescanNow();
-    // Removal scheduled via microtask
+
     await Future.delayed(const Duration(milliseconds: 10));
     expect(provider.files.length, 0);
   });

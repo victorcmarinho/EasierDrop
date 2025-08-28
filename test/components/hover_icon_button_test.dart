@@ -21,7 +21,7 @@ void main() {
     await tester.pump();
     final sem = find.bySemanticsLabel('Add');
     expect(sem, findsOneWidget);
-    // Tap
+
     await tester.tap(sem);
     await tester.pump();
     expect(taps, 1);

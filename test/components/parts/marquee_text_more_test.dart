@@ -7,8 +7,7 @@ void main() {
   const TextStyle testStyle = TextStyle(fontSize: 16.0);
 
   setUp(() {
-    // Configuração para ignorar erros de overflow, que são esperados para o MarqueeText
-    debugDisableShadows = true; // Melhora a performance dos testes
+    debugDisableShadows = true;
     TestWidgetsFlutterBinding.ensureInitialized();
     configureFlutterErrorsForMarqueeTests();
   });
@@ -24,7 +23,6 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Verifica se o texto está visível
     expect(find.text(shortText), findsOneWidget);
   });
 
@@ -40,13 +38,10 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Verifica se o texto está visível
     expect(find.text(longText), findsWidgets);
 
-    // Verifica se o MarqueeText existe
     expect(find.byType(MarqueeText), findsOneWidget);
 
-    // Simula o tempo passando para testar a animação
     for (int i = 0; i < 5; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
@@ -64,17 +59,14 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Verifica texto inicial
     expect(find.text(initialText), findsOneWidget);
 
-    // Atualiza o widget com texto diferente
     await tester.pumpWidget(
       const TestMarqueeWrapper(width: 150, text: updatedText, style: testStyle),
     );
 
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Verifica se o texto foi atualizado
     expect(find.text(initialText), findsNothing);
     expect(find.text(updatedText), findsOneWidget);
   });
@@ -95,14 +87,12 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Atualiza o estilo
     await tester.pumpWidget(
       const TestMarqueeWrapper(width: 150, text: testText, style: updatedStyle),
     );
 
     await tester.pump(const Duration(milliseconds: 100));
 
-    // O widget ainda deve existir
     expect(find.byType(MarqueeText), findsOneWidget);
   });
 
@@ -117,14 +107,12 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Substitui o widget por outro
     await tester.pumpWidget(
       const MaterialApp(home: Scaffold(body: Text('Widget diferente'))),
     );
 
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Verifica se o MarqueeText foi removido
     expect(find.byType(MarqueeText), findsNothing);
     expect(find.text('Widget diferente'), findsOneWidget);
   });

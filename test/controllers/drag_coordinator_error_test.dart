@@ -27,7 +27,6 @@ void main() {
     await tester.pump();
     expect(provider.files.length, 2);
 
-    // Structured error map
     coord.handleOutboundTest({
       'status': 'error',
       'code': 'E',
@@ -35,7 +34,6 @@ void main() {
     });
     expect(provider.files.length, 2, reason: 'Error should not clear files');
 
-    // Malformed map (no status) treated as error -> should not clear
     coord.handleOutboundTest({'unexpected': 123});
     expect(provider.files.length, 2, reason: 'Malformed map should not clear');
   });
@@ -57,7 +55,7 @@ void main() {
     final coord = DragCoordinator(ctx);
     expect(coord.draggingOut.value, isFalse);
     await coord.beginExternalDrag();
-    // Should remain false because there were no files
+
     expect(coord.draggingOut.value, isFalse);
   });
 }

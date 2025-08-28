@@ -10,14 +10,11 @@ import 'package:provider/provider.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:mocktail/mocktail.dart';
 
-// Mock das dependências
 class MockFilesProvider extends Mock implements FilesProvider {
   final List<FileReference> _files = [];
 
   @override
   List<FileReference> get files => _files;
-
-  // Sem override de hasFiles porque não existe no FilesProvider original
 
   @override
   void clear() {
@@ -63,10 +60,7 @@ FilesSurface _buildSurface(
     hovering: hovering,
     draggingOut: draggingOut,
     showLimit: showLimit,
-    hasFiles:
-        provider
-            .files
-            .isNotEmpty, // Usando files.isNotEmpty ao invés de hasFiles
+    hasFiles: provider.files.isNotEmpty,
     buttonKey: GlobalKey(),
     loc: loc,
     onHoverChanged: onHoverChanged ?? (_) {},
@@ -104,20 +98,16 @@ void main() {
       ),
     );
 
-    // Simulando entrada do mouse
     final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await gesture.addPointer(location: Offset.zero);
     await gesture.moveTo(tester.getCenter(find.byType(FilesSurface)));
     await tester.pump();
 
-    // Verificando se o callback onHoverChanged foi chamado com true
     expect(hoverState, isTrue);
 
-    // Simulando saída do mouse
-    await gesture.moveTo(const Offset(-10, -10)); // Fora do widget
+    await gesture.moveTo(const Offset(-10, -10));
     await tester.pump();
 
-    // Verificando se o callback onHoverChanged foi chamado com false
     expect(hoverState, isFalse);
   });
 
@@ -138,21 +128,19 @@ void main() {
                 },
                 onDragCheck: (dy) {
                   dragCheckCalled = true;
-                  return true; // Permite o drag
+                  return true;
                 },
               ),
         ),
       ),
     );
 
-    // Simulando pan gesture
     await tester.dragFrom(
       tester.getCenter(find.byType(FilesSurface)),
       const Offset(50, 50),
     );
     await tester.pump();
 
-    // Verificando se os callbacks foram chamados
     expect(dragCheckCalled, isTrue);
     expect(dragRequested, isTrue);
   });
@@ -160,7 +148,6 @@ void main() {
   testWidgets('FilesSurface shows correct UI based on files count', (
     tester,
   ) async {
-    // Teste com nenhum arquivo
     await tester.pumpWidget(
       _wrapWithApp(
         provider: provider,
@@ -170,10 +157,8 @@ void main() {
     await tester.pump();
     expect(find.byType(FileNameBadge), findsNothing);
 
-    // Adiciona um arquivo
     await provider.addFile(const FileReference(pathname: '/tmp/test.txt'));
 
-    // Reconstroi o widget
     await tester.pumpWidget(
       _wrapWithApp(
         provider: provider,
@@ -182,13 +167,10 @@ void main() {
     );
     await tester.pump();
 
-    // Verifica exibição da badge com nome de um arquivo
     expect(find.byType(FileNameBadge), findsOneWidget);
 
-    // Adiciona outro arquivo
     await provider.addFile(const FileReference(pathname: '/tmp/test2.txt'));
 
-    // Reconstroi o widget
     await tester.pumpWidget(
       _wrapWithApp(
         provider: provider,
@@ -197,12 +179,10 @@ void main() {
     );
     await tester.pump();
 
-    // Verifica exibição da badge com contagem de múltiplos arquivos
     expect(find.byType(FileNameBadge), findsOneWidget);
   });
 
   testWidgets('FilesSurface shows different states', (tester) async {
-    // Teste com draggingOut = true
     await tester.pumpWidget(
       _wrapWithApp(
         provider: provider,
@@ -214,7 +194,6 @@ void main() {
     );
     await tester.pump();
 
-    // Testa estado de hovering = true
     await tester.pumpWidget(
       _wrapWithApp(
         provider: provider,

@@ -33,7 +33,7 @@ void main() {
         final path = '/tmp/file.ext0';
         await FileIconHelper.getFileIcon(path);
         expect(callCount['ext0'], 1);
-        // second call should be cached
+
         await FileIconHelper.getFileIcon(path);
         expect(callCount['ext0'], 1);
       },
@@ -42,18 +42,18 @@ void main() {
     test('LRU evicts oldest after capacity exceeded', () async {
       FileIconHelper.debugClearCache();
       callCount.clear();
-      // Carrega extensões até a capacidade
+
       for (int i = 0; i < 128; i++) {
         await FileIconHelper.getFileIcon('/tmp/file_$i.ext$i');
       }
       expect(callCount.length, 128);
-      // Reacessa a primeira para movê-la para o final (MRU)
+
       await FileIconHelper.getFileIcon('/tmp/file_0.ext0');
-      expect(callCount['ext0'], 1); // cache hit
-      // Adiciona nova extensão para provocar eviction
+      expect(callCount['ext0'], 1);
+
       await FileIconHelper.getFileIcon('/tmp/file_999.ext999');
       expect(callCount['ext999'], 1);
-      // Agora a segunda inserida (ext1) deve ter sido a LRU e ser removida; ao acessá-la gera segunda chamada
+
       await FileIconHelper.getFileIcon('/tmp/file_1.ext1');
       expect(callCount['ext1'], 2);
     });

@@ -11,7 +11,7 @@ void main() {
         final f = File('${dir.path}/temp.bin');
         await f.writeAsString('data');
         final ref = FileReference(pathname: f.path);
-        // Delete file before async validation proceeds
+
         await f.delete();
         expect(await ref.isValidAsync(), isFalse);
         await dir.delete(recursive: true);
@@ -32,7 +32,7 @@ void main() {
       final dir = await Directory.systemTemp.createTemp('fr_ext_');
       final f = File('${dir.path}/filename')..writeAsStringSync('z');
       final ref = FileReference(pathname: f.path);
-      // extension getter currently splits by '.'; sem ponto retorna último segmento completo
+
       expect(ref.extension, 'filename');
       await dir.delete(recursive: true);
     });

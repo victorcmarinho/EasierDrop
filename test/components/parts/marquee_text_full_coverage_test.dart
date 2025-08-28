@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:easier_drop/components/parts/marquee_text.dart';
 
 void main() {
-  // Função para ignorar erros de overflow e outros erros esperados
   void ignoreOverflowErrors() {
     FlutterError.onError = (FlutterErrorDetails details) {
       final String exception = details.exception.toString();
@@ -13,7 +12,6 @@ void main() {
           exception.contains('was not laid out') ||
           exception.contains('appears to be') ||
           exception.contains('Looking up a deactivated')) {
-        // Ignora erros esperados para o MarqueeText
         return;
       }
       FlutterError.presentError(details);
@@ -63,7 +61,6 @@ void main() {
     expect(find.text(text), findsWidgets);
     expect(find.byType(MarqueeText), findsOneWidget);
 
-    // Simula o tempo passando
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 100));
   });
@@ -75,7 +72,6 @@ void main() {
 
     const String initialText = 'Texto inicial';
 
-    // Widget com estado para permitir atualização
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -96,7 +92,6 @@ void main() {
 
     expect(find.text(initialText), findsWidgets);
 
-    // Atualiza para um novo texto
     const String updatedText = 'Texto atualizado';
     await tester.pumpWidget(
       MaterialApp(
@@ -138,7 +133,6 @@ void main() {
 
     expect(find.byType(MarqueeText), findsOneWidget);
 
-    // Substitui por outro widget
     await tester.pumpWidget(
       const MaterialApp(home: Scaffold(body: Text('Widget diferente'))),
     );
@@ -154,12 +148,11 @@ void main() {
     const String text =
         'Este texto vai testar mudanças no tamanho do contêiner';
 
-    // Começa com um contêiner grande o suficiente
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(
           body: SizedBox(
-            width: 500, // Largura suficiente para o texto
+            width: 500,
             child: MarqueeText(text: text, style: TextStyle(fontSize: 16)),
           ),
         ),
@@ -168,12 +161,11 @@ void main() {
 
     await tester.pump();
 
-    // Reduz o tamanho do contêiner para forçar a animação
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(
           body: SizedBox(
-            width: 100, // Muito pequeno para o texto
+            width: 100,
             child: MarqueeText(text: text, style: TextStyle(fontSize: 16)),
           ),
         ),
@@ -183,7 +175,6 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Simula um ciclo completo de animação
     for (int i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }

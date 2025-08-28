@@ -48,7 +48,7 @@ void main() {
       expect(p.files, isNotEmpty);
       await f.delete();
       p.rescanNow();
-      // allow microtask notify
+
       await Future.delayed(Duration.zero);
       expect(p.files, isEmpty);
     });

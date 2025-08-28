@@ -44,13 +44,13 @@ void main() {
       ),
     );
     await tester.pump();
-    // Initially hidden
+
     expect(find.byKey(const ValueKey('shareSem')), findsNothing);
     expect(find.byKey(const ValueKey('removeSem')), findsNothing);
 
     provider.addFileForTest(const FileReference(pathname: '/tmp/a.txt'));
-    await tester.pump(); // process notify
-    // Rebuild with updated hasFiles flag
+    await tester.pump();
+
     await tester.pumpWidget(
       ChangeNotifierProvider.value(
         value: provider,

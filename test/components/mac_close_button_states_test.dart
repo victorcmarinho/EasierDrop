@@ -11,7 +11,6 @@ void main() {
   ) async {
     bool pressed = false;
 
-    // Build o widget com as localizações necessárias
     await tester.pumpWidget(
       Localizations(
         locale: const Locale('en'),
@@ -31,18 +30,14 @@ void main() {
       ),
     );
 
-    // Espere pelas localizações
     await tester.pumpAndSettle();
 
-    // Encontre o MouseRegion
     final mouseRegion = find.byType(MouseRegion);
     expect(mouseRegion, findsOneWidget);
 
-    // Encontre o GestureDetector
     final gestureDetector = find.byType(GestureDetector);
     expect(gestureDetector, findsOneWidget);
 
-    // Simule hover
     final TestGesture gesture = await tester.createGesture(
       kind: PointerDeviceKind.mouse,
     );
@@ -50,38 +45,27 @@ void main() {
     await gesture.moveTo(tester.getCenter(mouseRegion));
     await tester.pumpAndSettle();
 
-    // Simule tap down
     await gesture.down(tester.getCenter(gestureDetector));
     await tester.pumpAndSettle();
 
-    // Simule tap up
     await gesture.up();
     await tester.pumpAndSettle();
 
-    // Verifique se o callback foi chamado
     expect(pressed, true);
 
-    // Teste onTapCancel
     pressed = false;
     await gesture.down(tester.getCenter(gestureDetector));
     await tester.pumpAndSettle();
 
-    // Mova o mouse para fora para acionar onTapCancel
-    await gesture.moveTo(const Offset(500, 500)); // Longe do widget
-    await tester.pumpAndSettle();
-
-    // Verifique se o callback não foi chamado neste caso
-    expect(pressed, false);
-
-    // Teste onExit
-    await gesture.moveTo(tester.getCenter(mouseRegion));
-    await tester.pumpAndSettle();
-
-    // Mova o mouse para fora novamente para acionar onExit
     await gesture.moveTo(const Offset(500, 500));
     await tester.pumpAndSettle();
 
-    // Infelizmente, não temos acesso direto ao estado privado _hover e _pressed,
-    // mas podemos observar efeitos visuais resultantes das mudanças de estado
+    expect(pressed, false);
+
+    await gesture.moveTo(tester.getCenter(mouseRegion));
+    await tester.pumpAndSettle();
+
+    await gesture.moveTo(const Offset(500, 500));
+    await tester.pumpAndSettle();
   });
 }

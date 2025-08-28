@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:easier_drop/components/parts/marquee_text.dart';
 
-// Widget de teste para verificar se o marquee funciona corretamente
 class TestMarqueeWidget extends StatelessWidget {
   final String text;
   final double width;
@@ -30,15 +29,13 @@ class TestMarqueeWidget extends StatelessWidget {
 void main() {
   const TextStyle testStyle = TextStyle(fontSize: 16.0);
 
-  // Ignorar os avisos de overflow que são esperados nos testes
   FlutterError.onError = (FlutterErrorDetails details) {
     final String exception = details.exception.toString();
     if (exception.contains('overflowed') ||
         exception.contains('A RenderFlex')) {
-      // Ignora erros de overflow (esperados neste teste)
       return;
     }
-    // Relata outros erros normalmente
+
     FlutterError.presentError(details);
   };
 
@@ -51,10 +48,8 @@ void main() {
       const TestMarqueeWidget(text: shortText, width: 300, style: testStyle),
     );
 
-    // Verifica se o widget foi renderizado
     expect(find.byType(MarqueeText), findsOneWidget);
 
-    // Verifica se o texto está presente
     expect(find.text(shortText), findsOneWidget);
   });
 
@@ -68,10 +63,8 @@ void main() {
       const TestMarqueeWidget(text: initialText, width: 300, style: testStyle),
     );
 
-    // Verifica o texto inicial
     expect(find.text(initialText), findsOneWidget);
 
-    // Atualiza o texto
     await tester.pumpWidget(
       const TestMarqueeWidget(text: updatedText, width: 300, style: testStyle),
     );
@@ -79,7 +72,6 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    // Verifica se o texto foi atualizado
     expect(find.text(updatedText), findsOneWidget);
     expect(find.text(initialText), findsNothing);
   });
@@ -91,12 +83,10 @@ void main() {
     const TextStyle initialStyle = TextStyle(fontSize: 16.0);
     const TextStyle updatedStyle = TextStyle(fontSize: 20.0);
 
-    // Renderiza com estilo inicial
     await tester.pumpWidget(
       const TestMarqueeWidget(text: testText, width: 300, style: initialStyle),
     );
 
-    // Atualiza para novo estilo
     await tester.pumpWidget(
       const TestMarqueeWidget(text: testText, width: 300, style: updatedStyle),
     );
@@ -104,7 +94,6 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    // Verifica se o widget ainda está presente após a atualização
     expect(find.byType(MarqueeText), findsOneWidget);
     expect(find.text(testText), findsOneWidget);
   });
