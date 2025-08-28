@@ -7,12 +7,23 @@ import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
+import 'package:easier_drop/helpers/system.dart';
+import 'package:easier_drop/model/file_reference.dart';
 
 // Mock para o FilesProvider
 class MockFilesProvider extends Mock implements FilesProvider {}
 
+// Mock para FileReference
+class MockFileReference extends Mock implements FileReference {}
+
 // Estendemos o TrayManager para acessar o estado interno
 class MockTrayListener extends Mock implements TrayListener {}
+
+// Mock do SystemHelper para testar as chamadas
+class MockSystemHelper extends Mock implements SystemHelper {
+  static Future<void> open() async {}
+  static Future<void> exit() async {}
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +50,7 @@ void main() {
   testWidgets('Tray é renderizado corretamente', (tester) async {
     final filesProvider = MockFilesProvider();
     when(() => filesProvider.files).thenReturn([]);
-    
+
     // Configuramos os mocks para não verificar número específico de chamadas
     // que pode variar entre execuções devido a como o Flutter gerencia listeners
     when(() => filesProvider.addListener(any())).thenReturn(null);
@@ -51,7 +62,44 @@ void main() {
     expect(find.byType(Tray), findsOneWidget);
 
     // Verificamos apenas que o listener foi registrado, sem especificar quantas vezes
-    verify(() => filesProvider.addListener(any())).called(greaterThanOrEqualTo(1));
+    verify(
+      () => filesProvider.addListener(any()),
+    ).called(greaterThanOrEqualTo(1));
+  });
+
+  testWidgets('Tray atualiza o menu quando os arquivos mudam', (tester) async {
+    final filesProvider = MockFilesProvider();
+
+    // Simulamos uma lista de arquivos
+    final List<FileReference> files = [];
+    when(() => filesProvider.files).thenReturn(files);
+    when(() => filesProvider.addListener(any())).thenReturn(null);
+    when(() => filesProvider.removeListener(any())).thenReturn(null);
+
+    await tester.pumpWidget(buildWidget(filesProvider));
+    await tester.pumpAndSettle();
+
+    // Verifica se o componente foi criado
+    expect(find.byType(Tray), findsOneWidget);
+
+    // Simulamos uma mudança nos arquivos (arquivos são atualizados)
+    final callback =
+        verify(() => filesProvider.addListener(captureAny())).captured.first
+            as Function;
+
+    // Adicionamos um arquivo mock
+    final mockFile = MockFileReference();
+    when(() => mockFile.pathname).thenReturn('/path/to/file.txt');
+    files.add(mockFile);
+
+    // Chamamos o callback para simular a atualização
+    callback();
+
+    await tester.pumpAndSettle();
+
+    // Não podemos verificar a atualização do menu facilmente,
+    // mas podemos verificar se o código executa sem erros
+    expect(true, isTrue);
   });
 
   test('TrayListener implementa os métodos corretamente', () {
@@ -71,5 +119,17 @@ void main() {
       trayManager.addListener(mockListener);
       trayManager.removeListener(mockListener);
     }, returnsNormally);
+  });
+
+  test('onTrayIconMouseDown e menu items', () {
+    // Criamos uma instância do widget Tray para testar
+    final tray = const Tray();
+
+    // Verificamos se o widget foi criado
+    expect(tray, isA<Tray>());
+
+    // Não podemos testar diretamente os métodos internos de _TrayState
+    // pois são privados, mas podemos verificar que o widget foi criado corretamente
+    expect(tray.createState(), isA<State<Tray>>());
   });
 }

@@ -40,7 +40,7 @@ void main() {
   ) async {
     // Ignora erros de overflow para este teste específico
     tester.takeException(); // Limpa qualquer exceção anterior
-    
+
     const testText =
         'Este é um texto muito longo que certamente não caberá no espaço disponível';
 
@@ -123,13 +123,13 @@ void main() {
     );
 
     await tester.pump();
-    
+
     // Remove o widget para testar o dispose
     await tester.pumpWidget(Container());
 
     // Não deve lançar exceções
     await tester.pump();
-    
+
     // Verificação simples para confirmar que o teste passou
     expect(true, isTrue);
   });
