@@ -219,7 +219,9 @@ void main() {
     expect(find.byType(Tray), findsOneWidget);
   });
 
-  testWidgets('Tray responde a mudanças de contagem de arquivos', (tester) async {
+  testWidgets('Tray responde a mudanças de contagem de arquivos', (
+    tester,
+  ) async {
     final filesProvider = MockFilesProvider();
     final List<FileReference> files = [];
 
@@ -284,16 +286,18 @@ void main() {
     when(() => filesProvider.addListener(any())).thenReturn(null);
 
     await tester.pumpWidget(buildWidget(filesProvider));
-    
+
     // Pump múltiplas vezes para garantir que todos os post frame callbacks executem
     await tester.pump();
     await tester.pump();
     await tester.pumpAndSettle();
 
     expect(find.byType(Tray), findsOneWidget);
-    
+
     // Verificar que o listener foi adicionado
-    verify(() => filesProvider.addListener(any())).called(greaterThanOrEqualTo(1));
+    verify(
+      () => filesProvider.addListener(any()),
+    ).called(greaterThanOrEqualTo(1));
   });
 
   testWidgets('Tray testa dispose com diferentes estados', (tester) async {
@@ -310,7 +314,9 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verificar que removeListener foi chamado
-    verify(() => filesProvider.removeListener(any())).called(greaterThanOrEqualTo(1));
+    verify(
+      () => filesProvider.removeListener(any()),
+    ).called(greaterThanOrEqualTo(1));
   });
 
   testWidgets('Tray funciona com provider vazio e cheio', (tester) async {
@@ -327,7 +333,7 @@ void main() {
     final callback =
         verify(() => filesProvider.addListener(captureAny())).captured.first
             as Function;
-    
+
     callback();
     await tester.pumpAndSettle();
 

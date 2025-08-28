@@ -26,8 +26,10 @@ void main() {
     });
 
     test('clearFilesMessage deve retornar explicação em português', () {
-      expect(localizations.clearFilesMessage, 
-          'Essa ação removerá todos os arquivos coletados.');
+      expect(
+        localizations.clearFilesMessage,
+        'Essa ação removerá todos os arquivos coletados.',
+      );
     });
 
     test('clearCancel deve retornar Cancelar', () {
@@ -65,8 +67,7 @@ void main() {
     });
 
     test('filesCountTooltip deve retornar dica', () {
-      expect(localizations.filesCountTooltip, 
-          'Quantidade atual na bandeja');
+      expect(localizations.filesCountTooltip, 'Quantidade atual na bandeja');
     });
 
     test('languageLabel deve retornar Idioma:', () {
@@ -86,8 +87,10 @@ void main() {
     });
 
     test('limitReached deve retornar mensagem de limite', () {
-      expect(localizations.limitReached(100), 
-          'Limite de 100 arquivos atingido');
+      expect(
+        localizations.limitReached(100),
+        'Limite de 100 arquivos atingido',
+      );
     });
 
     test('shareNone deve retornar mensagem sem arquivos', () {
@@ -119,14 +122,21 @@ void main() {
     });
 
     test('semAreaHintHas deve retornar dica com arquivos', () {
-      expect(localizations.semAreaHintHas(1), 
-          'Contém 1 arquivo. Arraste para fora para mover ou compartilhar.');
-      expect(localizations.semAreaHintHas(3), 
-          'Contém 3 arquivos. Arraste para fora para mover ou compartilhar.');
+      expect(
+        localizations.semAreaHintHas(1),
+        'Contém 1 arquivo. Arraste para fora para mover ou compartilhar.',
+      );
+      expect(
+        localizations.semAreaHintHas(3),
+        'Contém 3 arquivos. Arraste para fora para mover ou compartilhar.',
+      );
     });
 
     test('semShareHintNone deve retornar dica sem compartilhamento', () {
-      expect(localizations.semShareHintNone, 'Nenhum arquivo para compartilhar');
+      expect(
+        localizations.semShareHintNone,
+        'Nenhum arquivo para compartilhar',
+      );
     });
 
     test('semShareHintSome deve retornar dica de compartilhamento', () {

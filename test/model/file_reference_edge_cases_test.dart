@@ -12,17 +12,20 @@ void main() {
       expect(result, false);
     });
 
-    test('isValidAsync - arquivo que existe mas não é arquivo regular', () async {
-      // Testar com um diretório em vez de arquivo
-      final tempDir = Directory.systemTemp.createTempSync('test_dir');
-      try {
-        final ref = FileReference(pathname: tempDir.path);
-        final result = await ref.isValidAsync();
-        expect(result, false);
-      } finally {
-        await tempDir.delete(recursive: true);
-      }
-    });
+    test(
+      'isValidAsync - arquivo que existe mas não é arquivo regular',
+      () async {
+        // Testar com um diretório em vez de arquivo
+        final tempDir = Directory.systemTemp.createTempSync('test_dir');
+        try {
+          final ref = FileReference(pathname: tempDir.path);
+          final result = await ref.isValidAsync();
+          expect(result, false);
+        } finally {
+          await tempDir.delete(recursive: true);
+        }
+      },
+    );
 
     test('isValidAsync - arquivo vazio para testar readByte exception', () async {
       // Criar um arquivo vazio para potencialmente gerar RangeError no readByte
@@ -30,7 +33,7 @@ void main() {
       try {
         await tempFile.writeAsString('');
         final ref = FileReference(pathname: tempFile.path);
-        
+
         // Arquivo vazio pode gerar exceção no readByte
         final result = await ref.isValidAsync();
         // Pode ser true ou false dependendo da implementação, mas não deve dar crash
@@ -75,7 +78,7 @@ void main() {
 
     test('size - arquivo que não existe', () async {
       final ref = FileReference(pathname: '/invalid/nonexistent/file.txt');
-      
+
       // Isso deve gerar uma exceção, mas vamos testar que não crashe o app
       try {
         await ref.size;
@@ -104,15 +107,18 @@ void main() {
       final ref = FileReference(pathname: '/test/file.txt');
       final iconData = Uint8List.fromList([1, 2, 3, 4]);
       final newRef = ref.withIcon(iconData);
-      
+
       expect(newRef.pathname, ref.pathname);
       expect(newRef.iconData, iconData);
     });
 
     test('withIcon - teste com ícone nulo', () {
-      final ref = FileReference(pathname: '/test/file.txt', iconData: Uint8List.fromList([1, 2, 3]));
+      final ref = FileReference(
+        pathname: '/test/file.txt',
+        iconData: Uint8List.fromList([1, 2, 3]),
+      );
       final newRef = ref.withIcon(null);
-      
+
       expect(newRef.pathname, ref.pathname);
       expect(newRef.iconData, isNull);
     });
@@ -120,7 +126,7 @@ void main() {
     test('equality - objetos iguais', () {
       final ref1 = FileReference(pathname: '/test/file.txt');
       final ref2 = FileReference(pathname: '/test/file.txt');
-      
+
       expect(ref1, equals(ref2));
       expect(ref1.hashCode, equals(ref2.hashCode));
     });
@@ -128,13 +134,13 @@ void main() {
     test('equality - objetos diferentes', () {
       final ref1 = FileReference(pathname: '/test/file1.txt');
       final ref2 = FileReference(pathname: '/test/file2.txt');
-      
+
       expect(ref1, isNot(equals(ref2)));
     });
 
     test('equality - mesmo objeto', () {
       final ref = FileReference(pathname: '/test/file.txt');
-      
+
       expect(ref, equals(ref));
     });
 
