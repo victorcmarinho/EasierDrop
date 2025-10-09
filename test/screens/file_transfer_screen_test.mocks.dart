@@ -1,0 +1,153 @@
+import 'dart:async' as _i5;
+import 'dart:ui' as _i6;
+
+import 'package:easier_drop/model/file_reference.dart' as _i3;
+import 'package:easier_drop/providers/files_provider.dart' as _i2;
+import 'package:mockito/mockito.dart' as _i1;
+import 'package:share_plus/share_plus.dart' as _i4;
+
+class _FakeObject_0 extends _i1.SmartFake implements Object {
+  _FakeObject_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+class MockFilesProvider extends _i1.Mock implements _i2.FilesProvider {
+  @override
+  bool get recentlyAtLimit =>
+      (super.noSuchMethod(
+            Invocation.getter(#recentlyAtLimit),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  List<_i3.FileReference> get files =>
+      (super.noSuchMethod(
+            Invocation.getter(#files),
+            returnValue: <_i3.FileReference>[],
+            returnValueForMissingStub: <_i3.FileReference>[],
+          )
+          as List<_i3.FileReference>);
+
+  @override
+  List<_i4.XFile> get xfiles =>
+      (super.noSuchMethod(
+            Invocation.getter(#xfiles),
+            returnValue: <_i4.XFile>[],
+            returnValueForMissingStub: <_i4.XFile>[],
+          )
+          as List<_i4.XFile>);
+
+  @override
+  bool get isEmpty =>
+      (super.noSuchMethod(
+            Invocation.getter(#isEmpty),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  bool get hasListeners =>
+      (super.noSuchMethod(
+            Invocation.getter(#hasListeners),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
+  void dispose() => super.noSuchMethod(
+    Invocation.method(#dispose, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  _i5.Future<void> addFile(_i3.FileReference? file) =>
+      (super.noSuchMethod(
+            Invocation.method(#addFile, [file]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> addFiles(Iterable<_i3.FileReference>? files) =>
+      (super.noSuchMethod(
+            Invocation.method(#addFiles, [files]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> removeFile(_i3.FileReference? file) =>
+      (super.noSuchMethod(
+            Invocation.method(#removeFile, [file]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  void removeByPath(String? pathname) => super.noSuchMethod(
+    Invocation.method(#removeByPath, [pathname]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void clear() => super.noSuchMethod(
+    Invocation.method(#clear, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  _i5.Future<Object> shared({_i6.Offset? position}) =>
+      (super.noSuchMethod(
+            Invocation.method(#shared, [], {#position: position}),
+            returnValue: _i5.Future<Object>.value(
+              _FakeObject_0(
+                this,
+                Invocation.method(#shared, [], {#position: position}),
+              ),
+            ),
+            returnValueForMissingStub: _i5.Future<Object>.value(
+              _FakeObject_0(
+                this,
+                Invocation.method(#shared, [], {#position: position}),
+              ),
+            ),
+          )
+          as _i5.Future<Object>);
+
+  @override
+  void rescanNow() => super.noSuchMethod(
+    Invocation.method(#rescanNow, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void addFileForTest(_i3.FileReference? ref) => super.noSuchMethod(
+    Invocation.method(#addFileForTest, [ref]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void addListener(_i6.VoidCallback? listener) => super.noSuchMethod(
+    Invocation.method(#addListener, [listener]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void removeListener(_i6.VoidCallback? listener) => super.noSuchMethod(
+    Invocation.method(#removeListener, [listener]),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  void notifyListeners() => super.noSuchMethod(
+    Invocation.method(#notifyListeners, []),
+    returnValueForMissingStub: null,
+  );
+}

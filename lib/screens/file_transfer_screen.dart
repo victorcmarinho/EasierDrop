@@ -1,84 +1,41 @@
 import 'package:easier_drop/components/drag_drop.dart';
 import 'package:easier_drop/components/tray.dart';
-import 'package:easier_drop/providers/files_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:easier_drop/helpers/keyboard_shortcuts.dart';
+import 'package:flutter/widgets.dart';
 
-class ClearFilesIntent extends Intent {
-  const ClearFilesIntent();
-}
-
-class ShareFilesIntent extends Intent {
-  const ShareFilesIntent();
-}
-
-class UndoFilesIntent extends Intent {
-  const UndoFilesIntent();
-}
-
+/// Tela principal de transferência de arquivos
+///
+/// Combina os componentes de drag & drop e tray do sistema,
+/// com suporte a atalhos de teclado e modo de teste.
 class FileTransferScreen extends StatelessWidget {
-  const FileTransferScreen({super.key});
+  final bool testMode;
+  final Widget? testDragDrop;
+
+  const FileTransferScreen({
+    super.key,
+    this.testMode = false,
+    this.testDragDrop,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final filesProvider = context.read<FilesProvider>();
-
     return Shortcuts(
-      shortcuts: <LogicalKeySet, Intent>{
-        // Cmd+Backspace ou Cmd+Delete para limpar
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.backspace):
-            const ClearFilesIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.delete):
-            const ClearFilesIntent(),
-        // Cmd+Shift+C para compartilhar (C de compartilhar / copy like)
-        LogicalKeySet(
-              LogicalKeyboardKey.meta,
-              LogicalKeyboardKey.shift,
-              LogicalKeyboardKey.keyC,
-            ):
-            const ShareFilesIntent(),
-        // Cmd+Enter para compartilhar
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.enter):
-            const ShareFilesIntent(),
-        // Cmd+Z para desfazer última limpeza
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyZ):
-            const UndoFilesIntent(),
-      },
+      shortcuts: KeyboardShortcuts.shortcuts,
       child: Actions(
-        actions: <Type, Action<Intent>>{
-          ClearFilesIntent: CallbackAction<ClearFilesIntent>(
-            onInvoke: (intent) {
-              if (filesProvider.files.isEmpty) return null;
-              filesProvider.clear();
-              return null;
-            },
-          ),
-          ShareFilesIntent: CallbackAction<ShareFilesIntent>(
-            onInvoke: (intent) {
-              filesProvider.shared();
-              return null;
-            },
-          ),
-          UndoFilesIntent: CallbackAction<UndoFilesIntent>(
-            onInvoke: (intent) {
-              if (filesProvider.canUndo) {
-                filesProvider.undoClear();
-              }
-              return null;
-            },
-          ),
-        },
-        child: const Focus(
-          // garante foco para receber atalhos
+        actions: KeyboardShortcuts.createActions(context),
+        child: Focus(
           autofocus: true,
-          child: Scaffold(
-            body: Stack(
-              children: [
-                Row(children: [Expanded(child: DragDrop())]),
-                Tray(),
-              ],
-            ),
+          child: Stack(
+            children: [
+              // Componente principal de drag & drop
+              if (testMode && testDragDrop != null)
+                testDragDrop!
+              else
+                const DragDrop(),
+
+              // Tray do sistema (apenas em modo normal)
+              if (!testMode) const Tray(),
+            ],
           ),
         ),
       ),

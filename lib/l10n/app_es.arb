@@ -1,0 +1,44 @@
+{
+  "appTitle": "Easier Drop",
+  "dropHere": "Suelta los archivos aquí",
+  "clearFilesTitle": "¿Limpiar archivos?",
+  "clearFilesMessage": "Esta acción eliminará todos los archivos recolectados.",
+  "clearCancel": "Cancelar",
+  "clearConfirm": "Limpiar",
+  "share": "Compartir",
+  "removeAll": "Eliminar archivos",
+  "close": "Cerrar",
+  "tooltipShare": "Compartir (Cmd+Shift+C)",
+  "tooltipClear": "Limpiar (Cmd+Backspace)",
+  "semAreaLabel": "Área de recolección de archivos",
+  "semAreaHintEmpty": "Vacío. Arrastra archivos aquí.",
+  "semAreaHintHas": "Contiene {count, plural, one{{count} archivo} other{{count} archivos}}. Arrastra para mover o compartir.",
+  "@semAreaHintHas": {"placeholders": {"count": {"type": "int"}}},
+  "semShareHintNone": "No hay archivos para compartir",
+  "semShareHintSome": "Compartir {count, plural, one{{count} archivo} other{{count} archivos}}",
+  "@semShareHintSome": {"placeholders": {"count": {"type": "int"}}},
+  "semRemoveHintNone": "No hay archivos para eliminar",
+  "semRemoveHintSome": "Eliminar {count, plural, one{{count} archivo} other{{count} archivos}}",
+  "@semRemoveHintSome": {"placeholders": {"count": {"type": "int"}}},
+  "trayFilesNone": "📂 Sin archivos",
+  "trayFilesCount": "📁 Archivos: {count}",
+  "@trayFilesCount": {"placeholders": {"count": {"type": "int"}}},
+  "trayExit": "Cerrar la aplicación",
+  "openTray": "Abrir bandeja",
+  "filesCountTooltip": "Cantidad actual en la bandeja",
+  "languageLabel": "Idioma:",
+  "languageEnglish": "Inglés",
+  "languagePortuguese": "Portugués",
+  "languageSpanish": "Español",
+  "limitReached": "Se alcanzó el límite de archivos ({max})",
+  "@limitReached": {"placeholders": {"max": {"type": "int"}}},
+  "shareNone": "No hay archivos para compartir",
+  "shareError": "Error al compartir archivos"
+  ,"fileLabelSingle": "{name}",
+  "fileLabelMultiple": "{count} archivos",
+  "genericFileName": "archivo"
+  ,"@fileLabelSingle": {"placeholders": {"name": {"type": "String"}}}
+  ,"@fileLabelMultiple": {"placeholders": {"count": {"type": "int"}}}
+  ,"semHandleLabel": "Barra de arrastre"
+  ,"semHandleHint": "Arrastra para mover la ventana"
+}

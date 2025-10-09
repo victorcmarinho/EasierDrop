@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'constants.dart';
 
-/// Serviço singleton responsável por monitorar eventos de drop de arquivos
-/// vindos do canal nativo macOS.
 class FileDropService {
   FileDropService._();
   static final FileDropService instance = FileDropService._();
@@ -47,5 +46,12 @@ class FileDropService {
     Future<dynamic> Function(MethodCall call)? handler,
   ) {
     _channel.setMethodCallHandler(handler);
+  }
+
+  @visibleForTesting
+  void pushTestEvent(List<String> paths) {
+    if (!_filesController.isClosed) {
+      _filesController.add(paths);
+    }
   }
 }

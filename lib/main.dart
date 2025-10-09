@@ -1,10 +1,14 @@
 import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/screens/file_transfer_screen.dart';
-import 'package:easier_drop/theme/app_theme.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:easier_drop/l10n/app_localizations.dart';
+import 'package:easier_drop/services/settings_service.dart';
+import 'package:easier_drop/helpers/keyboard_shortcuts.dart';
+import 'package:flutter/widgets.dart';
+import 'package:macos_ui/macos_ui.dart';
 import 'package:provider/provider.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,20 +28,41 @@ class EasierDrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Easier Drop',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      debugShowCheckedModeBanner: false,
-      scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: {
-          PointerDeviceKind.mouse,
-          PointerDeviceKind.trackpad,
-          PointerDeviceKind.touch,
-        },
+    return Shortcuts(
+      shortcuts: KeyboardShortcuts.shortcuts,
+      child: Actions(
+        actions: KeyboardShortcuts.createActions(context),
+        child: _buildApp(),
       ),
-      home: const FileTransferScreen(),
     );
+  }
+
+  Widget _buildApp() {
+    return AnimatedBuilder(
+      animation: SettingsService.instance,
+      builder: (context, _) {
+        final settings = SettingsService.instance;
+        final locale = _parseLocale(settings.localeCode);
+
+        return MacosApp(
+          navigatorKey: navigatorKey,
+          title: 'Easier Drop',
+          debugShowCheckedModeBanner: false,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: locale,
+          theme: MacosThemeData.light(),
+          darkTheme: MacosThemeData.dark(),
+          home: const MacosWindow(child: FileTransferScreen()),
+        );
+      },
+    );
+  }
+
+  Locale? _parseLocale(String? localeCode) {
+    if (localeCode == null) return null;
+
+    final parts = localeCode.split('_');
+    return parts.length == 2 ? Locale(parts[0], parts[1]) : Locale(parts[0]);
   }
 }

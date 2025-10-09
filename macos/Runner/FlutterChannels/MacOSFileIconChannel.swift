@@ -33,10 +33,10 @@ class MacOSFileIconChannel: NSObject {
             return
         }
         
-        // Obter o ícone do arquivo
+        
         let icon = NSWorkspace.shared.icon(forFile: filePath)
         
-        // Converter para PNG
+        
         guard let tiffData = icon.tiffRepresentation,
               let bitmap = NSBitmapImageRep(data: tiffData),
               let pngData = bitmap.representation(using: NSBitmapImageRep.FileType.png, properties: [:]) else {
@@ -46,7 +46,7 @@ class MacOSFileIconChannel: NSObject {
             return
         }
         
-        // Retornar os bytes do PNG
+        
         result(FlutterStandardTypedData(bytes: pngData))
     }
 }

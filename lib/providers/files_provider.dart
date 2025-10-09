@@ -2,29 +2,50 @@ import 'dart:async';
 import 'package:easier_drop/helpers/macos/file_icon_helper.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/services/logger.dart';
+import 'package:easier_drop/l10n/app_localizations.dart';
+import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
-/// Provider responsável apenas por gerenciar o estado (coleção de arquivos) e
-/// disparar notificações. Regras de ícone e validação simples permanecem aqui
-/// dado o pequeno escopo do app.
+/// Provider responsável pelo gerenciamento de arquivos no aplicativo.
+///
+/// Fornece funcionalidades para:
+/// - Adicionar/remover arquivos
+/// - Validação automática de arquivos
+/// - Compartilhamento de arquivos
+/// - Monitoramento de integridade dos arquivos
 class FilesProvider with ChangeNotifier {
-  // Mantém ordem de inserção determinística
+  static const Duration _notificationDelay = Duration(seconds: 2);
+  static const Duration _monitorInterval = Duration(seconds: 5);
+
   final Map<String, FileReference> _files = {};
-  static const int _maxFiles = 100; // Limite de arquivos
-
-  List<FileReference>? _lastCleared; // snapshot para undo
-
-  List<FileReference> get files => _files.values.toList(growable: false);
-
-  List<XFile> get xfiles => _files.values
-      .where((f) => f.isValidSync())
-      .map((f) => XFile(f.pathname))
-      .toList(growable: false);
-
-  bool get isEmpty => _files.isEmpty;
-
+  List<FileReference>? _cachedFilesList;
+  DateTime? _lastLimitHit;
+  Timer? _monitorTimer;
   bool _notifyScheduled = false;
+  bool _monitoringEnabled = true;
+
+  // Getters públicos
+  int get _maxFiles => SettingsService.instance.maxFiles;
+  DateTime? get lastLimitHit => _lastLimitHit;
+  bool get isEmpty => _files.isEmpty;
+  bool get hasFiles => _files.isNotEmpty;
+  int get fileCount => _files.length;
+
+  bool get recentlyAtLimit =>
+      _lastLimitHit != null &&
+      DateTime.now().difference(_lastLimitHit!) < _notificationDelay;
+
+  List<FileReference> get files =>
+      _cachedFilesList ??= List.unmodifiable(_files.values);
+
+  List<XFile> get validXFiles =>
+      _files.values
+          .where((file) => file.isValidSync())
+          .map((file) => XFile(file.pathname))
+          .toList();
+
+  /// Agenda uma notificação para evitar múltiplas atualizações
   void _scheduleNotify() {
     if (_notifyScheduled) return;
     _notifyScheduled = true;
@@ -34,112 +55,127 @@ class FilesProvider with ChangeNotifier {
     });
   }
 
-  @override
-  void dispose() {
-    // nenhum recurso pendente além do microtask agendado
-    super.dispose();
+  /// Invalida o cache da lista de arquivos
+  void _invalidateCache() => _cachedFilesList = null;
+
+  FilesProvider({bool enableMonitoring = true}) {
+    _monitoringEnabled = enableMonitoring;
+    if (_monitoringEnabled) {
+      _monitorTimer = Timer.periodic(
+        _monitorInterval,
+        (_) => _rescanInternal(),
+      );
+    }
   }
 
+  /// Adiciona um arquivo ao provider
+  ///
+  /// Verifica se o limite não foi atingido e se o arquivo é válido
+  /// antes de adicioná-lo. Também carrega o ícone do arquivo assincronamente.
   Future<void> addFile(FileReference file) async {
     try {
       if (_files.length >= _maxFiles) {
-        AppLogger.warn('Limite de arquivos atingido', tag: 'FilesProvider');
+        _lastLimitHit = DateTime.now();
+        AppLogger.warn('File limit reached ($_maxFiles)', tag: 'FilesProvider');
+        _scheduleNotify();
         return;
       }
+
       if (!await file.isValidAsync()) {
         AppLogger.debug(
-          'Arquivo inválido: ${file.pathname}',
+          'Invalid file skipped: ${file.pathname}',
           tag: 'FilesProvider',
         );
         return;
       }
+
       if (_files.containsKey(file.pathname)) {
         AppLogger.debug(
-          'Arquivo já existe: ${file.pathname}',
+          'Duplicate file ignored: ${file.pathname}',
           tag: 'FilesProvider',
         );
         return;
       }
 
       _files[file.pathname] = file;
+      _invalidateCache();
       _scheduleNotify();
 
-      // Busca ícone (não bloqueia primeira pintura do item)
-      final iconData = await FileIconHelper.getFileIcon(file.pathname);
-      if (iconData != null) {
-        final current = _files[file.pathname];
-        if (current != null && current.iconData == null) {
-          _files[file.pathname] = current.withIcon(iconData);
-          _scheduleNotify();
-        }
-      }
-      AppLogger.info(
-        'Arquivo adicionado: ${file.fileName}',
-        tag: 'FilesProvider',
-      );
+      // Carrega ícone assincronamente
+      _loadFileIcon(file);
+
+      AppLogger.info('File added: ${file.fileName}', tag: 'FilesProvider');
     } catch (e) {
-      AppLogger.error('Erro ao adicionar arquivo: $e', tag: 'FilesProvider');
+      AppLogger.error('Error adding file: $e', tag: 'FilesProvider');
     }
   }
 
+  /// Carrega o ícone do arquivo de forma assíncrona
+  Future<void> _loadFileIcon(FileReference file) async {
+    final iconData = await FileIconHelper.getFileIcon(file.pathname);
+    if (iconData != null) {
+      final current = _files[file.pathname];
+      if (current != null && current.iconData == null) {
+        _files[file.pathname] = current.withIcon(iconData);
+        _invalidateCache();
+        _scheduleNotify();
+      }
+    }
+  }
+
+  /// Adiciona múltiplos arquivos
+  Future<void> addFiles(Iterable<FileReference> files) async {
+    for (final file in files) {
+      await addFile(file);
+    }
+  }
+
+  /// Remove um arquivo específico
   Future<void> removeFile(FileReference file) async {
     try {
       if (_files.remove(file.pathname) != null) {
+        _invalidateCache();
         _scheduleNotify();
-        AppLogger.info(
-          'Arquivo removido: ${file.fileName}',
-          tag: 'FilesProvider',
-        );
+        AppLogger.info('File removed: ${file.fileName}', tag: 'FilesProvider');
       }
     } catch (e) {
-      AppLogger.error('Erro ao remover arquivo: $e', tag: 'FilesProvider');
+      AppLogger.error('Error removing file: $e', tag: 'FilesProvider');
     }
   }
 
+  /// Remove um arquivo pelo caminho
   void removeByPath(String pathname) {
     try {
       if (_files.remove(pathname) != null) {
+        _invalidateCache();
         _scheduleNotify();
-        AppLogger.info('Arquivo removido: $pathname', tag: 'FilesProvider');
+        AppLogger.info('File removed: $pathname', tag: 'FilesProvider');
       }
     } catch (e) {
-      AppLogger.error(
-        'Erro ao remover arquivo por path: $e',
-        tag: 'FilesProvider',
-      );
+      AppLogger.error('Error removing file by path: $e', tag: 'FilesProvider');
     }
   }
 
+  /// Remove todos os arquivos
   void clear() {
     if (_files.isEmpty) return;
-    _lastCleared = _files.values.toList(growable: false);
+
     final count = _files.length;
     _files.clear();
+    _invalidateCache();
     _scheduleNotify();
-    AppLogger.info('$count arquivos removidos', tag: 'FilesProvider');
+
+    AppLogger.info('$count file(s) cleared', tag: 'FilesProvider');
   }
 
-  bool get canUndo => _lastCleared != null && _lastCleared!.isNotEmpty;
-
-  void undoClear() {
-    if (!canUndo) return;
-    for (final f in _lastCleared!) {
-      _files[f.pathname] = f;
-    }
-    _lastCleared = null;
-    _scheduleNotify();
-    AppLogger.info('Restauração concluída', tag: 'FilesProvider');
-  }
-
+  /// Compartilha os arquivos válidos
   Future<Object> shared({Offset? position}) async {
     try {
-      final validFiles = xfiles;
+      final validFiles = validXFiles;
       if (validFiles.isEmpty) {
-        return ShareResult(
-          'Sem arquivos para compartilhar',
-          ShareResultStatus.unavailable,
-        );
+        return ShareResult('shareNone', ShareResultStatus.unavailable);
       }
+
       final params = ShareParams(
         files: validFiles,
         sharePositionOrigin:
@@ -152,16 +188,65 @@ class FilesProvider with ChangeNotifier {
                 )
                 : null,
       );
+
       return SharePlus.instance.share(params);
     } catch (e) {
-      AppLogger.error(
-        'Erro ao compartilhar arquivos: $e',
-        tag: 'FilesProvider',
-      );
-      return ShareResult(
-        'Erro ao compartilhar arquivos',
-        ShareResultStatus.unavailable,
-      );
+      AppLogger.error('Error sharing files: $e', tag: 'FilesProvider');
+      return ShareResult('shareError', ShareResultStatus.unavailable);
     }
+  }
+
+  /// Faz um scan interno dos arquivos para remover inválidos
+  void _rescanInternal() {
+    if (_files.isEmpty) return;
+
+    final toRemove = <String>[];
+    for (final entry in _files.entries) {
+      if (!entry.value.isValidSync()) {
+        toRemove.add(entry.key);
+      }
+    }
+
+    if (toRemove.isEmpty) return;
+
+    for (final key in toRemove) {
+      _files.remove(key);
+    }
+
+    _invalidateCache();
+    _scheduleNotify();
+
+    AppLogger.info(
+      '${toRemove.length} invalid file(s) removed after rescan',
+      tag: 'FilesProvider',
+    );
+  }
+
+  /// Resolve mensagens de compartilhamento para exibição
+  static String resolveShareMessage(String rawMessage, AppLocalizations loc) {
+    switch (rawMessage) {
+      case 'shareNone':
+        return loc.shareNone;
+      case 'shareError':
+        return loc.shareError;
+      default:
+        return rawMessage;
+    }
+  }
+
+  /// Força um rescan imediato dos arquivos
+  void rescanNow() => _rescanInternal();
+
+  @override
+  void dispose() {
+    _monitorTimer?.cancel();
+    super.dispose();
+  }
+
+  @visibleForTesting
+  void addFileForTest(FileReference ref) {
+    _files[ref.pathname] = ref;
+    _invalidateCache();
+    _scheduleNotify();
   }
 }

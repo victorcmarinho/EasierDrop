@@ -1,0 +1,44 @@
+{
+  "appTitle": "Easier Drop",
+  "dropHere": "Jogue os arquivos aqui",
+  "clearFilesTitle": "Limpar arquivos?",
+  "clearFilesMessage": "Essa ação removerá todos os arquivos coletados.",
+  "clearCancel": "Cancelar",
+  "clearConfirm": "Limpar",
+  "share": "Compartilhar",
+  "removeAll": "Remover arquivos",
+  "close": "Fechar",
+  "tooltipShare": "Compartilhar (Cmd+Shift+C)",
+  "tooltipClear": "Limpar (Cmd+Backspace)",
+  "semAreaLabel": "Área de colecionar arquivos",
+  "semAreaHintEmpty": "Vazio. Arraste arquivos aqui.",
+  "semAreaHintHas": "Contém {count, plural, one{{count} arquivo} other{{count} arquivos}}. Arraste para fora para mover ou compartilhar.",
+  "@semAreaHintHas": {"placeholders": {"count": {"type": "int"}}},
+  "semShareHintNone": "Nenhum arquivo para compartilhar",
+  "semShareHintSome": "Compartilhar {count, plural, one{{count} arquivo} other{{count} arquivos}}",
+  "@semShareHintSome": {"placeholders": {"count": {"type": "int"}}},
+  "semRemoveHintNone": "Nenhum arquivo para remover",
+  "semRemoveHintSome": "Remover {count, plural, one{{count} arquivo} other{{count} arquivos}}",
+  "@semRemoveHintSome": {"placeholders": {"count": {"type": "int"}}},
+  "trayFilesNone": "📂 Sem arquivos",
+  "trayFilesCount": "📁 Arquivos: {count}",
+  "@trayFilesCount": {"placeholders": {"count": {"type": "int"}}},
+  "trayExit": "Fechar o aplicativo",
+  "openTray": "Abrir bandeja",
+  "filesCountTooltip": "Quantidade atual na bandeja",
+  "languageLabel": "Idioma:",
+  "languageEnglish": "Inglês",
+  "languagePortuguese": "Português",
+  "languageSpanish": "Espanhol",
+  "limitReached": "Limite de {max} arquivos atingido",
+  "@limitReached": {"placeholders": {"max": {"type": "int"}}},
+  "shareNone": "Sem arquivos para compartilhar",
+  "shareError": "Erro ao compartilhar arquivos"
+  ,"fileLabelSingle": "{name}",
+  "fileLabelMultiple": "{count} arquivos",
+  "genericFileName": "arquivo"
+  ,"@fileLabelSingle": {"placeholders": {"name": {"type": "String"}}}
+  ,"@fileLabelMultiple": {"placeholders": {"count": {"type": "int"}}}
+  ,"semHandleLabel": "Barra de arraste"
+  ,"semHandleHint": "Arraste para mover a janela"
+}

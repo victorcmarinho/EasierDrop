@@ -5,6 +5,7 @@ final class MacOSDragOutChannel: NSObject, NSDraggingSource {
 	static let shared = MacOSDragOutChannel()
 	private var channel: FlutterMethodChannel?
 	private weak var view: NSView?
+	private var forceCopyFromCmd: Bool = false
 
 	func setup(view: NSView, messenger: FlutterBinaryMessenger) {
 		self.view = view
@@ -56,17 +57,20 @@ final class MacOSDragOutChannel: NSObject, NSDraggingSource {
 			return
 		}
 
+		forceCopyFromCmd = event.modifierFlags.contains(.command)
+
 		view.beginDraggingSession(with: items, event: event, source: self)
 		result(nil)
 	}
 
-	// MARK: - NSDraggingSource
 	func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
 		return [.copy, .move]
 	}
 
 	func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
-		let op = operation == .move ? "move" : "copy"
+		let effectiveOp: NSDragOperation = forceCopyFromCmd ? .copy : operation
+		let op = effectiveOp == .move ? "move" : "copy"
 		channel?.invokeMethod("fileDropped", arguments: op)
+		forceCopyFromCmd = false
 	}
 }

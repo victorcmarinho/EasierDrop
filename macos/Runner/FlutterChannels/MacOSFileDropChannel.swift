@@ -29,7 +29,7 @@ class MacOSFileDropChannel: NSObject {
         
         switch call.method {
         case "startDropMonitor", "stopDropMonitor":
-            // This is now handled by the window, but we can keep the call for compatibility
+            
             result(nil)
         default:
             result(FlutterMethodNotImplemented)
@@ -46,7 +46,7 @@ class MacOSFileDropChannel: NSObject {
     }
 }
 
-// MARK: - FlutterStreamHandler
+
 extension MacOSFileDropChannel: FlutterStreamHandler {
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         Swift.print("[MacOSFileDropChannel] Event channel listening.")

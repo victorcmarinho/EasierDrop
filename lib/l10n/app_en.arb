@@ -1,0 +1,44 @@
+{
+  "appTitle": "Easier Drop",
+  "dropHere": "Drop files here",
+  "clearFilesTitle": "Clear files?",
+  "clearFilesMessage": "This will remove all collected files.",
+  "clearCancel": "Cancel",
+  "clearConfirm": "Clear",
+  "share": "Share",
+  "removeAll": "Remove files",
+  "close": "Close",
+  "tooltipShare": "Share (Cmd+Shift+C)",
+  "tooltipClear": "Clear (Cmd+Backspace)",
+  "semAreaLabel": "File collection area",
+  "semAreaHintEmpty": "Empty. Drag files here.",
+  "semAreaHintHas": "Contains {count, plural, one{{count} file} other{{count} files}}. Drag out to move or share.",
+  "@semAreaHintHas": {"placeholders": {"count": {"type": "int", "description": "Current number of files"}}},
+  "semShareHintNone": "No files to share",
+  "semShareHintSome": "Share {count, plural, one{{count} file} other{{count} files}}",
+  "@semShareHintSome": {"placeholders": {"count": {"type": "int"}}},
+  "semRemoveHintNone": "No files to remove",
+  "semRemoveHintSome": "Remove {count, plural, one{{count} file} other{{count} files}}",
+  "@semRemoveHintSome": {"placeholders": {"count": {"type": "int"}}},
+  "trayFilesNone": "📂 No files",
+  "trayFilesCount": "📁 Files: {count}",
+  "@trayFilesCount": {"placeholders": {"count": {"type": "int"}}},
+  "trayExit": "Quit application",
+  "openTray": "Open tray",
+  "filesCountTooltip": "Current number of files",
+  "languageLabel": "Language:",
+  "languageEnglish": "English",
+  "languagePortuguese": "Portuguese",
+  "languageSpanish": "Spanish",
+  "limitReached": "File limit ({max}) reached",
+  "@limitReached": {"placeholders": {"max": {"type": "int"}}},
+  "shareNone": "No files to share",
+  "shareError": "Error sharing files"
+  ,"fileLabelSingle": "{name}",
+  "fileLabelMultiple": "{count} files"
+  ,"genericFileName": "file"
+  ,"@fileLabelSingle": {"placeholders": {"name": {"type": "String"}}}
+  ,"@fileLabelMultiple": {"placeholders": {"count": {"type": "int"}}}
+  ,"semHandleLabel": "Window handle"
+  ,"semHandleHint": "Drag to move the window"
+}
