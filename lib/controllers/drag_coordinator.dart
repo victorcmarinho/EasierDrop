@@ -8,50 +8,65 @@ import 'package:easier_drop/services/constants.dart';
 import 'package:easier_drop/services/logger.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
+import 'drag_coordinator_types.dart';
 
+/// Coordenador responsável por gerenciar operações de drag & drop
+///
+/// Funcionalidades:
+/// - Coordena drag in (receber arquivos)
+/// - Coordena drag out (arrastar arquivos para fora)
+/// - Gerencia estados visuais de hover e dragging
+/// - Processa resultados de operações de drag
 class DragCoordinator {
   DragCoordinator(this.context);
 
   final BuildContext context;
-
   final ValueNotifier<bool> draggingOut = ValueNotifier(false);
   final ValueNotifier<bool> hovering = ValueNotifier(false);
 
-  StreamSubscription? _dropSub;
+  StreamSubscription? _dropSubscription;
   bool _initialized = false;
 
+  /// Inicializa o coordenador
   Future<void> init() async {
     if (_initialized) return;
     _initialized = true;
-    _setupInbound();
-    _setupOutbound();
+
+    _setupInboundDrag();
+    _setupOutboundDrag();
+
     await FileDropService.instance.start();
-    _dropSub = FileDropService.instance.filesStream.listen(_onPaths);
+    _dropSubscription = FileDropService.instance.filesStream.listen(
+      _onFilesDropped,
+    );
   }
 
+  /// Limpa recursos e encerra serviços
   void dispose() {
     FileDropService.instance.setMethodCallHandler(null);
     DragOutService.instance.setHandler(null);
-    _dropSub?.cancel();
+    _dropSubscription?.cancel();
     FileDropService.instance.stop();
     draggingOut.dispose();
     hovering.dispose();
   }
 
-  void _setupInbound() {
+  /// Configura o tratamento de arquivos sendo arrastados para dentro
+  void _setupInboundDrag() {
     FileDropService.instance.setMethodCallHandler((call) async {
       if (call.method == PlatformChannels.fileDroppedCallback) {
-        final op = call.arguments as String?;
+        final operation = call.arguments as String?;
         AppLogger.info(
-          'Drag finished (inbound). Operation: ${op ?? 'unknown'}',
-          tag: 'DragCoordinator',
+          'Drag finished (inbound). Operation: ${operation ?? 'unknown'}',
+          tag: DragCoordinatorConfig.logTag,
         );
       }
       return null;
     });
   }
 
-  void _setupOutbound() {
+  /// Configura o tratamento de arquivos sendo arrastados para fora
+  void _setupOutboundDrag() {
     DragOutService.instance.setHandler((call) async {
       if (call.method == PlatformChannels.fileDroppedCallback) {
         _handleOutboundResult(call.arguments);
@@ -60,54 +75,83 @@ class DragCoordinator {
     });
   }
 
+  /// Processa o resultado de uma operação de drag para fora
   void _handleOutboundResult(dynamic raw) {
     final result = ChannelDragResult.parse(raw);
+
     if (!result.isSuccess) {
-      AppLogger.warn('Drag finished with error', tag: 'DragCoordinator');
+      AppLogger.warn(
+        'Drag finished with error',
+        tag: DragCoordinatorConfig.logTag,
+      );
       return;
     }
-    switch (result.operation) {
-      case DragOperation.copy:
-        AppLogger.info(
-          'Copy detected; retaining files',
-          tag: 'DragCoordinator',
-        );
-        break;
-      case DragOperation.move:
-        final provider = context.read<FilesProvider>();
-        if (provider.files.isNotEmpty) provider.clear();
-        break;
-      case DragOperation.unknown:
-        AppLogger.info('Unknown op; retaining files', tag: 'DragCoordinator');
-        break;
+
+    final operationType = _mapDragOperation(result.operation);
+
+    AppLogger.info(operationType.logMessage, tag: DragCoordinatorConfig.logTag);
+
+    if (operationType.shouldClearFiles) {
+      final provider = context.read<FilesProvider>();
+      if (provider.hasFiles) {
+        provider.clear();
+      }
     }
+  }
+
+  /// Mapeia DragOperation para DragOperationType
+  DragOperationType _mapDragOperation(DragOperation operation) {
+    switch (operation) {
+      case DragOperation.copy:
+        return DragOperationType.copy;
+      case DragOperation.move:
+        return DragOperationType.move;
+      case DragOperation.unknown:
+        return DragOperationType.unknown;
+    }
+  }
+
+  /// Inicia uma operação de drag para fora
+  Future<void> beginExternalDrag() async {
+    final filesProvider = context.read<FilesProvider>();
+    final filePaths = filesProvider.files.map((f) => f.pathname).toList();
+
+    if (filePaths.isEmpty) {
+      AppLogger.warn('No files to drag', tag: DragCoordinatorConfig.logTag);
+      return;
+    }
+
+    draggingOut.value = true;
+
+    try {
+      await DragOutService.instance.beginDrag(filePaths);
+      AppLogger.info(
+        'External drag started',
+        tag: DragCoordinatorConfig.logTag,
+      );
+    } finally {
+      // Reset do estado após delay
+      Future.delayed(DragCoordinatorConfig.dragEndDelay, () {
+        draggingOut.value = false;
+      });
+    }
+  }
+
+  /// Define o estado de hover
+  void setHover(bool value) => hovering.value = value;
+
+  /// Processa arquivos que foram dropados
+  Future<void> _onFilesDropped(List<String> paths) async {
+    final provider = context.read<FilesProvider>();
+
+    final futures = paths.map((path) {
+      final ref = FileReference(pathname: path);
+      return provider.addFile(ref);
+    });
+
+    await Future.wait(futures);
   }
 
   @visibleForTesting
   void handleOutboundTest(dynamic raw) => _handleOutboundResult(raw);
-
-  Future<void> beginExternalDrag() async {
-    final filesProvider = context.read<FilesProvider>();
-    final files = filesProvider.files.map((f) => f.pathname).toList();
-    if (files.isEmpty) {
-      AppLogger.warn('No files to drag', tag: 'DragCoordinator');
-      return;
-    }
-    draggingOut.value = true;
-    await DragOutService.instance.beginDrag(files);
-    Future.delayed(const Duration(milliseconds: 400), () {
-      draggingOut.value = false;
-    });
-    AppLogger.info('External drag started', tag: 'DragCoordinator');
-  }
-
-  void setHover(bool value) => hovering.value = value;
-
-  Future<void> _onPaths(List<String> paths) async {
-    final provider = context.read<FilesProvider>();
-    for (final path in paths) {
-      final ref = FileReference(pathname: path);
-      unawaited(provider.addFile(ref));
-    }
-  }
 }

@@ -10,6 +10,7 @@ import 'file_name_badge.dart';
 import 'dragging_overlay.dart';
 import 'limit_overlay.dart';
 import 'file_actions_bar.dart';
+import 'files_surface_helpers.dart';
 
 class FilesSurface extends StatelessWidget {
   const FilesSurface({
@@ -48,73 +49,14 @@ class FilesSurface extends StatelessWidget {
       onExit: (_) => onHoverChanged(false),
       child: GestureDetector(
         onPanStart: (details) {
-          if (!onDragCheck(details.localPosition.dy)) return;
-          onDragRequest();
+          if (onDragCheck(details.localPosition.dy)) {
+            onDragRequest();
+          }
         },
         child: Stack(
           fit: StackFit.expand,
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 160),
-              decoration: BoxDecoration(
-                color: MacosTheme.of(
-                  context,
-                ).canvasColor.withValues(alpha: 0.03),
-                border: Border.all(
-                  color:
-                      hovering
-                          ? MacosTheme.of(
-                            context,
-                          ).primaryColor.withValues(alpha: 0.7)
-                          : MacosColors.transparent,
-                  width: 4,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Selector<FilesProvider, List<FileReference>>(
-                selector: (_, p) => p.files,
-                builder: (context, files, _) {
-                  final hint =
-                      files.isEmpty
-                          ? loc.semAreaHintEmpty
-                          : loc.semAreaHintHas(files.length);
-
-                  final fileNameLabel = () {
-                    if (files.isEmpty) return '';
-                    if (files.length == 1) {
-                      final name = files.first.fileName;
-                      return loc.fileLabelSingle(name);
-                    }
-                    return loc.fileLabelMultiple(files.length);
-                  }();
-
-                  return Semantics(
-                    label: loc.semAreaLabel,
-                    hint: hint,
-                    liveRegion: true,
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.6,
-                            child:
-                                files.isNotEmpty
-                                    ? FilesStack(droppedFiles: files)
-                                    : const DropHit(),
-                          ),
-                          if (fileNameLabel.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 6),
-                              child: FileNameBadge(label: fileNameLabel),
-                            ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+            _buildMainContainer(context),
             DraggingOverlay(visible: draggingOut),
             LimitOverlay(visible: showLimit, loc: loc),
             FileActionsBar(
@@ -128,6 +70,74 @@ class FilesSurface extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMainContainer(BuildContext context) {
+    return AnimatedContainer(
+      duration: FilesSurfaceStyles.animationDuration,
+      decoration: _buildContainerDecoration(context),
+      child: _buildFileContent(),
+    );
+  }
+
+  BoxDecoration _buildContainerDecoration(BuildContext context) {
+    final theme = MacosTheme.of(context);
+    return BoxDecoration(
+      color: theme.canvasColor.withValues(alpha: 0.03),
+      border: Border.all(
+        color:
+            hovering
+                ? theme.primaryColor.withValues(alpha: 0.7)
+                : MacosColors.transparent,
+        width: FilesSurfaceStyles.borderWidth,
+      ),
+      borderRadius: BorderRadius.circular(FilesSurfaceStyles.borderRadius),
+    );
+  }
+
+  /// Constrói o conteúdo principal com arquivos
+  Widget _buildFileContent() {
+    return Selector<FilesProvider, List<FileReference>>(
+      selector: (_, provider) => provider.files,
+      builder: (context, files, _) {
+        final hint = FilesSemanticsHelper.generateHint(files, loc);
+        final fileLabel = FilesSemanticsHelper.generateFileLabel(files, loc);
+
+        return Semantics(
+          label: loc.semAreaLabel,
+          hint: hint,
+          liveRegion: true,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildFilesDisplay(context, files),
+                if (fileLabel.isNotEmpty) _buildFileLabel(fileLabel),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Constrói a exibição dos arquivos ou área de drop
+  Widget _buildFilesDisplay(BuildContext context, List<FileReference> files) {
+    return SizedBox(
+      height:
+          MediaQuery.of(context).size.height *
+          FilesSurfaceStyles.contentHeightFactor,
+      child:
+          files.isNotEmpty ? FilesStack(droppedFiles: files) : const DropHit(),
+    );
+  }
+
+  /// Constrói o label do arquivo
+  Widget _buildFileLabel(String label) {
+    return Padding(
+      padding: const EdgeInsets.only(top: FilesSurfaceStyles.badgeTopPadding),
+      child: FileNameBadge(label: label),
     );
   }
 }

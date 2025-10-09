@@ -4,6 +4,7 @@ import 'window_handle.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/controllers/drag_coordinator.dart';
+import 'package:easier_drop/helpers/app_constants.dart';
 import 'parts/files_surface.dart';
 
 class DragDrop extends StatefulWidget {
@@ -14,8 +15,7 @@ class DragDrop extends StatefulWidget {
 }
 
 class _DragDropState extends State<DragDrop> {
-  final GlobalKey _buttonKey = GlobalKey();
-  static const double _handleGestureHeight = 28.0;
+  final GlobalKey _shareButtonKey = GlobalKey();
   late DragCoordinator _coordinator;
 
   @override
@@ -31,29 +31,23 @@ class _DragDropState extends State<DragDrop> {
     super.dispose();
   }
 
-  Offset? _getButtonPosition() {
+  Offset? _getShareButtonPosition() {
     final RenderBox? renderBox =
-        _buttonKey.currentContext?.findRenderObject() as RenderBox?;
+        _shareButtonKey.currentContext?.findRenderObject() as RenderBox?;
     return renderBox?.localToGlobal(Offset.zero);
   }
 
-  void _clearImmediate(FilesProvider provider) {
-    if (provider.files.isEmpty) return;
-    provider.clear();
+  void _clearFiles(FilesProvider provider) {
+    if (provider.hasFiles) {
+      provider.clear();
+    }
   }
+
+  bool _isDragArea(double dy) => dy > AppConstants.windowHandleHeight;
 
   @override
   Widget build(BuildContext context) {
     final filesProvider = context.read<FilesProvider>();
-    final hasFiles = context.select<FilesProvider, bool>(
-      (p) => p.files.isNotEmpty,
-    );
-    final limitHitAt = context.select<FilesProvider, DateTime?>(
-      (p) => p.lastLimitHit,
-    );
-    final showLimit =
-        limitHitAt != null &&
-        DateTime.now().difference(limitHitAt) < const Duration(seconds: 2);
     final loc = AppLocalizations.of(context)!;
 
     return FocusTraversalGroup(
@@ -66,19 +60,22 @@ class _DragDropState extends State<DragDrop> {
                 (context, hovering, _) => ValueListenableBuilder<bool>(
                   valueListenable: _coordinator.draggingOut,
                   builder:
-                      (context, draggingOut, _) => FilesSurface(
-                        hovering: hovering,
-                        draggingOut: draggingOut,
-                        showLimit: showLimit,
-                        hasFiles: hasFiles,
-                        buttonKey: _buttonKey,
-                        loc: loc,
-                        onHoverChanged: _coordinator.setHover,
-                        onDragCheck: (dy) => dy > _handleGestureHeight,
-                        onDragRequest: _coordinator.beginExternalDrag,
-                        onClear: () => _clearImmediate(filesProvider),
-                        getButtonPosition: _getButtonPosition,
-                        filesProvider: filesProvider,
+                      (context, draggingOut, _) => Consumer<FilesProvider>(
+                        builder:
+                            (context, provider, _) => FilesSurface(
+                              hovering: hovering,
+                              draggingOut: draggingOut,
+                              showLimit: provider.recentlyAtLimit,
+                              hasFiles: provider.hasFiles,
+                              buttonKey: _shareButtonKey,
+                              loc: loc,
+                              onHoverChanged: _coordinator.setHover,
+                              onDragCheck: _isDragArea,
+                              onDragRequest: _coordinator.beginExternalDrag,
+                              onClear: () => _clearFiles(filesProvider),
+                              getButtonPosition: _getShareButtonPosition,
+                              filesProvider: filesProvider,
+                            ),
                       ),
                 ),
           ),

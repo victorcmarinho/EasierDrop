@@ -4,6 +4,7 @@ import 'package:easier_drop/components/share_button.dart';
 import 'package:easier_drop/components/remove_button.dart';
 import 'package:easier_drop/components/mac_close_button.dart';
 import 'package:easier_drop/helpers/system.dart';
+import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 
@@ -29,70 +30,84 @@ class FileActionsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned(
-          top: 4,
-          left: 4,
-          child: MacCloseButton(onPressed: () => SystemHelper.hide()),
-        ),
-        Positioned(
-          top: 4,
-          right: 4,
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: hasFiles ? 1 : 0,
-            child:
-                hasFiles
-                    ? MacosTooltip(
-                      message: loc.tooltipShare,
-                      child: Semantics(
-                        key: const ValueKey('shareSem'),
-                        label: loc.share,
-                        hint:
-                            hasFiles
-                                ? loc.semShareHintSome(
-                                  filesProvider.files.length,
-                                )
-                                : loc.semShareHintNone,
-                        button: true,
-                        child: ShareButton(
-                          key: buttonKey,
-                          onPressed:
-                              () => filesProvider.shared(
-                                position: getButtonPosition(),
-                              ),
-                        ),
-                      ),
-                    )
-                    : const SizedBox(width: 40, height: 40),
-          ),
-        ),
-        Positioned(
-          bottom: 4,
-          right: 4,
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: hasFiles ? 1 : 0,
-            child:
-                hasFiles
-                    ? MacosTooltip(
-                      message: loc.tooltipClear,
-                      child: Semantics(
-                        key: const ValueKey('removeSem'),
-                        label: loc.removeAll,
-                        hint:
-                            hasFiles
-                                ? loc.semRemoveHintSome(
-                                  filesProvider.files.length,
-                                )
-                                : loc.semRemoveHintNone,
-                        button: true,
-                        child: RemoveButton(onPressed: onClear),
-                      ),
-                    )
-                    : const SizedBox(width: 40, height: 40),
-          ),
-        ),
+        _buildCloseButton(),
+        _buildShareButton(),
+        _buildRemoveButton(),
       ],
+    );
+  }
+
+  Widget _buildCloseButton() {
+    return const Positioned(
+      top: 4,
+      left: 4,
+      child: MacCloseButton(onPressed: SystemHelper.hide),
+    );
+  }
+
+  Widget _buildShareButton() {
+    return Positioned(
+      top: 4,
+      right: 4,
+      child: AnimatedOpacity(
+        duration: AppConstants.mediumAnimation,
+        opacity: hasFiles ? 1 : 0,
+        child: hasFiles ? _buildShareButtonContent() : _buildPlaceholder(),
+      ),
+    );
+  }
+
+  Widget _buildShareButtonContent() {
+    return MacosTooltip(
+      message: loc.tooltipShare,
+      child: Semantics(
+        key: SemanticKeys.shareButton,
+        label: loc.share,
+        hint:
+            hasFiles
+                ? loc.semShareHintSome(filesProvider.fileCount)
+                : loc.semShareHintNone,
+        button: true,
+        child: ShareButton(
+          key: buttonKey,
+          onPressed: () => filesProvider.shared(position: getButtonPosition()),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRemoveButton() {
+    return Positioned(
+      bottom: 4,
+      right: 4,
+      child: AnimatedOpacity(
+        duration: AppConstants.mediumAnimation,
+        opacity: hasFiles ? 1 : 0,
+        child: hasFiles ? _buildRemoveButtonContent() : _buildPlaceholder(),
+      ),
+    );
+  }
+
+  Widget _buildRemoveButtonContent() {
+    return MacosTooltip(
+      message: loc.tooltipClear,
+      child: Semantics(
+        key: SemanticKeys.removeButton,
+        label: loc.removeAll,
+        hint:
+            hasFiles
+                ? loc.semRemoveHintSome(filesProvider.fileCount)
+                : loc.semRemoveHintNone,
+        button: true,
+        child: RemoveButton(onPressed: onClear),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return const SizedBox(
+      width: AppConstants.actionButtonSize,
+      height: AppConstants.actionButtonSize,
     );
   }
 }

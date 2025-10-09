@@ -1,21 +1,14 @@
 import 'package:easier_drop/components/drag_drop.dart';
 import 'package:easier_drop/components/tray.dart';
-import 'package:easier_drop/providers/files_provider.dart';
-import 'package:flutter/services.dart';
+import 'package:easier_drop/helpers/keyboard_shortcuts.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 
-class ClearFilesIntent extends Intent {
-  const ClearFilesIntent();
-}
-
-class ShareFilesIntent extends Intent {
-  const ShareFilesIntent();
-}
-
+/// Tela principal de transferência de arquivos
+///
+/// Combina os componentes de drag & drop e tray do sistema,
+/// com suporte a atalhos de teclado e modo de teste.
 class FileTransferScreen extends StatelessWidget {
   final bool testMode;
-
   final Widget? testDragDrop;
 
   const FileTransferScreen({
@@ -26,47 +19,21 @@ class FileTransferScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filesProvider = context.read<FilesProvider>();
-
     return Shortcuts(
-      shortcuts: <LogicalKeySet, Intent>{
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.backspace):
-            const ClearFilesIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.delete):
-            const ClearFilesIntent(),
-        LogicalKeySet(
-              LogicalKeyboardKey.meta,
-              LogicalKeyboardKey.shift,
-              LogicalKeyboardKey.keyC,
-            ):
-            const ShareFilesIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.enter):
-            const ShareFilesIntent(),
-      },
+      shortcuts: KeyboardShortcuts.shortcuts,
       child: Actions(
-        actions: <Type, Action<Intent>>{
-          ClearFilesIntent: CallbackAction<ClearFilesIntent>(
-            onInvoke: (intent) {
-              if (filesProvider.files.isEmpty) return null;
-              filesProvider.clear();
-              return null;
-            },
-          ),
-          ShareFilesIntent: CallbackAction<ShareFilesIntent>(
-            onInvoke: (intent) {
-              filesProvider.shared();
-              return null;
-            },
-          ),
-        },
+        actions: KeyboardShortcuts.createActions(context),
         child: Focus(
           autofocus: true,
           child: Stack(
             children: [
+              // Componente principal de drag & drop
               if (testMode && testDragDrop != null)
                 testDragDrop!
               else
                 const DragDrop(),
+
+              // Tray do sistema (apenas em modo normal)
               if (!testMode) const Tray(),
             ],
           ),
