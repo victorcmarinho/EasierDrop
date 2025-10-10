@@ -8,18 +8,19 @@ environment:
 
 dependencies:
   window_manager: ^0.5.1
-  provider: ^6.1.2
-  share_plus: ^11.1.0
+  provider: ^6.1.5+1
+  share_plus: ^12.0.0
   tray_manager: ^0.5.1
-  cupertino_icons: ^1.0.6
-  macos_ui: ^2.0.0
+  cupertino_icons: ^1.0.8
+  macos_ui: ^2.2.0
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  path_provider: ^2.1.4
-  path: ^1.9.0
+  path_provider: ^2.1.5
+  path: ^1.9.1
   intl: ^0.20.2
+  text_marquee: ^0.0.2
 
 dev_dependencies:
   flutter_test:
@@ -28,8 +29,8 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   path_provider_platform_interface: ^2.1.2
   mocktail: ^1.0.4
-  mockito: ^5.5.0
-  build_runner: ^2.7.0
+  mockito: ^5.5.1
+  build_runner: ^2.9.0
 
 flutter:
   generate: true
