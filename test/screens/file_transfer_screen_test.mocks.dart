@@ -48,6 +48,15 @@ class MockFilesProvider extends i1.Mock implements i2.FilesProvider {
           as bool);
 
   @override
+  bool get hasFiles =>
+      (super.noSuchMethod(
+            Invocation.getter(#hasFiles),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
+
+  @override
   bool get hasListeners =>
       (super.noSuchMethod(
             Invocation.getter(#hasListeners),

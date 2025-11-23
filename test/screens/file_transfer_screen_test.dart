@@ -1,3 +1,4 @@
+import 'package:easier_drop/helpers/keyboard_shortcuts.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/screens/file_transfer_screen.dart';
@@ -53,28 +54,28 @@ class TestableFileTransferScreen extends StatelessWidget {
     return Shortcuts(
       shortcuts: <LogicalKeySet, Intent>{
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.backspace):
-            const ClearFilesIntent(),
+            const ClearAllIntent(),
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.delete):
-            const ClearFilesIntent(),
+            const ClearAllIntent(),
         LogicalKeySet(
               LogicalKeyboardKey.meta,
               LogicalKeyboardKey.shift,
               LogicalKeyboardKey.keyC,
             ):
-            const ShareFilesIntent(),
+            const ShareIntent(),
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.enter):
-            const ShareFilesIntent(),
+            const ShareIntent(),
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
-          ClearFilesIntent: CallbackAction<ClearFilesIntent>(
+          ClearAllIntent: CallbackAction<ClearAllIntent>(
             onInvoke: (intent) {
               if (filesProvider.files.isEmpty) return null;
               filesProvider.clear();
               return null;
             },
           ),
-          ShareFilesIntent: CallbackAction<ShareFilesIntent>(
+          ShareIntent: CallbackAction<ShareIntent>(
             onInvoke: (intent) {
               filesProvider.shared();
               return null;
@@ -162,7 +163,7 @@ void main() {
   });
 
   group('FileTransferScreen Actions e Intents', () {
-    testWidgets('ClearFilesIntent invoca clear quando há arquivos', (
+    testWidgets('ClearAllIntent invoca clear quando há arquivos', (
       tester,
     ) async {
       when(
@@ -189,7 +190,7 @@ void main() {
       verify(mockFilesProvider.clear()).called(1);
     });
 
-    testWidgets('ClearFilesIntent não invoca clear quando não há arquivos', (
+    testWidgets('ClearAllIntent não invoca clear quando não há arquivos', (
       tester,
     ) async {
       when(mockFilesProvider.files).thenReturn([]);
@@ -214,7 +215,7 @@ void main() {
       verifyNever(mockFilesProvider.clear());
     });
 
-    testWidgets('ShareFilesIntent invoca shared', (tester) async {
+    testWidgets('ShareIntent invoca shared', (tester) async {
       final widget = MaterialApp(
         home: ChangeNotifierProvider<FilesProvider>.value(
           value: mockFilesProvider,
@@ -241,6 +242,7 @@ void main() {
       when(
         mockFilesProvider.files,
       ).thenReturn([const TestFileReference('/path/to/file1.txt')]);
+      when(mockFilesProvider.hasFiles).thenReturn(true);
 
       final widget = MaterialApp(
         home: ChangeNotifierProvider<FilesProvider>.value(
@@ -278,13 +280,13 @@ void main() {
     });
 
     test(
-      'ClearFilesIntent e ShareFilesIntent classes são inicializadas corretamente',
+      'ClearAllIntent e ShareIntent classes são inicializadas corretamente',
       () {
-        final clearIntent = const ClearFilesIntent();
-        final shareIntent = const ShareFilesIntent();
+        final clearIntent = const ClearAllIntent();
+        final shareIntent = const ShareIntent();
 
-        expect(clearIntent, isA<ClearFilesIntent>());
-        expect(shareIntent, isA<ShareFilesIntent>());
+        expect(clearIntent, isA<ClearAllIntent>());
+        expect(shareIntent, isA<ShareIntent>());
       },
     );
   });

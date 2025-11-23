@@ -1,6 +1,6 @@
+import 'package:easier_drop/helpers/keyboard_shortcuts.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
-import 'package:easier_drop/screens/file_transfer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,28 +39,28 @@ class MockedFileTransferScreen extends StatelessWidget {
     return Shortcuts(
       shortcuts: <LogicalKeySet, Intent>{
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.backspace):
-            const ClearFilesIntent(),
+            const ClearAllIntent(),
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.delete):
-            const ClearFilesIntent(),
+            const ClearAllIntent(),
         LogicalKeySet(
               LogicalKeyboardKey.meta,
               LogicalKeyboardKey.shift,
               LogicalKeyboardKey.keyC,
             ):
-            const ShareFilesIntent(),
+            const ShareIntent(),
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.enter):
-            const ShareFilesIntent(),
+            const ShareIntent(),
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
-          ClearFilesIntent: CallbackAction<ClearFilesIntent>(
+          ClearAllIntent: CallbackAction<ClearAllIntent>(
             onInvoke: (intent) {
               if (filesProvider.files.isEmpty) return null;
               filesProvider.clear();
               return null;
             },
           ),
-          ShareFilesIntent: CallbackAction<ShareFilesIntent>(
+          ShareIntent: CallbackAction<ShareIntent>(
             onInvoke: (intent) {
               filesProvider.shared();
               return null;
@@ -111,9 +111,7 @@ void main() {
       verify(mockFilesProvider.shared()).called(1);
     });
 
-    testWidgets('ClearFilesIntent limpa arquivos quando existem', (
-      tester,
-    ) async {
+    testWidgets('ClearAllIntent limpa arquivos quando existem', (tester) async {
       when(
         mockFilesProvider.files,
       ).thenReturn([const TestFileReference('/path/to/file.txt')]);
@@ -137,7 +135,7 @@ void main() {
       verify(mockFilesProvider.clear()).called(1);
     });
 
-    testWidgets('ClearFilesIntent não limpa quando não há arquivos', (
+    testWidgets('ClearAllIntent não limpa quando não há arquivos', (
       tester,
     ) async {
       when(mockFilesProvider.files).thenReturn([]);
@@ -208,13 +206,13 @@ void main() {
     });
 
     test(
-      'ClearFilesIntent e ShareFilesIntent classes são inicializadas corretamente',
+      'ClearAllIntent e ShareIntent classes são inicializadas corretamente',
       () {
-        final clearIntent = const ClearFilesIntent();
-        final shareIntent = const ShareFilesIntent();
+        final clearIntent = const ClearAllIntent();
+        final shareIntent = const ShareIntent();
 
-        expect(clearIntent, isA<ClearFilesIntent>());
-        expect(shareIntent, isA<ShareFilesIntent>());
+        expect(clearIntent, isA<ClearAllIntent>());
+        expect(shareIntent, isA<ShareIntent>());
       },
     );
   });
