@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MockDragDrop extends StatelessWidget {
-  const MockDragDrop({Key? key}) : super(key: key);
+  const MockDragDrop({super.key});
 
   @override
   Widget build(BuildContext context) {

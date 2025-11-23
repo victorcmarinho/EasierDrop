@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import '../screens/file_transfer_screen_test.mocks.dart';
 
 class MockTray extends StatelessWidget {
-  const MockTray({Key? key}) : super(key: key);
+  const MockTray({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class MockTray extends StatelessWidget {
 }
 
 class MockDragDrop extends StatelessWidget {
-  const MockDragDrop({Key? key}) : super(key: key);
+  const MockDragDrop({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class MockDragDrop extends StatelessWidget {
 }
 
 class MockedFileTransferScreen extends StatelessWidget {
-  const MockedFileTransferScreen({Key? key}) : super(key: key);
+  const MockedFileTransferScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

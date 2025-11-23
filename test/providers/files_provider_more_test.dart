@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/services/constants.dart';

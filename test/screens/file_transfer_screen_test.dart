@@ -46,8 +46,7 @@ class KeyboardShortcutHandler {
 class TestableFileTransferScreen extends StatelessWidget {
   final FilesProvider filesProvider;
 
-  const TestableFileTransferScreen({Key? key, required this.filesProvider})
-    : super(key: key);
+  const TestableFileTransferScreen({super.key, required this.filesProvider});
 
   @override
   Widget build(BuildContext context) {

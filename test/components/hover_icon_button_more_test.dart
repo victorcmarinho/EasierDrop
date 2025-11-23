@@ -1,7 +1,6 @@
 import 'package:easier_drop/components/hover_icon_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 void main() {

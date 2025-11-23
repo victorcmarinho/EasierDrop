@@ -9,7 +9,7 @@ import 'package:macos_ui/macos_ui.dart';
 class TestWrapper extends StatelessWidget {
   final Widget child;
 
-  const TestWrapper({Key? key, required this.child}) : super(key: key);
+  const TestWrapper({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

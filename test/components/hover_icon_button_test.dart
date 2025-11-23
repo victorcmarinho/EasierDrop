@@ -33,7 +33,7 @@ void main() {
       const MacosApp(
         home: Center(
           child: HoverIconButton(
-            icon: const Icon(Icons.remove),
+            icon: Icon(Icons.remove),
             enabled: false,
             semanticsLabel: 'Disabled',
           ),

@@ -11,6 +11,7 @@ class _StubLoc implements AppLocalizations {
   @override
   String get shareError => 'Share error';
 
+  @override
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 

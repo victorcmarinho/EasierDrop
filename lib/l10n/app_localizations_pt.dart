@@ -2,7 +2,7 @@ import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 class AppLocalizationsPt extends AppLocalizations {
-  AppLocalizationsPt([String locale = 'pt']) : super(locale);
+  AppLocalizationsPt([super.locale = 'pt']);
 
   @override
   String get appTitle => 'Easier Drop';
@@ -46,13 +46,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String semAreaHintHas(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
+    String temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count arquivos',
       one: '$count arquivo',
     );
-    return 'Contém $_temp0. Arraste para fora para mover ou compartilhar.';
+    return 'Contém $temp0. Arraste para fora para mover ou compartilhar.';
   }
 
   @override
@@ -60,13 +60,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String semShareHintSome(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
+    String temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count arquivos',
       one: '$count arquivo',
     );
-    return 'Compartilhar $_temp0';
+    return 'Compartilhar $temp0';
   }
 
   @override
@@ -74,13 +74,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String semRemoveHintSome(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
+    String temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count arquivos',
       one: '$count arquivo',
     );
-    return 'Remover $_temp0';
+    return 'Remover $temp0';
   }
 
   @override
@@ -125,7 +125,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String fileLabelSingle(String name) {
-    return '$name';
+    return name;
   }
 
   @override

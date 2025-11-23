@@ -34,10 +34,10 @@ class TestWrapper extends StatelessWidget {
   final MockFilesProvider filesProvider;
 
   const TestWrapper({
-    Key? key,
+    super.key,
     required this.child,
     required this.filesProvider,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
