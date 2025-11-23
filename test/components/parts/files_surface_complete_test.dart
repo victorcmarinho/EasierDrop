@@ -8,23 +8,40 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:share_plus/share_plus.dart';
 
-class MockFilesProvider extends Mock implements FilesProvider {
+class MockFilesProvider extends ChangeNotifier implements FilesProvider {
   final List<FileReference> _files = [];
 
   @override
   List<FileReference> get files => _files;
 
   @override
+  bool get hasFiles => _files.isNotEmpty;
+
+  @override
+  bool get isEmpty => _files.isEmpty;
+
+  @override
+  int get fileCount => _files.length;
+
+  @override
+  List<XFile> get validXFiles => _files.map((f) => XFile(f.pathname)).toList();
+
+  @override
   void clear() {
     _files.clear();
+    notifyListeners();
   }
 
   @override
   Future<void> addFile(FileReference file) async {
     _files.add(file);
+    notifyListeners();
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 Widget _wrapWithApp({required FilesProvider provider, required Widget child}) {

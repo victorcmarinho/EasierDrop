@@ -146,7 +146,10 @@ void main() {
 
     test('toString', () {
       final ref = FileReference(pathname: '/test/file.txt');
-      expect(ref.toString(), 'FileReference(pathname: /test/file.txt)');
+      expect(
+        ref.toString(),
+        'FileReference(pathname: /test/file.txt, hasIcon: false)',
+      );
     });
 
     test('fileName - path complexo', () {

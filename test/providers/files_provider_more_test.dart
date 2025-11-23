@@ -30,6 +30,7 @@ void main() {
       final f = File('${dir.path}/icon.test')..writeAsStringSync('x');
       final p = FilesProvider(enableMonitoring: false);
       await p.addFile(FileReference(pathname: f.path));
+      await Future.delayed(const Duration(milliseconds: 50));
       expect(p.files.first.iconData, isNotNull);
     });
 
