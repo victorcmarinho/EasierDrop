@@ -31,14 +31,12 @@ class MockTrayManager implements TrayManager {
   Future<void> setToolTip(String toolTip) async {}
 
   @override
-  Future<Rect?> getBounds() {
-    // TODO: implement getBounds
-    throw UnimplementedError();
+  Future<Rect?> getBounds() async {
+    return const Rect.fromLTWH(0, 0, 100, 100);
   }
 
   @override
-  // TODO: implement hasListeners
-  bool get hasListeners => throw UnimplementedError();
+  bool get hasListeners => false;
 
   @override
   Future<void> setIconPosition(TrayIconPosition trayIconPosition) {
@@ -47,8 +45,5 @@ class MockTrayManager implements TrayManager {
   }
 
   @override
-  Future<void> setTitle(String title) {
-    // TODO: implement setTitle
-    throw UnimplementedError();
-  }
+  Future<void> setTitle(String title) async {}
 }

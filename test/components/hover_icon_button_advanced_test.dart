@@ -123,9 +123,10 @@ void main() {
               as BoxDecoration;
       final color = decoration.color;
 
-      expect(color?.red, equals(customColor.red));
-      expect(color?.green, equals(customColor.green));
-      expect(color?.blue, equals(customColor.blue));
+      expect(
+        color?.toARGB32(),
+        equals(customColor.withValues(alpha: 0.14).toARGB32()),
+      );
     });
 
     testWidgets('Deve ter o tamanho correto conforme especificado', (

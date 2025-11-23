@@ -25,7 +25,7 @@ class MockDragDrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: Text('Mock DragDrop'));
+    return Text('Mock DragDrop');
   }
 }
 

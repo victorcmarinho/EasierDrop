@@ -30,7 +30,6 @@ void main() {
         }
       } catch (e) {
         // Ignore deletion errors in tearDown
-        print('Warning: Could not delete temp dir: $e');
       }
     });
 

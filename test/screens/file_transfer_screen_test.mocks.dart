@@ -6,8 +6,8 @@ import 'package:easier_drop/providers/files_provider.dart' as i2;
 import 'package:mockito/mockito.dart' as i1;
 import 'package:share_plus/share_plus.dart' as i4;
 
-class _FakeObject_0 extends i1.SmartFake implements Object {
-  _FakeObject_0(super.parent, super.parentInvocation);
+class FakeObject0 extends i1.SmartFake implements Object {
+  FakeObject0(super.parent, super.parentInvocation);
 }
 
 class MockFilesProvider extends i1.Mock implements i2.FilesProvider {
@@ -30,9 +30,9 @@ class MockFilesProvider extends i1.Mock implements i2.FilesProvider {
           as List<i3.FileReference>);
 
   @override
-  List<i4.XFile> get xfiles =>
+  List<i4.XFile> get validXFiles =>
       (super.noSuchMethod(
-            Invocation.getter(#xfiles),
+            Invocation.getter(#validXFiles),
             returnValue: <i4.XFile>[],
             returnValueForMissingStub: <i4.XFile>[],
           )
@@ -115,13 +115,13 @@ class MockFilesProvider extends i1.Mock implements i2.FilesProvider {
       (super.noSuchMethod(
             Invocation.method(#shared, [], {#position: position}),
             returnValue: i5.Future<Object>.value(
-              _FakeObject_0(
+              FakeObject0(
                 this,
                 Invocation.method(#shared, [], {#position: position}),
               ),
             ),
             returnValueForMissingStub: i5.Future<Object>.value(
-              _FakeObject_0(
+              FakeObject0(
                 this,
                 Invocation.method(#shared, [], {#position: position}),
               ),

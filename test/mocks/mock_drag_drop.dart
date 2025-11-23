@@ -6,7 +6,7 @@ class MockDragDrop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blue.withOpacity(0.1),
+      color: Colors.blue.withValues(alpha: 0.1),
       child: const Center(child: Text('Mock DragDrop para Testes')),
     );
   }

@@ -8,17 +8,17 @@ import 'package:flutter/widgets.dart' as i2;
 import 'package:mockito/mockito.dart' as i1;
 import 'package:share_plus/share_plus.dart' as i5;
 
-class _FakeObject_0 extends i1.SmartFake implements Object {
-  _FakeObject_0(super.parent, super.parentInvocation);
+class FakeObject0 extends i1.SmartFake implements Object {
+  FakeObject0(super.parent, super.parentInvocation);
 }
 
-class _FakeBuildContext_1 extends i1.SmartFake implements i2.BuildContext {
-  _FakeBuildContext_1(super.parent, super.parentInvocation);
+class FakeBuildContext1 extends i1.SmartFake implements i2.BuildContext {
+  FakeBuildContext1(super.parent, super.parentInvocation);
 }
 
-class _FakeValueNotifier_2<T> extends i1.SmartFake
+class FakeValueNotifier2<T> extends i1.SmartFake
     implements i2.ValueNotifier<T> {
-  _FakeValueNotifier_2(super.parent, super.parentInvocation);
+  FakeValueNotifier2(super.parent, super.parentInvocation);
 }
 
 class MockFilesProvider extends i1.Mock implements i3.FilesProvider {
@@ -41,13 +41,22 @@ class MockFilesProvider extends i1.Mock implements i3.FilesProvider {
           as List<i4.FileReference>);
 
   @override
-  List<i5.XFile> get xfiles =>
+  List<i5.XFile> get validXFiles =>
       (super.noSuchMethod(
-            Invocation.getter(#xfiles),
+            Invocation.getter(#validXFiles),
             returnValue: <i5.XFile>[],
             returnValueForMissingStub: <i5.XFile>[],
           )
           as List<i5.XFile>);
+
+  @override
+  bool get hasFiles =>
+      (super.noSuchMethod(
+            Invocation.getter(#hasFiles),
+            returnValue: false,
+            returnValueForMissingStub: false,
+          )
+          as bool);
 
   @override
   bool get isEmpty =>
@@ -117,13 +126,13 @@ class MockFilesProvider extends i1.Mock implements i3.FilesProvider {
       (super.noSuchMethod(
             Invocation.method(#shared, [], {#position: position}),
             returnValue: i6.Future<Object>.value(
-              _FakeObject_0(
+              FakeObject0(
                 this,
                 Invocation.method(#shared, [], {#position: position}),
               ),
             ),
             returnValueForMissingStub: i6.Future<Object>.value(
-              _FakeObject_0(
+              FakeObject0(
                 this,
                 Invocation.method(#shared, [], {#position: position}),
               ),
@@ -167,8 +176,8 @@ class MockDragCoordinator extends i1.Mock implements i8.DragCoordinator {
   i2.BuildContext get context =>
       (super.noSuchMethod(
             Invocation.getter(#context),
-            returnValue: _FakeBuildContext_1(this, Invocation.getter(#context)),
-            returnValueForMissingStub: _FakeBuildContext_1(
+            returnValue: FakeBuildContext1(this, Invocation.getter(#context)),
+            returnValueForMissingStub: FakeBuildContext1(
               this,
               Invocation.getter(#context),
             ),
@@ -179,11 +188,11 @@ class MockDragCoordinator extends i1.Mock implements i8.DragCoordinator {
   i2.ValueNotifier<bool> get draggingOut =>
       (super.noSuchMethod(
             Invocation.getter(#draggingOut),
-            returnValue: _FakeValueNotifier_2<bool>(
+            returnValue: FakeValueNotifier2<bool>(
               this,
               Invocation.getter(#draggingOut),
             ),
-            returnValueForMissingStub: _FakeValueNotifier_2<bool>(
+            returnValueForMissingStub: FakeValueNotifier2<bool>(
               this,
               Invocation.getter(#draggingOut),
             ),
@@ -194,11 +203,11 @@ class MockDragCoordinator extends i1.Mock implements i8.DragCoordinator {
   i2.ValueNotifier<bool> get hovering =>
       (super.noSuchMethod(
             Invocation.getter(#hovering),
-            returnValue: _FakeValueNotifier_2<bool>(
+            returnValue: FakeValueNotifier2<bool>(
               this,
               Invocation.getter(#hovering),
             ),
-            returnValueForMissingStub: _FakeValueNotifier_2<bool>(
+            returnValueForMissingStub: FakeValueNotifier2<bool>(
               this,
               Invocation.getter(#hovering),
             ),

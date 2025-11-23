@@ -12,7 +12,7 @@ class MockFileReference extends Mock implements FileReference {}
 class MockAppLocalizations extends Mock implements AppLocalizations {}
 
 class FixedAppLocalizations {
-  static AppLocalizations? original_of(BuildContext context) {
+  static AppLocalizations? originalOf(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 }
