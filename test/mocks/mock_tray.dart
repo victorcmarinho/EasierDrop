@@ -39,10 +39,7 @@ class MockTrayManager implements TrayManager {
   bool get hasListeners => false;
 
   @override
-  Future<void> setIconPosition(TrayIconPosition trayIconPosition) {
-    // TODO: implement setIconPosition
-    throw UnimplementedError();
-  }
+  Future<void> setIconPosition(TrayIconPosition trayIconPosition) async {}
 
   @override
   Future<void> setTitle(String title) async {}
