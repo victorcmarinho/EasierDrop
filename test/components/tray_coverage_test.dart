@@ -7,6 +7,7 @@ import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:easier_drop/model/file_reference.dart';
+import '../mocks/mock_tray.dart';
 
 // Mock classes
 class MockFilesProvider extends Mock implements FilesProvider {}
@@ -15,7 +16,8 @@ class MockFileReference extends Mock implements FileReference {}
 
 // Custom widget que implementa TrayListener para testar métodos específicos
 class TrayListenerWidget extends StatefulWidget {
-  const TrayListenerWidget({super.key});
+  final TrayManager? trayManager;
+  const TrayListenerWidget({super.key, this.trayManager});
 
   @override
   State<TrayListenerWidget> createState() => _TrayListenerWidgetState();
@@ -26,10 +28,12 @@ class _TrayListenerWidgetState extends State<TrayListenerWidget>
   int _lastCount = 0;
   FilesProvider? _filesProvider;
 
+  TrayManager get _trayManager => widget.trayManager ?? trayManager;
+
   @override
   void initState() {
     super.initState();
-    trayManager.addListener(this);
+    _trayManager.addListener(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _filesProvider = context.read<FilesProvider>();
       _filesProvider?.addListener(_onFilesChanged);
@@ -44,14 +48,14 @@ class _TrayListenerWidgetState extends State<TrayListenerWidget>
       _filesProvider!.removeListener(_onFilesChanged);
       _filesProvider = null;
     }
-    trayManager.removeListener(this);
+    _trayManager.removeListener(this);
     super.dispose();
   }
 
   @override
   void onTrayIconMouseDown() {
     // Simula o comportamento do tray original
-    trayManager.popUpContextMenu();
+    _trayManager.popUpContextMenu();
   }
 
   @override
@@ -136,7 +140,7 @@ class _TrayListenerWidgetState extends State<TrayListenerWidget>
         MenuItem(key: 'exit_app', label: loc.trayExit),
       ],
     );
-    await trayManager.setContextMenu(menu);
+    await _trayManager.setContextMenu(menu);
   }
 
   // Métodos públicos para teste
@@ -163,7 +167,7 @@ void main() {
           Locale('es'),
         ],
         locale: const Locale('en'),
-        home: const TrayListenerWidget(),
+        home: TrayListenerWidget(trayManager: MockTrayManager()),
       ),
     );
   }
