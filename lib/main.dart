@@ -1,6 +1,6 @@
 import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/providers/files_provider.dart';
-import 'package:easier_drop/screens/file_transfer_screen.dart';
+import 'package:easier_drop/screens/welcome_screen.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:easier_drop/helpers/keyboard_shortcuts.dart';
@@ -53,7 +53,7 @@ class EasierDrop extends StatelessWidget {
           locale: locale,
           theme: MacosThemeData.light(),
           darkTheme: MacosThemeData.dark(),
-          home: const MacosWindow(child: FileTransferScreen()),
+          home: const WelcomeScreen(),
         );
       },
     );
