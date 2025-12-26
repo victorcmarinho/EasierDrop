@@ -1,6 +1,7 @@
 import 'package:easier_drop/screens/file_transfer_screen.dart';
+import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:macos_ui/macos_ui.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -101,7 +102,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     const SizedBox(height: 32),
                     // Texto de boas-vindas
                     Text(
-                      'Olá, bem-vindo ao',
+                      AppLocalizations.of(context)!.welcomeTo,
                       style: MacosTheme.of(context).typography.title2.copyWith(
                         color: MacosTheme.of(context).typography.title2.color,
                       ),

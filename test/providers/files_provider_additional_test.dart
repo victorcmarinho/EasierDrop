@@ -118,6 +118,9 @@ class _TestLocalizations extends AppLocalizations {
 
   @override
   String get tooltipShare => 'Share';
+
+  @override
+  String get welcomeTo => 'Welcome';
 }
 
 void main() {
