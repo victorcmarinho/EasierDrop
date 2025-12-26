@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/promo/icon.png" width="128" alt="Easier Drop Icon">
+<img src="assets/icon/icon.png" width="128" alt="Easier Drop Icon">
 
 # Easier Drop
 
@@ -24,9 +24,9 @@
 Stop dragging files one by one between full-screen apps. **Easier Drop** lets you "stash" files from anywhere—Finder, Safari, Photos—and gather them in a floating shelf. Once you're ready, grab the whole pile and drop it into your destination in *one go*.
 
 <div align="center">
-  <video src="assets/promo/useged.mov" controls="controls" muted="muted" style="max-width: 100%;"></video>
+  <img src="assets/promo/useged.gif" style="max-width: 100%;">
   <br>
-  <i>(See the demo video in <code>assets/promo/useged.mov</code> if not loading)</i>
+  <i>(See the demo GIF in <code>assets/promo/useged.gif</code> if not loading)</i>
 </div>
 
 > **Note**: A free, open-source alternative to tools like Dropover.

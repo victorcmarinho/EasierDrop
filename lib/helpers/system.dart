@@ -65,7 +65,7 @@ class SystemHelper with WindowListener {
 
   static Future<void> _configureTray() async {
     try {
-      await trayManager.setIcon('assets/images/icon.icns');
+      await trayManager.setIcon('assets/icon/icon.icns');
     } catch (e) {
       AppLogger.warn('Failed to load tray icon: $e');
     }
