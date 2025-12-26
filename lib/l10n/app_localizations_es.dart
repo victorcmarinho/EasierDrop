@@ -1,8 +1,12 @@
+// ignore: unused_import
 import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
+// ignore_for_file: type=lint
+
+/// The translations for Spanish Castilian (`es`).
 class AppLocalizationsEs extends AppLocalizations {
-  AppLocalizationsEs([super.locale = 'es']);
+  AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
   String get appTitle => 'Easier Drop';
@@ -14,8 +18,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clearFilesTitle => '¿Limpiar archivos?';
 
   @override
-  String get clearFilesMessage =>
-      'Esta acción eliminará todos los archivos recolectados.';
+  String get clearFilesMessage => 'Esta acción eliminará todos los archivos recolectados.';
 
   @override
   String get clearCancel => 'Cancelar';
@@ -46,13 +49,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String semAreaHintHas(int count) {
-    String temp0 = intl.Intl.pluralLogic(
+    String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count archivos',
       one: '$count archivo',
     );
-    return 'Contiene $temp0. Arrastra para mover o compartir.';
+    return 'Contiene $_temp0. Arrastra para mover o compartir.';
   }
 
   @override
@@ -60,13 +63,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String semShareHintSome(int count) {
-    String temp0 = intl.Intl.pluralLogic(
+    String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count archivos',
       one: '$count archivo',
     );
-    return 'Compartir $temp0';
+    return 'Compartir $_temp0';
   }
 
   @override
@@ -74,13 +77,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String semRemoveHintSome(int count) {
-    String temp0 = intl.Intl.pluralLogic(
+    String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count archivos',
       one: '$count archivo',
     );
-    return 'Eliminar $temp0';
+    return 'Eliminar $_temp0';
   }
 
   @override
@@ -125,7 +128,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String fileLabelSingle(String name) {
-    return name;
+    return '$name';
   }
 
   @override
@@ -141,4 +144,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get semHandleHint => 'Arrastra para mover la ventana';
+
+  @override
+  String get welcomeTo => 'Hola, bienvenido a';
 }

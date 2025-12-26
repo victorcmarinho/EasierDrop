@@ -40,5 +40,6 @@
   ,"@fileLabelSingle": {"placeholders": {"name": {"type": "String"}}}
   ,"@fileLabelMultiple": {"placeholders": {"count": {"type": "int"}}}
   ,"semHandleLabel": "Window handle"
-  ,"semHandleHint": "Drag to move the window"
+  ,"semHandleHint": "Drag to move the window",
+  "welcomeTo": "Hello, welcome to"
 }

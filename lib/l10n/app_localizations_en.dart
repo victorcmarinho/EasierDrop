@@ -1,8 +1,12 @@
+// ignore: unused_import
 import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
-  AppLocalizationsEn([super.locale = 'en']);
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
   String get appTitle => 'Easier Drop';
@@ -45,13 +49,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String semAreaHintHas(int count) {
-    String temp0 = intl.Intl.pluralLogic(
+    String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count files',
       one: '$count file',
     );
-    return 'Contains $temp0. Drag out to move or share.';
+    return 'Contains $_temp0. Drag out to move or share.';
   }
 
   @override
@@ -59,13 +63,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String semShareHintSome(int count) {
-    String temp0 = intl.Intl.pluralLogic(
+    String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count files',
       one: '$count file',
     );
-    return 'Share $temp0';
+    return 'Share $_temp0';
   }
 
   @override
@@ -73,13 +77,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String semRemoveHintSome(int count) {
-    String temp0 = intl.Intl.pluralLogic(
+    String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count files',
       one: '$count file',
     );
-    return 'Remove $temp0';
+    return 'Remove $_temp0';
   }
 
   @override
@@ -124,7 +128,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String fileLabelSingle(String name) {
-    return name;
+    return '$name';
   }
 
   @override
@@ -140,4 +144,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get semHandleHint => 'Drag to move the window';
+
+  @override
+  String get welcomeTo => 'Hello, welcome to';
 }

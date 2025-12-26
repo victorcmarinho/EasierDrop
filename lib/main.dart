@@ -47,7 +47,6 @@ class EasierDrop extends StatelessWidget {
         return MacosApp(
           navigatorKey: navigatorKey,
           title: 'Easier Drop',
-          debugShowCheckedModeBanner: false,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: locale,
