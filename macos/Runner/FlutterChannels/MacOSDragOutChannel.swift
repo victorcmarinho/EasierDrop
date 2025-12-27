@@ -42,12 +42,15 @@ final class MacOSDragOutChannel: NSObject, NSDraggingSource {
 			return
 		}
 
-		let items: [NSDraggingItem] = urls.map { url in
+		let items: [NSDraggingItem] = urls.enumerated().map { (index, url) in
 			let provider = url as NSURL
 			let draggingItem = NSDraggingItem(pasteboardWriter: provider)
 			let icon = NSWorkspace.shared.icon(forFile: url.path)
 			icon.size = NSSize(width: 64, height: 64)
-			let frame = NSRect(origin: .zero, size: icon.size)
+			
+			let offset = CGFloat(index * 120)
+			let frame = NSRect(x: offset, y: 0, width: icon.size.width, height: icon.size.height)
+			
 			draggingItem.setDraggingFrame(frame, contents: icon)
 			return draggingItem
 		}
