@@ -73,57 +73,53 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return MacosScaffold(
-      backgroundColor: MacosTheme.of(context).canvasColor,
-      children: [
-        ContentArea(
-          builder: (context, scrollController) {
-            return Center(
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _fadeAnimation.value,
-                    child: Transform.scale(
-                      scale: _scaleAnimation.value,
-                      child: child,
-                    ),
-                  );
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Ícone ou logo (opcional)
-                    Icon(
-                      CupertinoIcons.cloud_download,
-                      size: 80,
-                      color: MacosTheme.of(context).primaryColor,
-                    ),
-                    const SizedBox(height: 32),
-                    // Texto de boas-vindas
-                    Text(
-                      AppLocalizations.of(context)!.welcomeTo,
-                      style: MacosTheme.of(context).typography.title2.copyWith(
-                        color: MacosTheme.of(context).typography.title2.color,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Easier Drop',
-                      style: MacosTheme.of(
-                        context,
-                      ).typography.largeTitle.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: MacosTheme.of(context).primaryColor,
-                      ),
-                    ),
-                  ],
-                ),
+    return MacosWindow(
+      child: Center(
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return Opacity(
+              opacity: _fadeAnimation.value,
+              child: Transform.scale(
+                scale: _scaleAnimation.value,
+                child: child,
               ),
             );
           },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Ícone ou logo (opcional)
+              Icon(
+                CupertinoIcons.cloud_download,
+                size: 48,
+                color: MacosTheme.of(context).primaryColor,
+              ),
+              const SizedBox(height: 16),
+              // Texto de boas-vindas
+              Text(
+                AppLocalizations.of(context)!.welcomeTo,
+                style: MacosTheme.of(context).typography.headline.copyWith(
+                  color: MacosTheme.of(context).typography.headline.color,
+                  fontSize: 13,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Easier Drop',
+                style: MacosTheme.of(context).typography.headline.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: MacosTheme.of(context).primaryColor,
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 }
