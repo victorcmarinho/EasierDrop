@@ -33,12 +33,10 @@ class SystemHelper with WindowListener {
   static Future<void> _configureWindow() async {
     await windowManager.ensureInitialized();
     final s = SettingsService.instance;
-    final initialSize =
-        (s.windowW != null && s.windowH != null)
-            ? Size(s.windowW!.clamp(150, 800), s.windowH!.clamp(150, 800))
-            : const Size(250, 250);
+    final initialSize = const Size(250, 250);
     final options = WindowOptions(
-      minimumSize: const Size(150, 150),
+      minimumSize: const Size(250, 250),
+      maximumSize: const Size(250, 250),
       size: initialSize,
       backgroundColor: Colors.transparent,
       alwaysOnTop: true,
@@ -65,7 +63,7 @@ class SystemHelper with WindowListener {
 
   static Future<void> _configureTray() async {
     try {
-      await trayManager.setIcon('assets/images/icon.icns');
+      await trayManager.setIcon('assets/icon/icon.icns');
     } catch (e) {
       AppLogger.warn('Failed to load tray icon: $e');
     }

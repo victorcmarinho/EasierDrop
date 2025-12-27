@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/promo/icon.png" width="128" alt="Easier Drop Icon">
+<img src="assets/icon/icon.png" width="128" alt="Easier Drop Icon">
 
 # Easier Drop
 
@@ -24,9 +24,9 @@
 Deja de arrastrar archivos uno por uno entre aplicaciones a pantalla completa. **Easier Drop** te permite "guardar" archivos desde cualquier lugar (Finder, Safari, Fotos) y reunirlos en un estante flotante. Cuando estés listo, toma toda la pila y suéltala en tu destino de *una sola vez*.
 
 <div align="center">
-  <video src="assets/promo/useged.mov" controls="controls" muted="muted" style="max-width: 100%;"></video>
+  <img src="assets/promo/useged.gif" style="max-width: 100%;">
   <br>
-  <i>(Mira el video de demostración en <code>assets/promo/useged.mov</code> si no carga)</i>
+  <i>(Mira o GIF de demostración en <code>assets/promo/useged.gif</code> si no carga)</i>
 </div>
 
 > **Nota**: Una alternativa gratuita y de código abierto a herramientas como Dropover.
