@@ -12,8 +12,13 @@ import 'package:easier_drop/services/logger.dart';
 class FileReference {
   final String pathname;
   final Uint8List? iconData;
+  final Uint8List? previewData;
 
-  const FileReference({required this.pathname, this.iconData});
+  const FileReference({
+    required this.pathname,
+    this.iconData,
+    this.previewData,
+  });
 
   /// Nome do arquivo (sem o caminho)
   String get fileName => pathname.split(Platform.pathSeparator).last;
@@ -127,8 +132,18 @@ class FileReference {
   }
 
   /// Cria uma nova instância com ícone atualizado
-  FileReference withIcon(Uint8List? icon) =>
-      FileReference(pathname: pathname, iconData: icon);
+  FileReference withIcon(Uint8List? icon) => FileReference(
+    pathname: pathname,
+    iconData: icon,
+    previewData: previewData,
+  );
+
+  /// Cria uma nova instância com preview atualizado
+  FileReference withPreview(Uint8List? preview) => FileReference(
+    pathname: pathname,
+    iconData: iconData,
+    previewData: preview,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -140,5 +155,5 @@ class FileReference {
 
   @override
   String toString() =>
-      'FileReference(pathname: $pathname, hasIcon: ${iconData != null})';
+      'FileReference(pathname: $pathname, hasIcon: ${iconData != null}, hasPreview: ${previewData != null})';
 }
