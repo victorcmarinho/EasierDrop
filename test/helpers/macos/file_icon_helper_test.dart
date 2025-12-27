@@ -20,6 +20,10 @@ void main() {
             final ext = path.split('.').last;
             callCount[ext] = (callCount[ext] ?? 0) + 1;
             return Uint8List.fromList([ext.length]);
+          } else if (call.method == 'getFilePreview') {
+            final path = call.arguments as String;
+            if (path.contains('fail')) return null;
+            return Uint8List.fromList([1, 2, 3]);
           }
           return null;
         },
@@ -56,6 +60,17 @@ void main() {
 
       await FileIconHelper.getFileIcon('/tmp/file_1.ext1');
       expect(callCount['ext1'], 2);
+    });
+
+    test('getFilePreview returns data on success', () async {
+      final preview = await FileIconHelper.getFilePreview('/tmp/image.png');
+      expect(preview, isNotNull);
+      expect(preview!.length, 3);
+    });
+
+    test('getFilePreview returns null on failure', () async {
+      final preview = await FileIconHelper.getFilePreview('/tmp/fail.png');
+      expect(preview, isNull);
     });
   });
 }

@@ -5,21 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2025-12-27
+
+### Added
+- **File Previews**: Implemented `QuickLookThumbnailing` on macOS to generate and display high-quality file previews.
+- **Visual Staggering**: Added an index-based x-offset to `NSDraggingItem` frames for a staggered visual effect during dragging.
+
+### Changed
+- **Optimized Loading**: Improved performance by adding existence checks and optimizing preview/icon loading using JPEG compression and size reduction.
+- **Enhanced Reliability**: Refined file icons and preview fetching logic to handle edge cases and missing files.
+
 ## [1.0.1] - 2025-12-26
 
 ### Added
-- Implementado `flutter_launcher_icons` para padronização de ícones.
-- Ativação de geração de símbolos de catálogo de strings.
+- Implemented `flutter_launcher_icons` for standardized app icons.
+- Enabled string catalog symbol generation.
 
 ### Changed
-- Refatoração da interface da `WelcomeScreen` com layout aprimorado.
-- Tamanho fixo da janela inicial definido para 250x250.
-- Migração de *entitlements* para configurações nativas do Xcode.
-- Alvo de implantação do macOS atualizado para 11.0.
-- Atualização de ativos promocionais.
+- Refactored `WelcomeScreen` UI with an improved layout.
+- Set initial fixed window size to 250x250.
+- Migrated entitlements to native Xcode build settings.
+- Updated macOS deployment target to 11.0.
+- Updated promotional assets.
 
 ### Removed
-- Arquivos de *entitlements* de depuração obsoletos.
+- Obsolete debug entitlements files.
 
 ## [1.0.0] - 2025-12-25
 

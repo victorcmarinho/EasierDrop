@@ -38,6 +38,19 @@ class FileIconHelper {
     }
   }
 
+  static Future<Uint8List?> getFilePreview(String filePath) async {
+    try {
+      final Uint8List? previewData = await _channel.invokeMethod(
+        'getFilePreview',
+        filePath,
+      );
+      return previewData;
+    } catch (e) {
+      AppLogger.error('Erro ao obter preview: $e', tag: 'FileIconHelper');
+      return null;
+    }
+  }
+
   static void _insert(String key, Uint8List value) {
     _iconCache[key] = value;
     if (_iconCache.length > _maxEntries) {

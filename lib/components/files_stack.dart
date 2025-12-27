@@ -96,7 +96,13 @@ class _AnimatedFileIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final radians = rotationDegrees * math.pi / 180;
     final image =
-        file.iconData != null
+        file.previewData != null
+            ? Image.memory(
+              file.previewData!,
+              gaplessPlayback: true,
+              fit: BoxFit.contain,
+            )
+            : file.iconData != null
             ? Image.memory(
               file.iconData!,
               gaplessPlayback: true,
