@@ -115,10 +115,10 @@ class FilesProvider with ChangeNotifier {
   Future<void> _loadFileIcon(FileReference file) async {
     final iconData = await FileIconHelper.getFileIcon(file.pathname);
     if (iconData != null) {
+      if (!_files.containsKey(file.pathname)) return;
+
       final current = _files[file.pathname];
-      // Atualiza apenas se o arquivo ainda existir e não tiver ícone
-      if (current != null) {
-        // Preserva o preview se já existir
+      if (current != null && current.iconData == null) {
         _files[file.pathname] = current.withIcon(iconData);
         _invalidateCache();
         _scheduleNotify();
@@ -130,8 +130,10 @@ class FilesProvider with ChangeNotifier {
   Future<void> _loadFilePreview(FileReference file) async {
     final previewData = await FileIconHelper.getFilePreview(file.pathname);
     if (previewData != null) {
+      if (!_files.containsKey(file.pathname)) return; // Cleanup check
+
       final current = _files[file.pathname];
-      if (current != null) {
+      if (current != null && current.previewData == null) {
         _files[file.pathname] = current.withPreview(previewData);
         _invalidateCache();
         _scheduleNotify();

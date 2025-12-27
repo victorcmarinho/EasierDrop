@@ -59,7 +59,7 @@ class MacOSFileIconChannel: NSObject {
          }
 
          let fileURL = URL(fileURLWithPath: filePath)
-         let size = CGSize(width: 512, height: 512)
+         let size = CGSize(width: 256, height: 256)
          let scale = NSScreen.main?.backingScaleFactor ?? 2.0
          
          let request = QLThumbnailGenerator.Request(
@@ -80,16 +80,17 @@ class MacOSFileIconChannel: NSObject {
                  result(nil)
                  return
              }
-             // Convert NSImage to PNG data
+             
+             // Convert NSImage to JPEG data (Performance optimization)
              let image = thumbnail.nsImage
              guard let tiffData = image.tiffRepresentation,
                    let bitmap = NSBitmapImageRep(data: tiffData),
-                   let pngData = bitmap.representation(using: .png, properties: [:]) else {
+                   let jpegData = bitmap.representation(using: .jpeg, properties: [.compressionFactor: 0.8]) else {
                  result(nil)
                  return
              }
              
-             result(FlutterStandardTypedData(bytes: pngData))
+             result(FlutterStandardTypedData(bytes: jpegData))
          }
     }
 }
