@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		133229C22F01F465007A1920 /* MacOSShakeMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 133229C12F01F465007A1920 /* MacOSShakeMonitor.swift */; };
 		13ADC8B82E5A830C00E032D0 /* MacOSFileDropChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13ADC8B72E5A830A00E032D0 /* MacOSFileDropChannel.swift */; };
 		13ADC8BA2E5A833200E032D0 /* MacOSFileIconChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13ADC8B92E5A833000E032D0 /* MacOSFileIconChannel.swift */; };
 		13ADC8BD2E5A900000E032D0 /* MacOSDragOutChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13ADC8BC2E5A900000E032D0 /* MacOSDragOutChannel.swift */; };
@@ -66,6 +67,7 @@
 
 /* Begin PBXFileReference section */
 		0987C3E621E7A473B4E8769A /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
+		133229C12F01F465007A1920 /* MacOSShakeMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSShakeMonitor.swift; sourceTree = "<group>"; };
 		13ADC8B72E5A830A00E032D0 /* MacOSFileDropChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSFileDropChannel.swift; sourceTree = "<group>"; };
 		13ADC8B92E5A833000E032D0 /* MacOSFileIconChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSFileIconChannel.swift; sourceTree = "<group>"; };
 		13ADC8BC2E5A900000E032D0 /* MacOSDragOutChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSDragOutChannel.swift; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 		33FAB671232836740065AC1E /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				133229C12F01F465007A1920 /* MacOSShakeMonitor.swift */,
 				13E117792D85FB4400AD325F /* FlutterChannels */,
 				33CC11122044BFA00003C045 /* MainFlutterWindow.swift */,
 				33CC10F02044A3C60003C045 /* AppDelegate.swift */,
@@ -457,6 +460,7 @@
 				33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */,
 				33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */,
 				13ADC8BA2E5A833200E032D0 /* MacOSFileIconChannel.swift in Sources */,
+				133229C22F01F465007A1920 /* MacOSShakeMonitor.swift in Sources */,
 				13ADC8B82E5A830C00E032D0 /* MacOSFileDropChannel.swift in Sources */,
 				335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */,
 			);

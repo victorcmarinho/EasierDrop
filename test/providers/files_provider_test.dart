@@ -27,15 +27,17 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     PathProviderPlatform.instance = MockPathProviderPlatform();
 
-    const MethodChannel(PlatformChannels.fileIcon).setMockMethodCallHandler((
-      MethodCall methodCall,
-    ) async {
-      iconCalls.add(methodCall);
-      if (methodCall.method == 'getFileIcon') {
-        return Uint8List(0); // Return empty bytes as icon
-      }
-      return null;
-    });
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          const MethodChannel(PlatformChannels.fileIcon),
+          (MethodCall methodCall) async {
+            iconCalls.add(methodCall);
+            if (methodCall.method == 'getFileIcon') {
+              return Uint8List(0); // Return empty bytes as icon
+            }
+            return null;
+          },
+        );
   });
 
   setUp(() async {

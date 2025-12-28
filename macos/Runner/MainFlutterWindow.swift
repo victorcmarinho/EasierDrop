@@ -1,5 +1,6 @@
 import Cocoa
 import FlutterMacOS
+import desktop_multi_window
 
 class MainFlutterWindow: NSWindow, NSDraggingDestination {
     
@@ -22,6 +23,10 @@ class MainFlutterWindow: NSWindow, NSDraggingDestination {
         self.fileDropChannel = MacOSFileDropChannel.shared
         
         RegisterGeneratedPlugins(registry: flutterViewController)
+        
+        FlutterMultiWindowPlugin.setOnWindowCreatedCallback { controller in
+            RegisterGeneratedPlugins(registry: controller)
+        }
     }
     
     

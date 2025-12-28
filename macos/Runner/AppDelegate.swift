@@ -21,6 +21,7 @@ class AppDelegate: FlutterAppDelegate {
     MacOSFileIconChannel.shared.setup(binaryMessenger: messenger)
     MacOSFileDropChannel.shared.setup(binaryMessenger: messenger)
     MacOSDragOutChannel.shared.setup(view: controller.view, messenger: messenger)
+    MacOSShakeMonitor.shared.setup(binaryMessenger: messenger)
         
         super.applicationDidFinishLaunching(notification)
     }

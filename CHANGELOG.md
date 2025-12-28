@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.0] - 2025-12-28
 
+### Added
+- **Multi-Window Support**: Now supports multiple windows! Shake your mouse while dragging files to spawn a new EasierDrop window at your cursor location.
+- **Native Shake Detection**: Added native macOS shake gesture detection for seamless interaction.
+
 ### Improved
 - **Performance**: Optimized file adding process with parallel validation and batch updates.
 - **Rendering**: Reduced unnecessary widget rebuilds in file grid for smoother UI responsiveness.

@@ -4,27 +4,46 @@ import 'package:easier_drop/screens/welcome_screen.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:easier_drop/helpers/keyboard_shortcuts.dart';
+
+import 'package:easier_drop/screens/file_transfer_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:provider/provider.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-Future<void> main() async {
+Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await SystemHelper.setup();
+  if (args.firstOrNull == 'multi_window') {
+    final windowId = args[1];
 
-  runApp(
-    MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => FilesProvider())],
-      child: const EasierDrop(),
-    ),
-  );
+    // Initialize system helper for secondary window if needed, or simplified setup
+    // For now, let's assume we need basic setup but maybe not all singleton listeners if they conflict
+    await SystemHelper.setup(isSecondaryWindow: true, windowId: windowId);
+
+    runApp(
+      MultiProvider(
+        providers: [ChangeNotifierProvider(create: (_) => FilesProvider())],
+        child: const EasierDrop(isSecondaryWindow: true),
+      ),
+    );
+  } else {
+    await SystemHelper.setup();
+
+    runApp(
+      MultiProvider(
+        providers: [ChangeNotifierProvider(create: (_) => FilesProvider())],
+        child: const EasierDrop(),
+      ),
+    );
+  }
 }
 
 class EasierDrop extends StatelessWidget {
-  const EasierDrop({super.key});
+  final bool isSecondaryWindow;
+
+  const EasierDrop({super.key, this.isSecondaryWindow = false});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +71,10 @@ class EasierDrop extends StatelessWidget {
           locale: locale,
           theme: MacosThemeData.light(),
           darkTheme: MacosThemeData.dark(),
-          home: const WelcomeScreen(),
+          home:
+              isSecondaryWindow
+                  ? const MacosWindow(child: FileTransferScreen())
+                  : const WelcomeScreen(),
         );
       },
     );
