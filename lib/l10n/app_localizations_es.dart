@@ -147,4 +147,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get welcomeTo => 'Hola, bienvenido a';
+
+  @override
+  String get updateAvailable => 'Actualización Disponible';
 }

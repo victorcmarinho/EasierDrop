@@ -41,5 +41,6 @@
   ,"@fileLabelMultiple": {"placeholders": {"count": {"type": "int"}}}
   ,"semHandleLabel": "Barra de arraste"
   ,"semHandleHint": "Arraste para mover a janela",
-  "welcomeTo": "Olá, bem-vindo ao"
+  "welcomeTo": "Olá, bem-vindo ao",
+  "updateAvailable": "Atualização Disponível"
 }

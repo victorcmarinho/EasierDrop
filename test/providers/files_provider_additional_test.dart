@@ -121,6 +121,9 @@ class _TestLocalizations extends AppLocalizations {
 
   @override
   String get welcomeTo => 'Welcome';
+
+  @override
+  String get updateAvailable => 'Update Available';
 }
 
 void main() {

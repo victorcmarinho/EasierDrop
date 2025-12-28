@@ -5,6 +5,9 @@ import 'package:easier_drop/providers/files_provider.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
+import 'package:easier_drop/services/update_service.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
 
 class Tray extends StatefulWidget {
   const Tray({super.key});
@@ -15,6 +18,8 @@ class Tray extends StatefulWidget {
 
 class _TrayState extends State<Tray> with TrayListener {
   int _lastCount = 0;
+  String? _updateUrl;
+  Timer? _updateTimer;
 
   // Guardar referência ao provider para evitar acesso ao context durante dispose
   FilesProvider? _filesProvider;
@@ -23,6 +28,11 @@ class _TrayState extends State<Tray> with TrayListener {
   void initState() {
     super.initState();
     trayManager.addListener(this);
+    _checkForUpdates();
+    _updateTimer = Timer.periodic(
+      const Duration(hours: 6),
+      (_) => _checkForUpdates(),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _filesProvider = context.read<FilesProvider>();
       _filesProvider?.addListener(_onFilesChanged);
@@ -33,6 +43,7 @@ class _TrayState extends State<Tray> with TrayListener {
 
   @override
   void dispose() {
+    _updateTimer?.cancel();
     // Usar a referência salva em vez de acessar o context durante dispose
     if (_filesProvider != null) {
       _filesProvider!.removeListener(_onFilesChanged);
@@ -44,6 +55,7 @@ class _TrayState extends State<Tray> with TrayListener {
 
   @override
   void onTrayIconMouseDown() {
+    _checkForUpdates();
     trayManager.popUpContextMenu();
   }
 
@@ -51,6 +63,11 @@ class _TrayState extends State<Tray> with TrayListener {
   void onTrayMenuItemClick(MenuItem menuItem) async {
     try {
       switch (menuItem.key) {
+        case 'update_available':
+          if (_updateUrl != null) {
+            await launchUrl(Uri.parse(_updateUrl!));
+          }
+          break;
         case 'show_window':
           await SystemHelper.open();
           break;
@@ -82,6 +99,16 @@ class _TrayState extends State<Tray> with TrayListener {
     return Container();
   }
 
+  Future<void> _checkForUpdates() async {
+    final url = await UpdateService.instance.checkForUpdates();
+    if (url != _updateUrl && mounted) {
+      setState(() {
+        _updateUrl = url;
+      });
+      _rebuildMenu();
+    }
+  }
+
   void _onFilesChanged() {
     final provider = context.read<FilesProvider>();
     final count = provider.files.length;
@@ -97,6 +124,10 @@ class _TrayState extends State<Tray> with TrayListener {
     final current = settings.localeCode ?? loc.localeName.split('_').first;
     final menu = Menu(
       items: [
+        if (_updateUrl != null) ...[
+          MenuItem(key: 'update_available', label: '🌟 ${loc.updateAvailable}'),
+          MenuItem.separator(),
+        ],
         MenuItem(key: 'show_window', label: loc.openTray),
         MenuItem(
           key: 'files_count',

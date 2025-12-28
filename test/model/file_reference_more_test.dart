@@ -78,7 +78,7 @@ void main() {
     final ref = FileReference(pathname: '/path/to/file.txt');
     expect(
       ref.toString(),
-      'FileReference(pathname: /path/to/file.txt, hasIcon: false)',
+      'FileReference(pathname: /path/to/file.txt, hasIcon: false, hasPreview: false)',
     );
   });
 }
