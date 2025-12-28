@@ -8,11 +8,16 @@ import 'package:window_manager/window_manager.dart';
 import 'package:easier_drop/services/logger.dart';
 
 class SystemHelper with WindowListener {
+  static final SystemHelper _instance = SystemHelper();
+
   static Future<void> hide() async {
-    await windowManager.hide();
+    await windowManager.setOpacity(0);
+    await windowManager.setSkipTaskbar(true);
   }
 
   static Future<void> open() async {
+    await windowManager.setOpacity(1);
+    await windowManager.setSkipTaskbar(false);
     await Future.wait([windowManager.show(), windowManager.focus()]);
   }
 
@@ -21,9 +26,14 @@ class SystemHelper with WindowListener {
     await windowManager.destroy();
   }
 
+  @override
+  Future<void> onWindowClose() async {
+    await hide();
+  }
+
   static Future<void> setup() async {
     await SettingsService.instance.load();
-    windowManager.addListener(SystemHelper());
+    windowManager.addListener(_instance);
     await Future.wait([
       SystemHelper._configureTray(),
       SystemHelper._configureWindow(),
@@ -43,7 +53,7 @@ class SystemHelper with WindowListener {
       titleBarStyle: TitleBarStyle.hidden,
       title: 'Easier Drop',
       windowButtonVisibility: false,
-      skipTaskbar: true,
+      skipTaskbar: false,
     );
 
     await windowManager.waitUntilReadyToShow(options, () async {
@@ -59,6 +69,8 @@ class SystemHelper with WindowListener {
       }
       await SystemHelper.open();
     });
+
+    await windowManager.setPreventClose(true);
   }
 
   static Future<void> _configureTray() async {

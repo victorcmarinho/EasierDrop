@@ -18,7 +18,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clearFilesTitle => '¿Limpiar archivos?';
 
   @override
-  String get clearFilesMessage => 'Esta acción eliminará todos los archivos recolectados.';
+  String get clearFilesMessage =>
+      'Esta acción eliminará todos los archivos recolectados.';
 
   @override
   String get clearCancel => 'Cancelar';
