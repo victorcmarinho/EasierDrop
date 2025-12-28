@@ -11,24 +11,28 @@ class SystemHelper with WindowListener {
   static final SystemHelper _instance = SystemHelper();
 
   static Future<void> hide() async {
-    await windowManager.setOpacity(0);
-    await windowManager.setSkipTaskbar(true);
+    await Future.wait([
+      windowManager.hide(),
+      windowManager.setSkipTaskbar(true),
+    ]);
   }
 
   static Future<void> open() async {
-    await windowManager.setOpacity(1);
-    await windowManager.setSkipTaskbar(false);
-    await Future.wait([windowManager.show(), windowManager.focus()]);
+    await Future.wait([
+      windowManager.show(),
+      windowManager.focus(),
+      windowManager.setSkipTaskbar(false),
+    ]);
   }
 
   static Future<void> exit() async {
-    await trayManager.destroy();
-    await windowManager.destroy();
+    await Future.wait([trayManager.destroy(), windowManager.destroy()]);
   }
 
   @override
   Future<void> onWindowClose() async {
     await hide();
+    return;
   }
 
   static Future<void> setup() async {
@@ -42,6 +46,7 @@ class SystemHelper with WindowListener {
 
   static Future<void> _configureWindow() async {
     await windowManager.ensureInitialized();
+
     final s = SettingsService.instance;
     final initialSize = const Size(250, 250);
     final options = WindowOptions(
@@ -67,10 +72,12 @@ class SystemHelper with WindowListener {
           AppLogger.warn('Failed to restore window position: $e');
         }
       }
-      await SystemHelper.open();
-    });
 
-    await windowManager.setPreventClose(true);
+      await Future.wait([
+        windowManager.setPreventClose(true),
+        windowManager.setVisibleOnAllWorkspaces(true),
+      ]);
+    });
   }
 
   static Future<void> _configureTray() async {
