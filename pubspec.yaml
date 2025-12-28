@@ -1,7 +1,7 @@
 name: easier_drop
 description: "App Flutter desktop para coletar arquivos temporariamente e arrastar em lote para outro destino."
 publish_to: 'none'
-version: 1.0.3
+version: 1.0.4
 repository: https://github.com/victorcmarinho/EasierDrop
 
 environment:
