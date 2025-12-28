@@ -312,6 +312,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hello, welcome to'**
   String get welcomeTo;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Available'**
+  String get updateAvailable;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

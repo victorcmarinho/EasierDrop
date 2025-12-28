@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **File Previews**: Implemented `QuickLookThumbnailing` on macOS to generate and display high-quality file previews.
 - **Visual Staggering**: Added an index-based x-offset to `NSDraggingItem` frames for a staggered visual effect during dragging.
+- **Update Service**: Added a service to check for app updates and notify the user.
 
 ### Changed
 - **Optimized Loading**: Improved performance by adding existence checks and optimizing preview/icon loading using JPEG compression and size reduction.
