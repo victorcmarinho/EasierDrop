@@ -39,13 +39,19 @@ class FilesProvider with ChangeNotifier {
   List<FileReference> get files =>
       _cachedFilesList ??= List.unmodifiable(_files.values);
 
-  List<XFile> get validXFiles =>
-      _files.values
-          .where((file) => file.isValidSync())
-          .map((file) => XFile(file.pathname))
-          .toList();
+  List<XFile>? _cachedXFiles;
 
-  /// Agenda uma notificação para evitar múltiplas atualizações
+  List<XFile> get validXFiles {
+    if (_cachedXFiles != null) return _cachedXFiles!;
+
+    _cachedXFiles =
+        _files.values
+            .where((file) => file.isValidSync())
+            .map((file) => XFile(file.pathname))
+            .toList();
+    return _cachedXFiles!;
+  }
+
   void _scheduleNotify() {
     if (_notifyScheduled) return;
     _notifyScheduled = true;
@@ -56,7 +62,10 @@ class FilesProvider with ChangeNotifier {
   }
 
   /// Invalida o cache da lista de arquivos
-  void _invalidateCache() => _cachedFilesList = null;
+  void _invalidateCache() {
+    _cachedFilesList = null;
+    _cachedXFiles = null;
+  }
 
   FilesProvider({bool enableMonitoring = true}) {
     _monitoringEnabled = enableMonitoring;
@@ -75,9 +84,7 @@ class FilesProvider with ChangeNotifier {
   Future<void> addFile(FileReference file) async {
     try {
       if (_files.length >= _maxFiles) {
-        _lastLimitHit = DateTime.now();
-        AppLogger.warn('File limit reached ($_maxFiles)', tag: 'FilesProvider');
-        _scheduleNotify();
+        _handleLimitReached();
         return;
       }
 
@@ -141,14 +148,59 @@ class FilesProvider with ChangeNotifier {
     }
   }
 
-  /// Adiciona múltiplos arquivos
   Future<void> addFiles(Iterable<FileReference> files) async {
-    for (final file in files) {
-      await addFile(file);
+    if (files.isEmpty) return;
+
+    final validated = await Future.wait(
+      files.map((f) async {
+        if (_files.containsKey(f.pathname)) return null;
+
+        return await f.isValidAsync() ? f : null;
+      }),
+    );
+
+    final validFiles = validated.whereType<FileReference>().toList();
+    if (validFiles.isEmpty) return;
+
+    final currentCount = _files.length;
+    final availableSlots = _maxFiles - currentCount;
+
+    if (availableSlots <= 0) {
+      _handleLimitReached();
+      return;
+    }
+
+    final filesToAdd =
+        validFiles.length > availableSlots
+            ? validFiles.take(availableSlots).toList()
+            : validFiles;
+
+    if (validFiles.length > availableSlots) {
+      _handleLimitReached();
+    }
+
+    for (final file in filesToAdd) {
+      _files[file.pathname] = file;
+      _loadFileIcon(file);
+      _loadFilePreview(file);
+    }
+
+    if (filesToAdd.isNotEmpty) {
+      AppLogger.info(
+        'Batch added: ${filesToAdd.length} files',
+        tag: 'FilesProvider',
+      );
+      _invalidateCache();
+      notifyListeners();
     }
   }
 
-  /// Remove um arquivo específico
+  void _handleLimitReached() {
+    _lastLimitHit = DateTime.now();
+    AppLogger.warn('File limit reached ($_maxFiles)', tag: 'FilesProvider');
+    _scheduleNotify();
+  }
+
   Future<void> removeFile(FileReference file) async {
     try {
       if (_files.remove(file.pathname) != null) {

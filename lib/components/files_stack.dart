@@ -31,24 +31,21 @@ class FilesStack extends StatelessWidget {
       builder: (context, constraints) {
         final maxSide = math.min(constraints.maxWidth, constraints.maxHeight);
         final iconSize = maxSide * 0.78;
-        final count = droppedFiles.length;
         final visible = droppedFiles.take(6).toList();
+        final count = visible.length;
         final spread = math.min(14.0, maxSide * 0.12);
 
         return RepaintBoundary(
           child: Stack(
             alignment: Alignment.center,
             children: [
-              for (int i = 0; i < visible.length; i++)
+              for (int i = 0; i < count; i++)
                 _AnimatedFileIcon(
                   key: ValueKey(visible[i].pathname),
                   file: visible[i],
                   size: iconSize,
                   rotationDegrees: count == 1 ? 0 : _rotationForIndex(i),
-                  dx:
-                      count == 1
-                          ? 0
-                          : _offsetForIndex(i, visible.length, spread),
+                  dx: count == 1 ? 0 : _offsetForIndex(i, count, spread),
                   elevation: i.toDouble(),
                   duration: animationDuration,
                   curve: curve,
@@ -60,12 +57,12 @@ class FilesStack extends StatelessWidget {
     );
   }
 
-  double _rotationForIndex(int i) {
+  static double _rotationForIndex(int i) {
     const base = 3.0;
     return (i - 2) * base;
   }
 
-  double _offsetForIndex(int i, int len, double spread) {
+  static double _offsetForIndex(int i, int len, double spread) {
     if (len == 1) return 0;
     final norm = (i / (len - 1)) - 0.5;
     return norm * spread;
