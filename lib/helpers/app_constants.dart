@@ -13,7 +13,14 @@ class AppConstants {
   // Durações de animação
   static const Duration fastAnimation = Duration(milliseconds: 160);
   static const Duration mediumAnimation = Duration(milliseconds: 300);
+  static const double shareOriginSize = 40.0;
   static const Duration slowAnimation = Duration(milliseconds: 500);
+
+  // UI Stack
+  static const int stackMaxVisible = 6;
+  static const double stackRotationBase = 3.0;
+  static const double stackSpreadBase = 14.0;
+  static const double stackSizeMultiplier = 0.78;
 
   // Configurações de arquivo
   static const int defaultMaxFiles = 100;
@@ -22,6 +29,11 @@ class AppConstants {
   // Configurações de notificação
   static const Duration limitNotificationDuration = Duration(seconds: 2);
   static const Duration debounceDelay = Duration(milliseconds: 250);
+  static const Duration monitorInterval = Duration(seconds: 5);
+
+  // Welcome Screen
+  static const Duration welcomeAnimationDuration = Duration(milliseconds: 1500);
+  static const Duration welcomeNavigationDelay = Duration(seconds: 3);
 
   // Update Service
   static const String githubLatestReleaseUrl =

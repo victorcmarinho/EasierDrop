@@ -8,7 +8,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   group('FilesProvider icon integration', () {
     test('adds icon after file insert', () async {
-      SettingsService.instance.maxFiles = 10;
+      SettingsService.instance.setMaxFiles(10);
 
       final dir = await Directory.systemTemp.createTemp('icon_case');
       final f = File('${dir.path}/sample.zzzz')..writeAsStringSync('1');

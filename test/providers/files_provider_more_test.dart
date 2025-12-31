@@ -11,7 +11,7 @@ void main() {
 
   group('FilesProvider extra branches', () {
     setUp(() {
-      SettingsService.instance.maxFiles = 50;
+      SettingsService.instance.setMaxFiles(50);
     });
 
     test('adds icon data when channel returns bytes', () async {

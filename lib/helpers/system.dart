@@ -132,7 +132,6 @@ class SystemHelper with WindowListener {
   static Future<void> _configureWindow() async {
     await windowManager.ensureInitialized();
 
-    final s = SettingsService.instance;
     const defaultSize = Size(
       AppConstants.defaultWindowSize,
       AppConstants.defaultWindowSize,
@@ -151,22 +150,27 @@ class SystemHelper with WindowListener {
     );
 
     await windowManager.waitUntilReadyToShow(options, () async {
-      if (s.windowX != null && s.windowY != null) {
-        try {
-          await windowManager.setPosition(
-            Offset(s.windowX!.toDouble(), s.windowY!.toDouble()),
-            animate: false,
-          );
-        } catch (e) {
-          AppLogger.warn('Failed to restore window position: $e');
-        }
-      }
+      await _restoreWindowPosition();
 
       await Future.wait([
         windowManager.setPreventClose(true),
         windowManager.setVisibleOnAllWorkspaces(true),
       ]);
     });
+  }
+
+  static Future<void> _restoreWindowPosition() async {
+    final s = SettingsService.instance;
+    if (s.windowX != null && s.windowY != null) {
+      try {
+        await windowManager.setPosition(
+          Offset(s.windowX!.toDouble(), s.windowY!.toDouble()),
+          animate: false,
+        );
+      } catch (e) {
+        AppLogger.warn('Failed to restore window position: $e');
+      }
+    }
   }
 
   @override

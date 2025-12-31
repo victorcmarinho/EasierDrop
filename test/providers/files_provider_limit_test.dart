@@ -9,7 +9,7 @@ void main() {
     test('enforces maxFiles and recentlyAtLimit flag', () async {
       final settings = SettingsService.instance;
       final prev = settings.maxFiles;
-      settings.maxFiles = 2;
+      settings.setMaxFiles(2);
       final p = FilesProvider(enableMonitoring: false);
       final dir = await Directory.systemTemp.createTemp('files_limit');
       final f1 = File('${dir.path}/a.txt')..writeAsStringSync('a');
@@ -22,20 +22,20 @@ void main() {
       await p.addFile(FileReference(pathname: f3.path));
       expect(p.files.length, 2);
       expect(p.recentlyAtLimit, isTrue);
-      settings.maxFiles = prev;
+      settings.setMaxFiles(prev);
     });
 
     test('duplicate path not added twice', () async {
       final settings = SettingsService.instance;
       final prev = settings.maxFiles;
-      settings.maxFiles = 5;
+      settings.setMaxFiles(5);
       final p = FilesProvider(enableMonitoring: false);
       final dir = await Directory.systemTemp.createTemp('files_dup');
       final f = File('${dir.path}/dup.txt')..writeAsStringSync('dup');
       await p.addFile(FileReference(pathname: f.path));
       await p.addFile(FileReference(pathname: f.path));
       expect(p.files.length, 1);
-      settings.maxFiles = prev;
+      settings.setMaxFiles(prev);
     });
 
     test('removeByPath vs removeFile', () async {

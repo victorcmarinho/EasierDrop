@@ -171,7 +171,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Remove o widget para testar dispose
-    await tester.pumpWidget(Container());
+    await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
 
     // Verifica se removeListener foi chamado (pode ser chamado mais de uma vez)
@@ -189,7 +189,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verifica se o Container está presente (método build)
-    expect(find.byType(Container), findsOneWidget);
+    expect(find.byType(SizedBox), findsOneWidget);
   });
 
   test('Tray widget pode ser criado', () {
@@ -310,7 +310,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Testar dispose em diferentes momentos
-    await tester.pumpWidget(Container());
+    await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
 
     // Verificar que removeListener foi chamado
@@ -361,7 +361,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Remove o widget para testar dispose
-    await tester.pumpWidget(Container());
+    await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
 
     // Deve executar sem erros
