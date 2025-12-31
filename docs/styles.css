@@ -38,7 +38,8 @@ a {
 /* Navbar */
 .navbar {
     padding: 20px 0;
-    border-bottom: 1px solid transparent; /* reserved for scroll effect */
+    border-bottom: 1px solid transparent;
+    /* reserved for scroll effect */
 }
 
 .navbar .container {
@@ -90,6 +91,7 @@ a {
 .gradient-text {
     background: linear-gradient(90deg, #2f81f7, #a371f7);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -155,17 +157,15 @@ a {
     display: inline-block;
 }
 
-.placeholder-image {
+.demo-video {
     width: 100%;
     max-width: 800px;
-    height: 450px;
-    background: var(--card-bg);
+    height: auto;
     border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     border: 1px solid var(--border-color);
-    color: var(--text-muted);
+    pointer-events: none;
+    /* Disable interaction/pausing */
 }
 
 /* Features */
@@ -248,7 +248,7 @@ footer {
     .hero-title {
         font-size: 2.5rem;
     }
-    
+
     .footer-content {
         flex-direction: column;
         gap: 20px;
