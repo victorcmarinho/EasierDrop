@@ -16,13 +16,15 @@ class AppDelegate: FlutterAppDelegate {
             fatalError("FlutterViewController not found")
         }
         
-    // Setup communication channels
-    let messenger = controller.engine.binaryMessenger
-    MacOSFileIconChannel.shared.setup(binaryMessenger: messenger)
-    MacOSFileDropChannel.shared.setup(binaryMessenger: messenger)
-    MacOSDragOutChannel.shared.setup(view: controller.view, messenger: messenger)
-    MacOSShakeMonitor.shared.setup(binaryMessenger: messenger)
+        setupCustomChannels(messenger: controller.engine.binaryMessenger, view: controller.view)
         
         super.applicationDidFinishLaunching(notification)
+    }
+
+    func setupCustomChannels(messenger: FlutterBinaryMessenger, view: NSView) {
+        MacOSFileIconChannel.shared.setup(binaryMessenger: messenger)
+        MacOSFileDropChannel.shared.setup(binaryMessenger: messenger)
+        MacOSDragOutChannel.shared.setup(view: view, messenger: messenger)
+        MacOSShakeMonitor.shared.setup(binaryMessenger: messenger)
     }
 }

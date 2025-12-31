@@ -26,6 +26,10 @@ class MainFlutterWindow: NSWindow, NSDraggingDestination {
         
         FlutterMultiWindowPlugin.setOnWindowCreatedCallback { controller in
             RegisterGeneratedPlugins(registry: controller)
+            
+            if let appDelegate = NSApp.delegate as? AppDelegate {
+                appDelegate.setupCustomChannels(messenger: controller.engine.binaryMessenger, view: controller.view)
+            }
         }
     }
     
