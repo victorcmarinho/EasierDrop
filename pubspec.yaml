@@ -22,21 +22,19 @@ dependencies:
   path: ^1.9.1
   intl: ^0.20.2
   text_marquee: ^0.0.2
-  flutter_launcher_icons: ^0.14.4
   http: ^1.6.0
   pub_semver: ^2.2.0
   package_info_plus: ^8.3.1
   url_launcher: ^6.3.2
   desktop_multi_window: ^0.3.0
   shimmer: ^3.0.0
-  lottie: ^3.3.0
-  flutter_dotenv: ^5.2.1
+  flutter_dotenv: ^6.0.0
   aptabase_flutter: ^0.4.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons: ^0.14.4
   flutter_lints: ^6.0.0
   path_provider_platform_interface: ^2.1.2
   mocktail: ^1.0.4
