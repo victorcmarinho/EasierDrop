@@ -1,14 +1,13 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 class Env {
   Env._();
 
-  static String get aptabaseAppKey =>
-      dotenv.get('APTABASE_APP_KEY', fallback: '');
+  static const String aptabaseAppKey = String.fromEnvironment(
+    'APTABASE_APP_KEY',
+  );
 
-  static String get githubLatestReleaseUrl => dotenv.get(
+  static const String githubLatestReleaseUrl = String.fromEnvironment(
     'GITHUB_LATEST_RELEASE_URL',
-    fallback:
+    defaultValue:
         'https://api.github.com/repos/victorcmarinho/EasierDrop/releases/latest',
   );
 

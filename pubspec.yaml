@@ -28,7 +28,7 @@ dependencies:
   url_launcher: ^6.3.2
   desktop_multi_window: ^0.3.0
   shimmer: ^3.0.0
-  flutter_dotenv: ^6.0.0
+
   aptabase_flutter: ^0.4.1
 
 dev_dependencies:
@@ -47,7 +47,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - .env
+
     - assets/icon/icon.png
     - assets/icon/icon.icns
 
