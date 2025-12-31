@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:easier_drop/helpers/macos/file_icon_helper.dart';
-import 'package:easier_drop/services/logger.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 
 class FileRepository {
   const FileRepository();
@@ -16,7 +16,10 @@ class FileRepository {
 
       return await _testReadability(file);
     } catch (e) {
-      AppLogger.debug('Error validating file: $pathname ($e)', tag: 'FileRepo');
+      AnalyticsService.instance.debug(
+        'Error validating file: $pathname ($e)',
+        tag: 'FileRepo',
+      );
       return false;
     }
   }
@@ -48,13 +51,13 @@ class FileRepository {
       await raf.readByte();
       return true;
     } on FileSystemException catch (e) {
-      AppLogger.warn(
+      AnalyticsService.instance.warn(
         'No read permission: ${file.path} (${e.osError?.message})',
         tag: 'FileRepo',
       );
       return false;
     } catch (e) {
-      AppLogger.warn(
+      AnalyticsService.instance.warn(
         'Failed readability test: ${file.path} ($e)',
         tag: 'FileRepo',
       );

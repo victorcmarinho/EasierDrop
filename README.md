@@ -54,10 +54,21 @@ Stop dragging files one by one between full-screen apps. **Easier Drop** lets yo
 ### From Source
 
 1. **Prerequisites**: [Flutter SDK](https://flutter.dev) installed.
-2. **Clone & Run**:
+2. **Clone & Setup**:
    ```bash
    git clone https://github.com/victorcmarinho/easier_drop.git
    cd easier_drop
+   ```
+
+3. **Environment Setup**:
+   - Copy `.env.example` to `.env`:
+     ```bash
+     cp .env.example .env
+     ```
+   - Edit `.env` and add your `APTABASE_APP_KEY`.
+
+4. **Run**:
+   ```bash
    flutter pub get
    flutter run -d macos
    ```

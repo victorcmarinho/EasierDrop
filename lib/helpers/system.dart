@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:easier_drop/services/tray_service.dart';
-import 'package:easier_drop/services/logger.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:flutter/services.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
@@ -20,6 +20,7 @@ class SystemHelper with WindowListener {
       windowManager.hide(),
       windowManager.setSkipTaskbar(true),
     ]);
+    AnalyticsService.instance.trackEvent('window_hidden');
   }
 
   static Future<void> open() async {
@@ -28,6 +29,7 @@ class SystemHelper with WindowListener {
       windowManager.focus(),
       windowManager.setSkipTaskbar(false),
     ]);
+    AnalyticsService.instance.trackEvent('window_shown');
   }
 
   static Future<void> exit() async {
@@ -104,7 +106,7 @@ class SystemHelper with WindowListener {
 
       await controller.show();
     } catch (e) {
-      AppLogger.warn('Failed to setup secondary window: $e');
+      AnalyticsService.instance.warn('Failed to setup secondary window: $e');
       if (windowId != null) {
         WindowController.fromWindowId(windowId).show();
       }
@@ -127,6 +129,7 @@ class SystemHelper with WindowListener {
         }),
       ),
     );
+    AnalyticsService.instance.shakeWindowCreated();
   }
 
   static Future<void> _configureWindow() async {
@@ -168,7 +171,7 @@ class SystemHelper with WindowListener {
           animate: false,
         );
       } catch (e) {
-        AppLogger.warn('Failed to restore window position: $e');
+        AnalyticsService.instance.warn('Failed to restore window position: $e');
       }
     }
   }

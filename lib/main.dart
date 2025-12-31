@@ -1,4 +1,6 @@
 import 'package:easier_drop/helpers/system.dart';
+import 'package:easier_drop/services/analytics_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/screens/welcome_screen.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
@@ -14,6 +16,10 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: '.env');
+  await AnalyticsService.instance.initialize();
+  AnalyticsService.instance.appStarted();
 
   if (args.firstOrNull == 'multi_window') {
     final windowId = args[1];

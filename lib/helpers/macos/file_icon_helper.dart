@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'package:flutter/services.dart';
 import 'package:easier_drop/services/constants.dart';
-import 'package:easier_drop/services/logger.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 
 class FileIconHelper {
   static const MethodChannel _channel = MethodChannel(
@@ -33,7 +33,10 @@ class FileIconHelper {
       }
       return iconData;
     } catch (e) {
-      AppLogger.error('Erro ao obter ícone: $e', tag: 'FileIconHelper');
+      AnalyticsService.instance.error(
+        'Erro ao obter ícone: $e',
+        tag: 'FileIconHelper',
+      );
       return null;
     }
   }
@@ -46,7 +49,10 @@ class FileIconHelper {
       );
       return previewData;
     } catch (e) {
-      AppLogger.error('Erro ao obter preview: $e', tag: 'FileIconHelper');
+      AnalyticsService.instance.error(
+        'Erro ao obter preview: $e',
+        tag: 'FileIconHelper',
+      );
       return null;
     }
   }

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:easier_drop/services/logger.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
 
 abstract class UpdateClient {
@@ -29,7 +29,7 @@ class UpdateService {
       final response = await _client.getLatestRelease();
 
       if (response.statusCode == 200) {
-        AppLogger.info('Update check successful');
+        AnalyticsService.instance.info('Update check successful');
         final data = json.decode(response.body);
 
         final String tagName = data['tag_name'] ?? '';
@@ -38,11 +38,12 @@ class UpdateService {
         final packageInfo = await PackageInfo.fromPlatform();
 
         if (isBetterVersion(tagName, packageInfo.version)) {
+          AnalyticsService.instance.updateAvailable(tagName);
           return releaseUrl;
         }
       }
     } catch (e) {
-      AppLogger.warn('Failed to check for updates: $e');
+      AnalyticsService.instance.warn('Failed to check for updates: $e');
     }
     return null;
   }
@@ -59,7 +60,7 @@ class UpdateService {
 
       return latest > current;
     } catch (e) {
-      AppLogger.warn('Version parsing error: $e');
+      AnalyticsService.instance.warn('Version parsing error: $e');
       return false;
     }
   }

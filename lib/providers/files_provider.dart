@@ -1,14 +1,13 @@
 import 'dart:async';
+import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/services/file_repository.dart';
-import 'package:easier_drop/services/logger.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
-/// Provider responsável pelo gerenciamento de arquivos no aplicativo.
 class FilesProvider with ChangeNotifier {
   final int? _maxFilesOverride;
   final FileRepository _repository;
@@ -48,7 +47,7 @@ class FilesProvider with ChangeNotifier {
 
   List<FileReference> get files {
     final list = _cachedFilesList ??= List.unmodifiable(_files.values);
-    AppLogger.debug(
+    AnalyticsService.instance.debug(
       'files getter called. Map size: ${_files.length}, List size: ${list.length}',
       tag: 'FilesProvider',
     );
@@ -89,7 +88,7 @@ class FilesProvider with ChangeNotifier {
       }
 
       if (!await _repository.validateFile(file.pathname)) {
-        AppLogger.debug(
+        AnalyticsService.instance.debug(
           'Invalid file skipped: ${file.pathname}',
           tag: 'FilesProvider',
         );
@@ -97,7 +96,7 @@ class FilesProvider with ChangeNotifier {
       }
 
       if (_files.containsKey(file.pathname)) {
-        AppLogger.debug(
+        AnalyticsService.instance.debug(
           'Duplicate file ignored: ${file.pathname}',
           tag: 'FilesProvider',
         );
@@ -108,12 +107,16 @@ class FilesProvider with ChangeNotifier {
       _invalidateCache();
       _scheduleNotify();
 
-      // Carrega thumbnails em background
       _loadFileThumbnails(file.pathname);
 
-      AppLogger.info('File added: ${file.fileName}', tag: 'FilesProvider');
+      AnalyticsService.instance.fileAdded(
+        extension: file.fileName.split('.').lastOrNull,
+      );
     } catch (e) {
-      AppLogger.error('Error adding file: $e', tag: 'FilesProvider');
+      AnalyticsService.instance.error(
+        'Error adding file: $e',
+        tag: 'FilesProvider',
+      );
     }
   }
 
@@ -178,10 +181,13 @@ class FilesProvider with ChangeNotifier {
     for (final file in filesToAdd) {
       _files[file.pathname] = file.withProcessing(true);
       _loadFileThumbnails(file.pathname);
+      AnalyticsService.instance.fileAdded(
+        extension: file.fileName.split('.').lastOrNull,
+      );
     }
 
     if (filesToAdd.isNotEmpty) {
-      AppLogger.info(
+      AnalyticsService.instance.info(
         'Batch added: ${filesToAdd.length} files',
         tag: 'FilesProvider',
       );
@@ -192,7 +198,11 @@ class FilesProvider with ChangeNotifier {
 
   void _handleLimitReached() {
     _lastLimitHit = DateTime.now();
-    AppLogger.warn('File limit reached ($_maxFiles)', tag: 'FilesProvider');
+    AnalyticsService.instance.warn(
+      'File limit reached ($_maxFiles)',
+      tag: 'FilesProvider',
+    );
+    AnalyticsService.instance.fileLimitReached();
     _scheduleNotify();
   }
 
@@ -200,7 +210,10 @@ class FilesProvider with ChangeNotifier {
     if (_files.remove(file.pathname) != null) {
       _invalidateCache();
       _scheduleNotify();
-      AppLogger.info('File removed: ${file.fileName}', tag: 'FilesProvider');
+      AnalyticsService.instance.info(
+        'File removed: ${file.fileName}',
+        tag: 'FilesProvider',
+      );
     }
   }
 
@@ -208,7 +221,11 @@ class FilesProvider with ChangeNotifier {
     if (_files.remove(pathname) != null) {
       _invalidateCache();
       _scheduleNotify();
-      AppLogger.info('File removed: $pathname', tag: 'FilesProvider');
+      AnalyticsService.instance.fileDroppedOut();
+      AnalyticsService.instance.info(
+        'File removed: $pathname',
+        tag: 'FilesProvider',
+      );
     }
   }
 
@@ -218,7 +235,11 @@ class FilesProvider with ChangeNotifier {
     _files.clear();
     _invalidateCache();
     _scheduleNotify();
-    AppLogger.info('$count file(s) cleared', tag: 'FilesProvider');
+    AnalyticsService.instance.fileDroppedOut();
+    AnalyticsService.instance.info(
+      '$count file(s) cleared',
+      tag: 'FilesProvider',
+    );
   }
 
   Future<Object> shared({Offset? position}) async {
@@ -243,7 +264,10 @@ class FilesProvider with ChangeNotifier {
 
       return SharePlus.instance.share(params);
     } catch (e) {
-      AppLogger.error('Error sharing files: $e', tag: 'FilesProvider');
+      AnalyticsService.instance.error(
+        'Error sharing files: $e',
+        tag: 'FilesProvider',
+      );
       return ShareResult('shareError', ShareResultStatus.unavailable);
     }
   }
@@ -267,7 +291,7 @@ class FilesProvider with ChangeNotifier {
 
     _invalidateCache();
     _scheduleNotify();
-    AppLogger.info(
+    AnalyticsService.instance.info(
       '${toRemove.length} invalid file(s) removed after rescan',
       tag: 'FilesProvider',
     );

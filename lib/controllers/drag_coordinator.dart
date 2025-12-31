@@ -5,7 +5,7 @@ import 'package:easier_drop/services/file_drop_service.dart';
 import 'package:easier_drop/services/drag_out_service.dart';
 import 'package:easier_drop/services/drag_result.dart';
 import 'package:easier_drop/services/constants.dart';
-import 'package:easier_drop/services/logger.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'drag_coordinator_types.dart';
@@ -56,7 +56,7 @@ class DragCoordinator {
     FileDropService.instance.setMethodCallHandler((call) async {
       if (call.method == PlatformChannels.fileDroppedCallback) {
         final operation = call.arguments as String?;
-        AppLogger.info(
+        AnalyticsService.instance.info(
           'Drag finished (inbound). Operation: ${operation ?? 'unknown'}',
           tag: DragCoordinatorConfig.logTag,
         );
@@ -80,7 +80,7 @@ class DragCoordinator {
     final result = ChannelDragResult.parse(raw);
 
     if (!result.isSuccess) {
-      AppLogger.warn(
+      AnalyticsService.instance.warn(
         'Drag finished with error',
         tag: DragCoordinatorConfig.logTag,
       );
@@ -89,7 +89,10 @@ class DragCoordinator {
 
     final operationType = _mapDragOperation(result.operation);
 
-    AppLogger.info(operationType.logMessage, tag: DragCoordinatorConfig.logTag);
+    AnalyticsService.instance.info(
+      operationType.logMessage,
+      tag: DragCoordinatorConfig.logTag,
+    );
 
     if (operationType.shouldClearFiles) {
       final provider = context.read<FilesProvider>();
@@ -117,7 +120,10 @@ class DragCoordinator {
     final filePaths = filesProvider.files.map((f) => f.pathname).toList();
 
     if (filePaths.isEmpty) {
-      AppLogger.warn('No files to drag', tag: DragCoordinatorConfig.logTag);
+      AnalyticsService.instance.warn(
+        'No files to drag',
+        tag: DragCoordinatorConfig.logTag,
+      );
       return;
     }
 
@@ -125,7 +131,7 @@ class DragCoordinator {
 
     try {
       await DragOutService.instance.beginDrag(filePaths);
-      AppLogger.info(
+      AnalyticsService.instance.info(
         'External drag started',
         tag: DragCoordinatorConfig.logTag,
       );

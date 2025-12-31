@@ -8,6 +8,7 @@ class AppSettings {
   final double? windowW;
   final double? windowH;
   final String? localeCode;
+  final bool telemetryEnabled;
 
   const AppSettings({
     this.maxFiles = 100,
@@ -16,6 +17,7 @@ class AppSettings {
     this.windowW,
     this.windowH,
     this.localeCode,
+    this.telemetryEnabled = true,
   });
 
   factory AppSettings.fromMap(Map<String, dynamic> map) {
@@ -26,6 +28,7 @@ class AppSettings {
       windowW: (map['windowW'] as num?)?.toDouble(),
       windowH: (map['windowH'] as num?)?.toDouble(),
       localeCode: map['locale'] as String?,
+      telemetryEnabled: (map['telemetryEnabled'] as bool?) ?? true,
     );
   }
 
@@ -39,6 +42,7 @@ class AppSettings {
       if (windowY != null) 'windowY': windowY,
       if (windowW != null) 'windowW': windowW,
       if (windowH != null) 'windowH': windowH,
+      'telemetryEnabled': telemetryEnabled,
     };
   }
 
@@ -49,6 +53,7 @@ class AppSettings {
     double? windowW,
     double? windowH,
     String? localeCode,
+    bool? telemetryEnabled,
   }) {
     return AppSettings(
       maxFiles: maxFiles ?? this.maxFiles,
@@ -57,6 +62,7 @@ class AppSettings {
       windowW: windowW ?? this.windowW,
       windowH: windowH ?? this.windowH,
       localeCode: localeCode ?? this.localeCode,
+      telemetryEnabled: telemetryEnabled ?? this.telemetryEnabled,
     );
   }
 }

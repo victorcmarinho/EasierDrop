@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'logger.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 
 import 'package:easier_drop/model/app_settings.dart';
 
@@ -30,6 +30,7 @@ class SettingsService with ChangeNotifier {
   double? get windowW => _settings.windowW;
   double? get windowH => _settings.windowH;
   String? get localeCode => _settings.localeCode;
+  bool get telemetryEnabled => _settings.telemetryEnabled;
 
   Future<void> load() async {
     if (_loaded) return;
@@ -44,7 +45,7 @@ class SettingsService with ChangeNotifier {
         }
       }
     } catch (e) {
-      AppLogger.warn('Falha ao carregar settings: $e');
+      AnalyticsService.instance.warn('Falha ao carregar settings: $e');
     } finally {
       _loaded = true;
       notifyListeners();
@@ -67,6 +68,11 @@ class SettingsService with ChangeNotifier {
     _updateSettings(_settings.copyWith(localeCode: code));
   }
 
+  void setTelemetryEnabled(bool enabled) {
+    if (_settings.telemetryEnabled == enabled) return;
+    _updateSettings(_settings.copyWith(telemetryEnabled: enabled));
+  }
+
   void _updateSettings(AppSettings newSettings) {
     _settings = newSettings;
     _schedulePersist();
@@ -86,7 +92,7 @@ class SettingsService with ChangeNotifier {
       ).convert(_settings.toMap(_currentSchemaVersion));
       await file.writeAsString(jsonContent);
     } catch (e) {
-      AppLogger.warn('Falha ao salvar settings: $e');
+      AnalyticsService.instance.warn('Falha ao salvar settings: $e');
     }
   }
 

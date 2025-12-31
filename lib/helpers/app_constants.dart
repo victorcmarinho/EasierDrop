@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:easier_drop/config/env_config.dart';
 
 /// Constantes globais da aplicação
 class AppConstants {
@@ -36,8 +37,7 @@ class AppConstants {
   static const Duration welcomeNavigationDelay = Duration(seconds: 3);
 
   // Update Service
-  static const String githubLatestReleaseUrl =
-      'https://api.github.com/repos/victorcmarinho/EasierDrop/releases/latest';
+  static String get githubLatestReleaseUrl => Env.githubLatestReleaseUrl;
 
   // System Dimensions
   static const double defaultWindowSize = 250.0;

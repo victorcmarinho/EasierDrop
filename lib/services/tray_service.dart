@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
-import 'package:easier_drop/services/logger.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/services/update_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,7 +19,7 @@ class TrayService with ChangeNotifier {
     try {
       await trayManager.setIcon('assets/icon/icon.icns');
     } catch (e) {
-      AppLogger.warn('Failed to load tray icon: $e');
+      AnalyticsService.instance.warn('Failed to load tray icon: $e');
     }
   }
 
@@ -92,7 +92,7 @@ class TrayService with ChangeNotifier {
           break;
       }
     } catch (e) {
-      AppLogger.error('Error handling tray menu item: $e');
+      AnalyticsService.instance.error('Error handling tray menu item: $e');
     }
   }
 
