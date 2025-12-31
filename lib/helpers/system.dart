@@ -50,6 +50,10 @@ class SystemHelper with WindowListener {
     if (isSecondaryWindow) {
       // Secondary window setup
       await windowManager.ensureInitialized();
+      await windowManager.setTitleBarStyle(
+        TitleBarStyle.hidden,
+        windowButtonVisibility: false,
+      );
 
       try {
         final controller = await WindowController.fromCurrentEngine();
