@@ -18,9 +18,7 @@ Future<void> main(List<String> args) async {
   if (args.firstOrNull == 'multi_window') {
     final windowId = args[1];
 
-    // Initialize system helper for secondary window if needed, or simplified setup
-    // For now, let's assume we need basic setup but maybe not all singleton listeners if they conflict
-    await SystemHelper.setup(isSecondaryWindow: true, windowId: windowId);
+    await SystemHelper.initialize(isSecondaryWindow: true, windowId: windowId);
 
     runApp(
       MultiProvider(
@@ -29,7 +27,7 @@ Future<void> main(List<String> args) async {
       ),
     );
   } else {
-    await SystemHelper.setup();
+    await SystemHelper.initialize();
 
     runApp(
       MultiProvider(

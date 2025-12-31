@@ -22,6 +22,16 @@ class AppConstants {
   // Configurações de notificação
   static const Duration limitNotificationDuration = Duration(seconds: 2);
   static const Duration debounceDelay = Duration(milliseconds: 250);
+
+  // Update Service
+  static const String githubLatestReleaseUrl =
+      'https://api.github.com/repos/victorcmarinho/EasierDrop/releases/latest';
+
+  // System Dimensions
+  static const double defaultWindowSize = 250.0;
+
+  // Platform Channels
+  static const String shakeChannelName = 'com.easier_drop/shake';
 }
 
 /// Chaves semânticas para testes e acessibilidade
