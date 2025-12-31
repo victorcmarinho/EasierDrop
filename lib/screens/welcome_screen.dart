@@ -44,7 +44,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder:
-                (context, _, __) =>
+                (context, _, _) =>
                     const MacosWindow(child: FileTransferScreen()),
             transitionsBuilder: (context, animation, _, child) {
               return FadeTransition(opacity: animation, child: child);

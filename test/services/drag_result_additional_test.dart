@@ -1,9 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:easier_drop/services/drag_result.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:easier_drop/services/logger.dart';
 
-class MockAppLogger extends Mock implements AppLogger {}
+// MockAppLogger removed as AppLogger is deprecated
 
 void main() {
   group('ChannelDragResult operation getter', () {

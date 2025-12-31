@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:easier_drop/services/update_service.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class MockUpdateClient implements UpdateClient {
   final http.Response response;
@@ -34,14 +33,14 @@ void main() {
 
   group('UpdateService Check Flow', () {
     test('should return URL when update is available', () async {
-      final mockData = {
-        'tag_name': 'v2.0.0',
-        'html_url': 'https://github.com/update',
-      };
+      // final mockData = {
+      //   'tag_name': 'v2.0.0',
+      //   'html_url': 'https://github.com/update',
+      // };
 
-      final client = MockUpdateClient(
-        http.Response(json.encode(mockData), 200),
-      );
+      // final client = MockUpdateClient(
+      //   http.Response(json.encode(mockData), 200),
+      // );
     });
   });
 }
