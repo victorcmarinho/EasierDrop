@@ -1,23 +1,22 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 
-/// Representa uma referência imutável a um arquivo no sistema
 @immutable
 class FileReference {
   final String pathname;
   final Uint8List? iconData;
   final Uint8List? previewData;
+  final bool isProcessing;
 
   const FileReference({
     required this.pathname,
     this.iconData,
     this.previewData,
+    this.isProcessing = false,
   });
 
-  /// Nome do arquivo (sem o caminho)
   String get fileName => pathname.split(Platform.pathSeparator).last;
 
-  /// Extensão do arquivo em minúsculas
   String get extension {
     final base = fileName;
     final dotIndex = base.lastIndexOf('.');
@@ -32,6 +31,7 @@ class FileReference {
     pathname: pathname,
     iconData: icon,
     previewData: previewData,
+    isProcessing: isProcessing,
   );
 
   /// Cria uma nova instância com preview atualizado
@@ -39,6 +39,14 @@ class FileReference {
     pathname: pathname,
     iconData: iconData,
     previewData: preview,
+    isProcessing: isProcessing,
+  );
+
+  FileReference withProcessing(bool processing) => FileReference(
+    pathname: pathname,
+    iconData: iconData,
+    previewData: previewData,
+    isProcessing: processing,
   );
 
   @override

@@ -19,17 +19,29 @@ class FilesStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (droppedFiles.isEmpty) {
-      final loc = AppLocalizations.of(context)!;
-      return Center(
-        child: Text(
-          loc.dropHere,
-          style: const TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-      );
-    }
+    return AnimatedSwitcher(
+      duration: animationDuration,
+      child:
+          droppedFiles.isEmpty
+              ? _buildEmptyState(context)
+              : _buildStack(context),
+    );
+  }
 
+  Widget _buildEmptyState(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    return Center(
+      key: const ValueKey('empty_state'),
+      child: Text(
+        loc.dropHere,
+        style: const TextStyle(fontSize: 16, color: Colors.grey),
+      ),
+    );
+  }
+
+  Widget _buildStack(BuildContext context) {
     return LayoutBuilder(
+      key: const ValueKey('files_stack'),
       builder: (context, constraints) {
         final maxSide = math.min(constraints.maxWidth, constraints.maxHeight);
         final iconSize = maxSide * AppConstants.stackSizeMultiplier;
@@ -60,11 +72,11 @@ class FilesStack extends StatelessWidget {
     );
   }
 
-  static double _rotationForIndex(int i) {
+  double _rotationForIndex(int i) {
     return (i - 2) * AppConstants.stackRotationBase;
   }
 
-  static double _offsetForIndex(int i, int len, double spread) {
+  double _offsetForIndex(int i, int len, double spread) {
     if (len == 1) return 0;
     final norm = (i / (len - 1)) - 0.5;
     return norm * spread;

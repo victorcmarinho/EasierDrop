@@ -1,3 +1,4 @@
+import 'package:easier_drop/components/parts/async_file_wrapper.dart';
 import 'dart:math' as math;
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:flutter/material.dart';
@@ -37,10 +38,9 @@ class AnimatedFileIcon extends StatelessWidget {
       transformAlignment: Alignment.center,
       width: size,
       height: size,
-      child: AnimatedOpacity(
-        duration: duration,
-        curve: curve,
-        opacity: 1,
+      child: AsyncFileWrapper(
+        isProcessing: file.isProcessing,
+        size: size,
         child: image,
       ),
     );

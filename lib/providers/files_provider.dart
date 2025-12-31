@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 
 /// Provider responsável pelo gerenciamento de arquivos no aplicativo.
 class FilesProvider with ChangeNotifier {
+  final int? _maxFilesOverride;
   final FileRepository _repository;
   final Map<String, FileReference> _files = {};
 
@@ -22,7 +23,9 @@ class FilesProvider with ChangeNotifier {
   FilesProvider({
     FileRepository repository = const FileRepository(),
     bool enableMonitoring = true,
-  }) : _repository = repository {
+    int? maxFiles,
+  }) : _repository = repository,
+       _maxFilesOverride = maxFiles {
     if (enableMonitoring) {
       _monitorTimer = Timer.periodic(
         AppConstants.monitorInterval,
@@ -32,7 +35,7 @@ class FilesProvider with ChangeNotifier {
   }
 
   // Getters públicos
-  int get _maxFiles => SettingsService.instance.maxFiles;
+  int get _maxFiles => _maxFilesOverride ?? SettingsService.instance.maxFiles;
   DateTime? get lastLimitHit => _lastLimitHit;
   bool get isEmpty => _files.isEmpty;
   bool get hasFiles => _files.isNotEmpty;
@@ -43,8 +46,14 @@ class FilesProvider with ChangeNotifier {
       DateTime.now().difference(_lastLimitHit!) <
           AppConstants.limitNotificationDuration;
 
-  List<FileReference> get files =>
-      _cachedFilesList ??= List.unmodifiable(_files.values);
+  List<FileReference> get files {
+    final list = _cachedFilesList ??= List.unmodifiable(_files.values);
+    AppLogger.debug(
+      'files getter called. Map size: ${_files.length}, List size: ${list.length}',
+      tag: 'FilesProvider',
+    );
+    return list;
+  }
 
   List<XFile> get validXFiles {
     if (_cachedXFiles != null) return _cachedXFiles!;
@@ -95,12 +104,12 @@ class FilesProvider with ChangeNotifier {
         return;
       }
 
-      _files[file.pathname] = file;
+      _files[file.pathname] = file.withProcessing(true);
       _invalidateCache();
       _scheduleNotify();
 
       // Carrega thumbnails em background
-      _loadFileThumbnails(file);
+      _loadFileThumbnails(file.pathname);
 
       AppLogger.info('File added: ${file.fileName}', tag: 'FilesProvider');
     } catch (e) {
@@ -108,28 +117,36 @@ class FilesProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _loadFileThumbnails(FileReference file) async {
-    await Future.wait([_loadFileIcon(file), _loadFilePreview(file)]);
-  }
-
-  Future<void> _loadFileIcon(FileReference file) async {
-    final iconData = await _repository.getIcon(file.pathname);
-    if (iconData != null && _files.containsKey(file.pathname)) {
-      final current = _files[file.pathname]!;
-      if (current.iconData == null) {
-        _files[file.pathname] = current.withIcon(iconData);
+  Future<void> _loadFileThumbnails(String pathname) async {
+    try {
+      await Future.wait([_loadFileIcon(pathname), _loadFilePreview(pathname)]);
+    } finally {
+      if (_files.containsKey(pathname)) {
+        _files[pathname] = _files[pathname]!.withProcessing(false);
         _invalidateCache();
         _scheduleNotify();
       }
     }
   }
 
-  Future<void> _loadFilePreview(FileReference file) async {
-    final previewData = await _repository.getPreview(file.pathname);
-    if (previewData != null && _files.containsKey(file.pathname)) {
-      final current = _files[file.pathname]!;
+  Future<void> _loadFileIcon(String pathname) async {
+    final iconData = await _repository.getIcon(pathname);
+    if (iconData != null && _files.containsKey(pathname)) {
+      final current = _files[pathname]!;
+      if (current.iconData == null) {
+        _files[pathname] = current.withIcon(iconData);
+        _invalidateCache();
+        _scheduleNotify();
+      }
+    }
+  }
+
+  Future<void> _loadFilePreview(String pathname) async {
+    final previewData = await _repository.getPreview(pathname);
+    if (previewData != null && _files.containsKey(pathname)) {
+      final current = _files[pathname]!;
       if (current.previewData == null) {
-        _files[file.pathname] = current.withPreview(previewData);
+        _files[pathname] = current.withPreview(previewData);
         _invalidateCache();
         _scheduleNotify();
       }
@@ -159,8 +176,8 @@ class FilesProvider with ChangeNotifier {
     if (validFiles.length > availableSlots) _handleLimitReached();
 
     for (final file in filesToAdd) {
-      _files[file.pathname] = file;
-      _loadFileThumbnails(file);
+      _files[file.pathname] = file.withProcessing(true);
+      _loadFileThumbnails(file.pathname);
     }
 
     if (filesToAdd.isNotEmpty) {

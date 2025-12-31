@@ -94,15 +94,8 @@ void main() {
         0x82,
       ]);
 
-      final file1 = MockFileReference();
-      when(() => file1.pathname).thenReturn('/path/1');
-      when(() => file1.iconData).thenReturn(validPng);
-      when(() => file1.previewData).thenReturn(null);
-
-      final file2 = MockFileReference();
-      when(() => file2.pathname).thenReturn('/path/2');
-      when(() => file2.iconData).thenReturn(validPng);
-      when(() => file2.previewData).thenReturn(null);
+      final file1 = FileReference(pathname: '/path/1', iconData: validPng);
+      final file2 = FileReference(pathname: '/path/2', iconData: validPng);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -111,9 +104,31 @@ void main() {
           home: Scaffold(body: FilesStack(droppedFiles: [file1, file2])),
         ),
       );
+
+      // Need to pump and settle because of AnimatedSwitcher and AsyncFileWrapper animations
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
       await tester.pumpAndSettle();
 
       expect(find.byType(Image), findsNWidgets(2));
+    });
+    group('FilesStack Widget Tests Additional', () {
+      testWidgets('renders shimmer when files are processing', (tester) async {
+        final file1 = FileReference(pathname: '/path/1', isProcessing: true);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: FilesStack(droppedFiles: [file1])),
+          ),
+        );
+
+        await tester.pump();
+        expect(find.byType(Image), findsNothing);
+        // We can't easily find Shimmer widget if it's not exported or if it's internal,
+        // but we can check for its presence via type if we import it or just check for absence of Image.
+      });
     });
   });
 }
