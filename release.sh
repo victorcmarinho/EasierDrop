@@ -149,6 +149,15 @@ if [[ "$DEPLOY" == true ]]; then
       git push origin "$VERSION"
   fi
 
+  # Extract Changelog for this version
+  RAW_VERSION=${VERSION#v}
+  echo "   📄 Extracting changelog for version $RAW_VERSION..."
+  CHANGELOG_NOTES=$(awk "/^## \[${RAW_VERSION}\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md)
+
+  if [[ -z "$CHANGELOG_NOTES" ]]; then
+    CHANGELOG_NOTES="Official macOS release."
+  fi
+
   echo "   Creating GitHub Release..."
   gh release create "$VERSION" "$DMG_PATH" "$BUILD_OUTPUT_DIR/$ZIP_NAME" \
     --title "${APP_NAME} ${VERSION}" \
@@ -156,7 +165,7 @@ if [[ "$DEPLOY" == true ]]; then
     --notes "
 🚀 **${APP_NAME} ${VERSION}**
 
-Official macOS release.
+${CHANGELOG_NOTES}
 
 ## 📦 Downloads
 - **DMG Installer**: Drag and drop installation.
