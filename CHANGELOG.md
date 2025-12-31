@@ -5,15 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2025-12-28
+## [1.1.0] - 2025-12-31
 
 ### Added
 - **Multi-Window Support**: Now supports multiple windows! Shake your mouse while dragging files to spawn a new EasierDrop window at your cursor location.
-- **Native Shake Detection**: Added native macOS shake gesture detection for seamless interaction.
+- **Native Shake Detection**: Added native macOS shake gesture detection for seamless multi-window interaction.
+- **Visual Feedback**: Real-time file processing states with shimmer effects, success animations, and improved error visibility using `AsyncFileWrapper`.
+- **Analytics & Telemetry**: Integrated Aptabase for anonymous usage insights and error tracking, replacing the internal logger.
+- **Environment Configuration**: Added support for `.env` files and a unified `AppConfig` for managing service settings and API keys.
+- **Tray Management**: Introduced `TrayService` for more reliable and consistent system tray interactions.
+- **Minimalist Multi-Window UI**: Secondary windows now feature a cleaner, borderless interface without title bars or system buttons.
+- **Video Demo**: Added a video demonstration to the documentation and homepage for better onboarding.
 
 ### Improved
-- **Performance**: Optimized file adding process with parallel validation and batch updates.
-- **Rendering**: Reduced unnecessary widget rebuilds in file grid for smoother UI responsiveness.
+- **Architecture**: Migrated to a Repository pattern with `FileRepository` for cleaner separation of concerns.
+- **Performance**: Optimized file addition with parallel validation, batch updates, and cached file lists for smoother operation.
+- **Rendering**: Significantly reduced widget rebuilds in the file grid, improving UI responsiveness.
+- **Service Refactoring**: Refactored `UpdateService` and `TrayService` with dependency injection and improved testability.
+- **Testing Suite**: Expanded the codebase with comprehensive unit and widget tests using a TDD approach.
+- **Native Integration**: Centralized custom channel setup for more robust multi-window communication.
+
+### Changed
+- Replaced the custom `AppLogger` with a unified `AnalyticsService`.
+- Refactored `FilesProvider` and window management logic for better maintainability.
 
 ## [1.0.4] - 2025-12-28
 
