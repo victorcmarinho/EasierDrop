@@ -28,7 +28,6 @@ dependencies:
   url_launcher: ^6.3.2
   desktop_multi_window: ^0.3.0
   shimmer: ^3.0.0
-
   aptabase_flutter: ^0.4.1
 
 dev_dependencies:
