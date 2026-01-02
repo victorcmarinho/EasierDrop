@@ -149,13 +149,8 @@ class DragCoordinator {
   /// Processa arquivos que foram dropados
   Future<void> _onFilesDropped(List<String> paths) async {
     final provider = context.read<FilesProvider>();
-
-    final futures = paths.map((path) {
-      final ref = FileReference(pathname: path);
-      return provider.addFile(ref);
-    });
-
-    await Future.wait(futures);
+    final fileRefs = paths.map((path) => FileReference(pathname: path));
+    await provider.addFiles(fileRefs);
   }
 
   @visibleForTesting

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Environment Configuration**: Added support for `.env` files and a unified `AppConfig` for managing service settings and API keys.
 - **Tray Management**: Introduced `TrayService` for more reliable and consistent system tray interactions.
 - **Minimalist Multi-Window UI**: Secondary windows now feature a cleaner, borderless interface without title bars or system buttons.
+- **Clipboard Integration**: Now supports pasting files directly into the drop zone using `Cmd + V`. Copy files in Finder and paste them seamlessly!
 - **Video Demo**: Added a video demonstration to the documentation and homepage for better onboarding.
 
 ### Improved

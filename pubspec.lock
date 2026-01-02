@@ -453,6 +453,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
+  marquee_text:
+    dependency: "direct main"
+    description:
+      name: marquee_text
+      sha256: "2f667fc3870af19b58ad5204e15d5f1627807585ed049800e48133601905554e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.0+1"
   matcher:
     dependency: transitive
     description:
@@ -541,6 +549,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
+  pasteboard:
+    dependency: "direct main"
+    description:
+      name: pasteboard
+      sha256: "9ff73ada33f79a59ff91f6c01881fd4ed0a0031cfc4ae2d86c0384471525fca1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.0"
   path:
     dependency: "direct main"
     description:
@@ -818,14 +834,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.7"
-  text_marquee:
-    dependency: "direct main"
-    description:
-      name: text_marquee
-      sha256: "56dfa74b847a6acbf033fcfca88a0dcbc68134d4154f1bc9e68f8f75e196dc25"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.2"
   tray_manager:
     dependency: "direct main"
     description:

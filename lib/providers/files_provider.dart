@@ -81,43 +81,7 @@ class FilesProvider with ChangeNotifier {
 
   /// Adiciona um arquivo ao provider
   Future<void> addFile(FileReference file) async {
-    try {
-      if (_files.length >= _maxFiles) {
-        _handleLimitReached();
-        return;
-      }
-
-      if (!await _repository.validateFile(file.pathname)) {
-        AnalyticsService.instance.debug(
-          'Invalid file skipped: ${file.pathname}',
-          tag: 'FilesProvider',
-        );
-        return;
-      }
-
-      if (_files.containsKey(file.pathname)) {
-        AnalyticsService.instance.debug(
-          'Duplicate file ignored: ${file.pathname}',
-          tag: 'FilesProvider',
-        );
-        return;
-      }
-
-      _files[file.pathname] = file.withProcessing(true);
-      _invalidateCache();
-      _scheduleNotify();
-
-      _loadFileThumbnails(file.pathname);
-
-      AnalyticsService.instance.fileAdded(
-        extension: file.fileName.split('.').lastOrNull,
-      );
-    } catch (e) {
-      AnalyticsService.instance.error(
-        'Error adding file: $e',
-        tag: 'FilesProvider',
-      );
-    }
+    await addFiles([file]);
   }
 
   Future<void> _loadFileThumbnails(String pathname) async {
@@ -159,40 +123,47 @@ class FilesProvider with ChangeNotifier {
   Future<void> addFiles(Iterable<FileReference> files) async {
     if (files.isEmpty) return;
 
-    final validated = await Future.wait(
-      files.map((f) async {
-        if (_files.containsKey(f.pathname)) return null;
-        return await _repository.validateFile(f.pathname) ? f : null;
-      }),
-    );
-
-    final validFiles = validated.whereType<FileReference>().toList();
-    if (validFiles.isEmpty) return;
-
-    final availableSlots = _maxFiles - _files.length;
-    if (availableSlots <= 0) {
-      _handleLimitReached();
-      return;
-    }
-
-    final filesToAdd = validFiles.take(availableSlots).toList();
-    if (validFiles.length > availableSlots) _handleLimitReached();
-
-    for (final file in filesToAdd) {
-      _files[file.pathname] = file.withProcessing(true);
-      _loadFileThumbnails(file.pathname);
-      AnalyticsService.instance.fileAdded(
-        extension: file.fileName.split('.').lastOrNull,
+    try {
+      final validated = await Future.wait(
+        files.map((f) async {
+          if (_files.containsKey(f.pathname)) return null;
+          return await _repository.validateFile(f.pathname) ? f : null;
+        }),
       );
-    }
 
-    if (filesToAdd.isNotEmpty) {
-      AnalyticsService.instance.info(
-        'Batch added: ${filesToAdd.length} files',
+      final validFiles = validated.whereType<FileReference>().toList();
+      if (validFiles.isEmpty) return;
+
+      final availableSlots = _maxFiles - _files.length;
+      if (availableSlots <= 0) {
+        _handleLimitReached();
+        return;
+      }
+
+      final filesToAdd = validFiles.take(availableSlots).toList();
+      if (validFiles.length > availableSlots) _handleLimitReached();
+
+      for (final file in filesToAdd) {
+        _files[file.pathname] = file.withProcessing(true);
+        _loadFileThumbnails(file.pathname);
+        AnalyticsService.instance.fileAdded(
+          extension: file.fileName.split('.').lastOrNull,
+        );
+      }
+
+      if (filesToAdd.isNotEmpty) {
+        AnalyticsService.instance.info(
+          'Batch added: ${filesToAdd.length} files',
+          tag: 'FilesProvider',
+        );
+        _invalidateCache();
+        notifyListeners();
+      }
+    } catch (e) {
+      AnalyticsService.instance.error(
+        'Error adding files: $e',
         tag: 'FilesProvider',
       );
-      _invalidateCache();
-      notifyListeners();
     }
   }
 
