@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Service Refactoring**: Refactored `UpdateService` and `TrayService` with dependency injection and improved testability.
 - **Testing Suite**: Expanded the codebase with comprehensive unit and widget tests using a TDD approach.
 - **Native Integration**: Centralized custom channel setup for more robust multi-window communication.
+- **Code Centralization**: Unified file addition logic in `FilesProvider` to support both Drag & Drop and Clipboard operations consistently.
+
+### Fixed
+- **UI Stability**: Resolved `ScrollController` assertion errors by replacing `text_marquee` with the more stable `marquee_text` package, restoring smooth filename scrolling.
 
 ### Changed
 - Replaced the custom `AppLogger` with a unified `AnalyticsService`.
