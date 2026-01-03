@@ -1,3 +1,4 @@
+import 'dart:io' as io;
 import 'package:flutter/material.dart';
 import 'package:easier_drop/services/analytics_service.dart';
 import 'package:window_manager/window_manager.dart';
@@ -78,6 +79,7 @@ class SystemHelper with WindowListener {
       TrayService.instance.destroy(),
       windowManager.destroy(),
     ]);
+    io.exit(0);
   }
 
   @override
