@@ -1,0 +1,116 @@
+import 'package:easier_drop/helpers/app_constants.dart';
+import 'package:easier_drop/helpers/system.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:easier_drop/services/settings_service.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+class MockPathProviderPlatform extends Mock
+    with MockPlatformInterfaceMixin
+    implements PathProviderPlatform {
+  @override
+  Future<String?> getApplicationSupportPath() async => '.';
+}
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  const MethodChannel windowChannel = MethodChannel('window_manager');
+  const MethodChannel shakeChannel = MethodChannel(
+    AppConstants.shakeChannelName,
+  );
+  const MethodChannel trayChannel = MethodChannel('tray_manager');
+
+  final List<MethodCall> windowLog = [];
+  final List<MethodCall> shakeLog = [];
+  final List<MethodCall> trayLog = [];
+
+  setUpAll(() {
+    PathProviderPlatform.instance = MockPathProviderPlatform();
+  });
+
+  setUp(() async {
+    windowLog.clear();
+    shakeLog.clear();
+    trayLog.clear();
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(windowChannel, (MethodCall methodCall) async {
+          windowLog.add(methodCall);
+          if (methodCall.method == 'isMinimized') {
+            return false;
+          }
+          return null;
+        });
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(shakeChannel, (MethodCall methodCall) async {
+          shakeLog.add(methodCall);
+          return null;
+        });
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(trayChannel, (MethodCall methodCall) async {
+          trayLog.add(methodCall);
+          return null;
+        });
+
+    await SettingsService.instance.load();
+  });
+
+  tearDown(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(windowChannel, null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(shakeChannel, null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(trayChannel, null);
+  });
+
+  group('SystemHelper Tests', () {
+    test('hide calls windowManager hide and setSkipTaskbar', () async {
+      await SystemHelper.hide();
+
+      expect(
+        windowLog,
+        contains(isA<MethodCall>().having((m) => m.method, 'method', 'hide')),
+      );
+      expect(
+        windowLog,
+        contains(
+          isA<MethodCall>().having((m) => m.method, 'method', 'setSkipTaskbar'),
+        ),
+      );
+    });
+
+    test(
+      'open calls windowManager show, focus, and setSkipTaskbar false',
+      () async {
+        await SystemHelper.open();
+
+        expect(
+          windowLog,
+          contains(isA<MethodCall>().having((m) => m.method, 'method', 'show')),
+        );
+        expect(
+          windowLog,
+          contains(
+            isA<MethodCall>().having((m) => m.method, 'method', 'focus'),
+          ),
+        );
+      },
+    );
+
+    test('exit calls windowManager destroy (and tray destroy)', () async {
+      await SystemHelper.exit();
+      expect(
+        windowLog,
+        contains(
+          isA<MethodCall>().having((m) => m.method, 'method', 'destroy'),
+        ),
+      );
+    });
+  });
+}

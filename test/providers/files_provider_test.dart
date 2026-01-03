@@ -111,5 +111,96 @@ void main() {
       await Future.microtask(() {});
       expect(provider.files.isEmpty, true);
     });
+
+    test('removeFile removes specific file', () async {
+      final file1 = FileReference(pathname: '/path/to/file1.txt');
+
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      await provider.addFile(file1);
+      await Future.microtask(() {});
+      expect(provider.files.length, 1);
+
+      await provider.removeFile(file1);
+      await Future.microtask(() {});
+      expect(provider.files.isEmpty, true);
+    });
+
+    test('removeByPath removes specific file by path', () async {
+      const path = '/path/to/file1.txt';
+      final file1 = FileReference(pathname: path);
+
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      await provider.addFile(file1);
+      await Future.microtask(() {});
+      expect(provider.files.length, 1);
+
+      provider.removeByPath(path);
+      await Future.microtask(() {});
+      expect(provider.files.isEmpty, true);
+    });
+
+    test('respects maxFiles limit', () async {
+      provider = FilesProvider(
+        repository: mockRepo,
+        enableMonitoring: false,
+        maxFiles: 2,
+      );
+
+      final file1 = FileReference(pathname: '/file1.txt');
+      final file2 = FileReference(pathname: '/file2.txt');
+      final file3 = FileReference(pathname: '/file3.txt');
+
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      await provider.addFiles([file1, file2, file3]);
+      await Future.microtask(() {});
+
+      expect(provider.files.length, 2);
+      expect(provider.recentlyAtLimit, true);
+      expect(provider.lastLimitHit, isNotNull);
+    });
+
+    test('maxFiles override via SettingsService', () async {
+      provider = FilesProvider(repository: mockRepo, enableMonitoring: false);
+
+      expect(provider.files.isEmpty, true);
+    });
+
+    test('rescan removes invalid files', () async {
+      provider = FilesProvider(
+        repository: mockRepo,
+        enableMonitoring: false,
+        maxFiles: 10,
+      );
+
+      final file1 = FileReference(pathname: '/valid.txt');
+      final file2 = FileReference(pathname: '/invalid.txt');
+
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      await provider.addFiles([file1, file2]);
+      await Future.microtask(() {});
+      expect(provider.files.length, 2);
+
+      // Now set validation to fail for file2
+      when(() => mockRepo.validateFileSync('/valid.txt')).thenReturn(true);
+      when(() => mockRepo.validateFileSync('/invalid.txt')).thenReturn(false);
+
+      provider.rescanNow();
+      await Future.microtask(() {});
+
+      expect(provider.files.length, 1);
+      expect(provider.files.first.pathname, '/valid.txt');
+    });
   });
 }

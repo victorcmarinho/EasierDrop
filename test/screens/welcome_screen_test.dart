@@ -27,10 +27,11 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider<FilesProvider>.value(
         value: mockProvider,
-        child: const MacosApp(
+        child: MacosApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: WelcomeScreen(),
+          routes: {AppConstants.routeShare: (_) => FileTransferScreen()},
         ),
       ),
     );

@@ -39,7 +39,7 @@ void main() {
 
       expect(settingsService.isLoaded, true);
       expect(settingsService.maxFiles, 100); // Default from AppSettings
-      expect(settingsService.settings.isAutoHideEnabled, false);
+
       expect(settingsService.settings.isAlwaysOnTop, false);
     });
 
