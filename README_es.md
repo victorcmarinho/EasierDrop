@@ -85,6 +85,58 @@ Creado con Flutter y ganchos nativos de macOS, Easier Drop es increíblemente li
 
 Distribuido bajo la Licencia MIT. Ver `LICENSE` para más información.
 
+---
+
+## 🛠️ Información Técnica
+
+### Cómo Funciona
+Easier Drop está desarrollado como una aplicación de escritorio para macOS que aprovecha Flutter para la interfaz de usuario y las API nativas de macOS para la integración con el sistema.
+- **Lógica de Arrastrar y Soltar**: Utiliza platform channels y el paquete `desktop_multi_window` para gestionar múltiples instancias de ventanas.
+- **Gestión de Estado**: Utiliza el patrón `Provider` para sincronizar archivos entre múltiples ventanas en tiempo real.
+- **Integración Nativa**: Implementa un `MacOSShakeMonitor` personalizado mediante ganchos nativos de Swift para detectar el gesto de agitar durante el arrastre.
+- **Persistencia**: Las referencias de archivos se gestionan en memoria para mayor velocidad, con validación de rutas efímeras para asegurar la integridad de los datos.
+
+### Tecnologías Utilizadas
+- **Framework**: [Flutter](https://flutter.dev) (macOS Desktop)
+- **Lenguaje**: Dart y Swift (para ganchos nativos)
+- **Gestión de Estado**: Provider
+- **Telemetría**: Aptabase
+- **Componentes de UI**: `macos_ui` para una apariencia nativa
+
+### Cómo Ejecutar el Proyecto
+Para ejecutar el proyecto localmente:
+1. Asegúrate de tener instalado el [SDK de Flutter](https://docs.flutter.dev/get-started/install/macos).
+2. Clona el repositorio.
+3. Instala las dependencias:
+   ```bash
+   flutter pub get
+   ```
+4. Crea un archivo `.env` basado en `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+5. Ejecuta la aplicación:
+   ```bash
+   flutter run -d macos
+   ```
+
+### Ejecución de Pruebas
+Mantenemos la calidad del código con un conjunto completo de pruebas unitarias.
+Para ejecutar las pruebas:
+```bash
+flutter test
+```
+Para comprobar la cobertura:
+```bash
+flutter test --coverage
+genhtml coverage/lcov.info -o coverage/html
+```
+
+### Variables de Entorno
+El proyecto utiliza archivos `.env` para la configuración:
+- `APTABASE_APP_KEY`: Tu clave de telemetría de Aptabase.
+- `GITHUB_LATEST_RELEASE_URL`: Punto de enlace de la API para las comprobaciones de actualización.
+
 ## ❤️ Apoya el Proyecto
 
 Si Easier Drop hace tu vida más fácil, ¡considera apoyar al desarrollador!

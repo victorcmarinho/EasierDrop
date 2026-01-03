@@ -85,6 +85,58 @@ Adoramos contribuidores!
 
 Distribuído sob a Licença MIT. Veja `LICENSE` para mais informações.
 
+---
+
+## 🛠️ Informações Técnicas
+
+### Como Funciona
+O Easier Drop é construído como uma aplicação desktop para macOS que utiliza Flutter para a interface e APIs nativas do macOS para integração com o sistema.
+- **Lógica de Drag & Drop**: Utiliza platform channels e o pacote `desktop_multi_window` para gerenciar múltiplas instâncias de janelas.
+- **Gerenciamento de Estado**: Utiliza o padrão `Provider` para sincronizar os arquivos entre várias janelas em tempo real.
+- **Integração Nativa**: Implementa um `MacOSShakeMonitor` personalizado usando ganchos em Swift para detectar o gesto de "balançar" durante o arraste.
+- **Persistência**: As referências dos arquivos são gerenciadas em memória para maior velocidade, com validação de caminhos para garantir a integridade dos dados.
+
+### Tecnologias Utilizadas
+- **Framework**: [Flutter](https://flutter.dev) (macOS Desktop)
+- **Linguagem**: Dart & Swift (para hooks nativos)
+- **Gerenciamento de Estado**: Provider
+- **Telemetria**: Aptabase
+- **Interface**: `macos_ui` para um design nativo
+
+### Como Rodar o Projeto
+Para executar o projeto localmente:
+1. Certifique-se de ter o [Flutter SDK](https://docs.flutter.dev/get-started/install/macos) instalado.
+2. Clone o repositório.
+3. Instale as dependências:
+   ```bash
+   flutter pub get
+   ```
+4. Crie um arquivo `.env` baseado no `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+5. Execute a aplicação:
+   ```bash
+   flutter run -d macos
+   ```
+
+### Executando Testes
+Mantemos a qualidade do código com uma suíte abrangente de testes unitários.
+Para executar os testes:
+```bash
+flutter test
+```
+Para verificar a cobertura:
+```bash
+flutter test --coverage
+genhtml coverage/lcov.info -o coverage/html
+```
+
+### Variáveis de Ambiente (Envs)
+O projeto utiliza arquivos `.env` para configuração:
+- `APTABASE_APP_KEY`: Sua chave de telemetria do Aptabase.
+- `GITHUB_LATEST_RELEASE_URL`: Endpoint da API para verificação de atualizações.
+
 ## ❤️ Apoie o Projeto
 
 Se o Easier Drop facilita sua vida, considere apoiar o desenvolvedor!
