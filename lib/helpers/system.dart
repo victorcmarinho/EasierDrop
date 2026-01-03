@@ -113,7 +113,6 @@ class SystemHelper with WindowListener {
         'Shake event received via channel',
         tag: 'SystemHelper',
       );
-      print('DEBUG: SystemHelper received - Shake detected!');
       final args = call.arguments as Map;
       final x = (args['x'] as num).toDouble();
       final y = (args['y'] as num).toDouble();
