@@ -1,6 +1,5 @@
 import 'package:easier_drop/components/welcome/animated_welcome_content.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
-import 'package:easier_drop/screens/file_transfer_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 
@@ -41,17 +40,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   void _navigateToMain() {
     Future.delayed(AppConstants.welcomeNavigationDelay, () {
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder:
-                (context, _, _) =>
-                    const MacosWindow(child: FileTransferScreen()),
-            transitionsBuilder: (context, animation, _, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: AppConstants.slowAnimation,
-          ),
-        );
+        Navigator.of(context).pushReplacementNamed(AppConstants.routeShare);
       }
     });
   }

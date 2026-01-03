@@ -37,6 +37,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Native Integration**: Centralized custom channel setup for more robust multi-window communication.
 - **Code Centralization**: Unified file addition logic in `FilesProvider` to support both Drag & Drop and Clipboard operations consistently.
 
+### Improved
+- **Shake Gesture Sensitivity**: Significantly lowered the shake threshold and reduced required reversals, making the "Shake to Select" gesture much easier and more reliable to trigger.
+- **Navigation Architecture**: Refactored screen selection to use modern named routes (`/`, `/settings`, `/share`), improving code maintainability and scalability.
+
+### Fixed
+- **Shake Gesture Reliability**: Addressed issues where the shake gesture was difficult to trigger by tuning native parameters and adding robust logging for easier debugging.
+
+
 ### Fixed
 - **UI Stability**: Resolved `ScrollController` assertion errors by replacing `text_marquee` with the more stable `marquee_text` package, restoring smooth filename scrolling.
 

@@ -185,7 +185,7 @@ class SystemHelper with WindowListener {
       alwaysOnTop: true,
       titleBarStyle: TitleBarStyle.hidden,
       title: 'Easier Drop',
-      windowButtonVisibility: false,
+      windowButtonVisibility: true,
       skipTaskbar: false,
     );
 
@@ -195,6 +195,7 @@ class SystemHelper with WindowListener {
       await Future.wait([
         windowManager.setPreventClose(true),
         windowManager.setVisibleOnAllWorkspaces(true),
+        windowManager.setMaximizable(false),
       ]);
     });
   }

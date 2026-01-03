@@ -44,6 +44,11 @@ class AppConstants {
 
   // Platform Channels
   static const String shakeChannelName = 'com.easier_drop/shake';
+
+  // Routes
+  static const String routeHome = '/';
+  static const String routeSettings = '/settings';
+  static const String routeShare = '/share';
 }
 
 /// Chaves semânticas para testes e acessibilidade

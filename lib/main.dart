@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:easier_drop/helpers/system.dart';
+import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:easier_drop/services/analytics_service.dart';
 
@@ -34,13 +35,20 @@ Future<void> main(List<String> args) async {
 
     await SystemHelper.initialize(isSecondaryWindow: true, windowId: windowId);
 
+    // Determine initial route based on arguments
+    final String initialRoute;
+    if (argument['args'] == 'settings_window') {
+      initialRoute = AppConstants.routeSettings;
+    } else if (argument['args'] == 'shake_window') {
+      initialRoute = AppConstants.routeShare;
+    } else {
+      initialRoute = AppConstants.routeHome;
+    }
+
     runApp(
       MultiProvider(
         providers: [ChangeNotifierProvider(create: (_) => FilesProvider())],
-        child: EasierDrop(
-          isSecondaryWindow: true,
-          isSettingsWindow: argument['args'] == 'settings_window',
-        ),
+        child: EasierDrop(isSecondaryWindow: true, initialRoute: initialRoute),
       ),
     );
   } else {
@@ -49,7 +57,7 @@ Future<void> main(List<String> args) async {
     runApp(
       MultiProvider(
         providers: [ChangeNotifierProvider(create: (_) => FilesProvider())],
-        child: const EasierDrop(),
+        child: const EasierDrop(initialRoute: AppConstants.routeHome),
       ),
     );
   }
@@ -57,12 +65,12 @@ Future<void> main(List<String> args) async {
 
 class EasierDrop extends StatelessWidget {
   final bool isSecondaryWindow;
-  final bool isSettingsWindow;
+  final String initialRoute;
 
   const EasierDrop({
     super.key,
     this.isSecondaryWindow = false,
-    this.isSettingsWindow = false,
+    this.initialRoute = AppConstants.routeHome,
   });
 
   @override
@@ -91,12 +99,18 @@ class EasierDrop extends StatelessWidget {
           locale: locale,
           theme: MacosThemeData.light(),
           darkTheme: MacosThemeData.dark(),
-          home:
-              isSettingsWindow
-                  ? const MacosWindow(child: SettingsScreen())
-                  : isSecondaryWindow
-                  ? const MacosWindow(child: FileTransferScreen())
-                  : const WelcomeScreen(),
+          initialRoute: initialRoute,
+          routes: {
+            AppConstants.routeHome:
+                (_) =>
+                    isSecondaryWindow
+                        ? const MacosWindow(child: FileTransferScreen())
+                        : const WelcomeScreen(),
+            AppConstants.routeSettings:
+                (_) => const MacosWindow(child: SettingsScreen()),
+            AppConstants.routeShare:
+                (_) => const MacosWindow(child: FileTransferScreen()),
+          },
         );
       },
     );
