@@ -33,7 +33,6 @@ class TrayService with ChangeNotifier {
 
   Future<void> rebuildMenu({
     required AppLocalizations loc,
-    required int fileCount,
     required String currentLocale,
   }) async {
     final menu = Menu(
@@ -44,12 +43,6 @@ class TrayService with ChangeNotifier {
         ],
         MenuItem(key: 'preferences', label: loc.preferences),
         MenuItem(key: 'show_window', label: loc.openTray),
-        MenuItem(
-          key: 'files_count',
-          label:
-              fileCount > 0 ? loc.trayFilesCount(fileCount) : loc.trayFilesNone,
-          toolTip: loc.filesCountTooltip,
-        ),
         MenuItem.separator(),
         MenuItem(key: 'exit_app', label: loc.trayExit),
       ],

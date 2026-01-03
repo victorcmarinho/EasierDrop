@@ -20,12 +20,10 @@
   "semRemoveHintNone": "No hay archivos para eliminar",
   "semRemoveHintSome": "Eliminar {count, plural, one{{count} archivo} other{{count} archivos}}",
   "@semRemoveHintSome": {"placeholders": {"count": {"type": "int"}}},
-  "trayFilesNone": "📂 Sin archivos",
-  "trayFilesCount": "📁 Archivos: {count}",
-  "@trayFilesCount": {"placeholders": {"count": {"type": "int"}}},
+
   "trayExit": "Cerrar la aplicación",
   "openTray": "Abrir bandeja",
-  "filesCountTooltip": "Cantidad actual en la bandeja",
+
   "languageLabel": "Idioma:",
   "languageEnglish": "Inglés",
   "languagePortuguese": "Portugués",

@@ -20,12 +20,9 @@
   "semRemoveHintNone": "No files to remove",
   "semRemoveHintSome": "Remove {count, plural, one{{count} file} other{{count} files}}",
   "@semRemoveHintSome": {"placeholders": {"count": {"type": "int"}}},
-  "trayFilesNone": "📂 No files",
-  "trayFilesCount": "📁 Files: {count}",
-  "@trayFilesCount": {"placeholders": {"count": {"type": "int"}}},
   "trayExit": "Quit application",
   "openTray": "Open tray",
-  "filesCountTooltip": "Current number of files",
+
   "languageLabel": "Language:",
   "languageEnglish": "English",
   "languagePortuguese": "Portuguese",

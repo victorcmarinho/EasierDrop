@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved `flutter_launcher_icons` to `dev_dependencies` to streamline production builds.
 
 ### Removed
+- **Tray File Count item**: Removed the file count display from the tray menu to keep a cleaner interface.
 - **Lottie Dependency**: Removed the `lottie` package to reduce application bundle size and complexity.
 - **Obsolete Tests**: Cleaned up the test directory by removing outdated or redundant test files.
 
