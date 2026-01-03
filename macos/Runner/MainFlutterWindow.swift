@@ -36,7 +36,6 @@ class MainFlutterWindow: NSWindow, NSDraggingDestination {
     
     
     func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        Swift.print("[MainFlutterWindow] Dragging Entered. Pasteboard types: \(sender.draggingPasteboard.types ?? [])")
         let sourceDragMask = sender.draggingSourceOperationMask
         if sourceDragMask.contains(.copy) {
             return .copy
@@ -49,39 +48,30 @@ class MainFlutterWindow: NSWindow, NSDraggingDestination {
     }
     
     func draggingExited(_ sender: NSDraggingInfo?) {
-        Swift.print("[MainFlutterWindow] Dragging Exited.")
     }
     
     func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        Swift.print("[MainFlutterWindow] Preparing for drag operation.")
         return true
     }
     
     func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        Swift.print("[MainFlutterWindow] Performing drag operation.")
-        
-        let pasteboard = sender.draggingPasteboard
-        
-        
-        guard let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL], !urls.isEmpty else {
-            Swift.print("[MainFlutterWindow] Could not get file URLs from pasteboard.")
+        guard let urls = sender.draggingPasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL], !urls.isEmpty else {
             return false
         }
+        
+        
         
         let filePaths = urls.map { $0.path }
         
         if !filePaths.isEmpty {
-            Swift.print("[MainFlutterWindow] Sending \(filePaths.count) file(s) to Flutter.")
             fileDropChannel?.sendDropEvent(filePaths: filePaths)
             return true
         }
         
-        Swift.print("[MainFlutterWindow] No valid file paths found.")
         return false
     }
     
     func concludeDragOperation(_ sender: NSDraggingInfo?) {
-        Swift.print("[MainFlutterWindow] Concluding drag operation.")
     }
 }
 
@@ -93,6 +83,5 @@ extension MainFlutterWindow: NSDraggingSource {
 
     func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
         
-        print("[MainFlutterWindow] Dragging session ended.")
     }
 }

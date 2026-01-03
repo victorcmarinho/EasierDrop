@@ -28,7 +28,6 @@ class MacOSShakeMonitor: NSObject {
     }
     
     func startMonitoring() {
-        print("MacOSShakeMonitor: startMonitoring called")
         let mask = (1 << CGEventType.leftMouseDragged.rawValue)
         
         eventTap = CGEvent.tapCreate(
@@ -38,7 +37,6 @@ class MacOSShakeMonitor: NSObject {
             eventsOfInterest: CGEventMask(mask),
             callback: { (proxy, type, event, refcon) -> Unmanaged<CGEvent>? in
                 if type == .tapDisabledByTimeout {
-                    print("MacOSShakeMonitor: Event tap disabled by timeout. Re-enabling...")
                     if let tap = MacOSShakeMonitor.shared.eventTap {
                         CGEvent.tapEnable(tap: tap, enable: true)
                     }
@@ -51,16 +49,11 @@ class MacOSShakeMonitor: NSObject {
         )
         
         if let tap = eventTap {
-            print("MacOSShakeMonitor: Event tap created successfully")
             runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
             CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
             CGEvent.tapEnable(tap: tap, enable: true)
-        } else {
-            print("MacOSShakeMonitor: Failed to create event tap. Check Accessibility permissions.")
         }
     }
-    
-    // ... (stopMonitoring remains same)
 
     private func handleEvent(_ event: CGEvent) {
         let currentLocation = event.location
@@ -114,7 +107,6 @@ class MacOSShakeMonitor: NSObject {
             
             if timeSinceLastReversal < reversalTimeout {
                 reversalCount += 1
-                print("MacOSShakeMonitor: Reversal detected (Any Dir). Count: \(reversalCount)")
             } else {
                 reversalCount = 1
                 // print("MacOSShakeMonitor: Reset count (timeout)")
@@ -123,7 +115,6 @@ class MacOSShakeMonitor: NSObject {
             lastReversalTime = currentTime
             
             if reversalCount >= requiredReversals {
-                print("MacOSShakeMonitor: Shake detected! Triggering at \(currentLocation)...")
                 triggerShake(location: currentLocation)
                 reversalCount = 0
             }
@@ -140,7 +131,6 @@ class MacOSShakeMonitor: NSObject {
         ]
         
         DispatchQueue.main.async { [weak self] in
-            print("MacOSShakeMonitor: Invoking method channel shake_detected")
             self?.methodChannel?.invokeMethod("shake_detected", arguments: args)
         }
     }
