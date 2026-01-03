@@ -58,14 +58,6 @@ void main() {
       expect(content, contains('"maxFiles": 50'));
     });
 
-    test('should toggle Auto-Hide', () async {
-      await settingsService.load();
-      expect(settingsService.settings.isAutoHideEnabled, false);
-
-      settingsService.setAutoHide(true);
-      expect(settingsService.settings.isAutoHideEnabled, true);
-    });
-
     test('should toggle Always on Top', () async {
       await settingsService.load();
       expect(settingsService.settings.isAlwaysOnTop, false);

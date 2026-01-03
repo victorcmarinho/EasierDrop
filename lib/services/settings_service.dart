@@ -126,11 +126,6 @@ class SettingsService with ChangeNotifier {
     _updateSettings(_settings.copyWith(telemetryEnabled: enabled));
   }
 
-  void setAutoHide(bool enabled) {
-    if (_settings.isAutoHideEnabled == enabled) return;
-    _updateSettings(_settings.copyWith(isAutoHideEnabled: enabled));
-  }
-
   void setAlwaysOnTop(bool enabled) {
     if (_settings.isAlwaysOnTop == enabled) return;
     _updateSettings(_settings.copyWith(isAlwaysOnTop: enabled));

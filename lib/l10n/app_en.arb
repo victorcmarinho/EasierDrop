@@ -47,7 +47,7 @@
   "settingsGeneral": "General",
   "settingsAppearance": "Appearance",
   "settingsLaunchAtLogin": "Launch at Login",
-  "settingsAutoHide": "Auto-hide after Drop",
+
   "settingsAlwaysOnTop": "Always on Top",
   "settingsOpacity": "Window Opacity"
 }

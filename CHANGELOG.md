@@ -21,7 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Window Management**:
     - **Opacity Control**: Adjust window opacity in real-time.
     - **Always on Top**: Toggle to keep the drop zone above other windows.
-    - **Auto-Hide**: Option to automatically hide the window after dropping files.
 - **System Integration**:
     - **Launch at Login**: Option to start the app automatically.
     - **Shortcuts**: `Cmd + ,` to open Preferences.

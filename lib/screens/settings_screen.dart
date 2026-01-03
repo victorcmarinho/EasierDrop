@@ -42,15 +42,7 @@ class SettingsScreen extends StatelessWidget {
                   onChanged: (v) => settings.setLaunchAtLogin(v),
                 ),
               ),
-              _buildDivider(),
-              _buildSettingsItem(
-                icon: CupertinoIcons.eye_slash_fill,
-                label: loc.settingsAutoHide,
-                child: MacosSwitch(
-                  value: settings.settings.isAutoHideEnabled,
-                  onChanged: (v) => settings.setAutoHide(v),
-                ),
-              ),
+
               _buildDivider(),
               _buildSettingsItem(
                 icon: CupertinoIcons.pin_fill,

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:easier_drop/services/analytics_service.dart';
-import 'package:easier_drop/helpers/system.dart';
+
 import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/services/file_repository.dart';
@@ -159,10 +159,6 @@ class FilesProvider with ChangeNotifier {
         );
         _invalidateCache();
         notifyListeners();
-
-        if (SettingsService.instance.settings.isAutoHideEnabled) {
-          await SystemHelper.hide();
-        }
       }
     } catch (e) {
       AnalyticsService.instance.error(

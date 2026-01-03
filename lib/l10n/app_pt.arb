@@ -47,7 +47,7 @@
   "settingsGeneral": "Geral",
   "settingsAppearance": "Aparência",
   "settingsLaunchAtLogin": "Iniciar no Login",
-  "settingsAutoHide": "Auto-ocultar após soltar",
+
   "settingsAlwaysOnTop": "Sempre no Topo",
   "settingsOpacity": "Opacidade da Janela"
 }
