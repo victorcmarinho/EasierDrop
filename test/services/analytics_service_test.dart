@@ -45,5 +45,23 @@ void main() {
       expect(SettingsService.instance.telemetryEnabled, true);
       expect(() => service.trackEvent('test'), returnsNormally);
     });
+
+    test('all descriptive methods run normally', () {
+      final s = AnalyticsService.instance;
+      SettingsService.instance.setTelemetryEnabled(true);
+
+      expect(() => s.appStarted(), returnsNormally);
+      expect(() => s.fileAdded(extension: 'txt'), returnsNormally);
+      expect(() => s.fileRemoved(extension: 'txt'), returnsNormally);
+      expect(() => s.fileShared(count: 2), returnsNormally);
+      expect(() => s.fileDroppedOut(), returnsNormally);
+      expect(() => s.shakeWindowCreated(), returnsNormally);
+      expect(() => s.shakeDetected(100, 200), returnsNormally);
+      expect(() => s.fileLimitReached(), returnsNormally);
+      expect(() => s.updateCheckStarted(), returnsNormally);
+      expect(() => s.updateAvailable('1.0.1'), returnsNormally);
+      expect(() => s.settingsOpened(), returnsNormally);
+      expect(() => s.settingsChanged('test', true), returnsNormally);
+    });
   });
 }

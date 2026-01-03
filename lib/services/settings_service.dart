@@ -108,6 +108,7 @@ class SettingsService with ChangeNotifier {
   void setMaxFiles(int value) {
     if (value <= 0 || _settings.maxFiles == value) return;
     _updateSettings(_settings.copyWith(maxFiles: value));
+    AnalyticsService.instance.settingsChanged('maxFiles', value);
   }
 
   void setWindowBounds({double? x, double? y, double? w, double? h}) {
@@ -119,16 +120,19 @@ class SettingsService with ChangeNotifier {
   void setLocale(String? code) {
     if (_settings.localeCode == code) return;
     _updateSettings(_settings.copyWith(localeCode: code));
+    AnalyticsService.instance.settingsChanged('locale', code);
   }
 
   void setTelemetryEnabled(bool enabled) {
     if (_settings.telemetryEnabled == enabled) return;
     _updateSettings(_settings.copyWith(telemetryEnabled: enabled));
+    AnalyticsService.instance.settingsChanged('telemetryEnabled', enabled);
   }
 
   void setAlwaysOnTop(bool enabled) {
     if (_settings.isAlwaysOnTop == enabled) return;
     _updateSettings(_settings.copyWith(isAlwaysOnTop: enabled));
+    AnalyticsService.instance.settingsChanged('alwaysOnTop', enabled);
   }
 
   Future<void> setLaunchAtLogin(bool enabled) async {
@@ -141,6 +145,7 @@ class SettingsService with ChangeNotifier {
         await launchAtStartup.disable();
       }
       _updateSettings(_settings.copyWith(launchAtLogin: enabled));
+      AnalyticsService.instance.settingsChanged('launchAtLogin', enabled);
     } catch (e) {
       AnalyticsService.instance.error('Failed to change launch at login: $e');
     }
@@ -149,6 +154,7 @@ class SettingsService with ChangeNotifier {
   void setWindowOpacity(double opacity) {
     if (_settings.windowOpacity == opacity) return;
     _updateSettings(_settings.copyWith(windowOpacity: opacity));
+    AnalyticsService.instance.settingsChanged('windowOpacity', opacity);
   }
 
   void _updateSettings(AppSettings newSettings) {

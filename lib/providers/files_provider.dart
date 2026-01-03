@@ -182,6 +182,9 @@ class FilesProvider with ChangeNotifier {
     if (_files.remove(file.pathname) != null) {
       _invalidateCache();
       _scheduleNotify();
+      AnalyticsService.instance.fileRemoved(
+        extension: file.fileName.split('.').lastOrNull,
+      );
       AnalyticsService.instance.info(
         'File removed: ${file.fileName}',
         tag: 'FilesProvider',
@@ -193,6 +196,9 @@ class FilesProvider with ChangeNotifier {
     if (_files.remove(pathname) != null) {
       _invalidateCache();
       _scheduleNotify();
+      AnalyticsService.instance.fileRemoved(
+        extension: pathname.split('.').lastOrNull,
+      );
       AnalyticsService.instance.fileDroppedOut();
       AnalyticsService.instance.info(
         'File removed: $pathname',
@@ -234,7 +240,9 @@ class FilesProvider with ChangeNotifier {
                 : null,
       );
 
-      return SharePlus.instance.share(params);
+      final result = await SharePlus.instance.share(params);
+      AnalyticsService.instance.fileShared(count: validFilesList.length);
+      return result;
     } catch (e) {
       AnalyticsService.instance.error(
         'Error sharing files: $e',

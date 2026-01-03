@@ -25,6 +25,7 @@ class UpdateService {
   static final UpdateService instance = UpdateService();
 
   Future<String?> checkForUpdates() async {
+    AnalyticsService.instance.updateCheckStarted();
     try {
       final response = await _client.getLatestRelease();
 

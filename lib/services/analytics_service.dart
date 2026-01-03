@@ -59,15 +59,38 @@ class AnalyticsService {
 
   // Specific Events
   void appStarted() => trackEvent('app_started');
+
   void fileAdded({String? extension}) => trackEvent(
     'file_added',
     extension != null ? {'extension': extension} : null,
   );
+
+  void fileRemoved({String? extension}) => trackEvent(
+    'file_removed',
+    extension != null ? {'extension': extension} : null,
+  );
+
+  void fileShared({required int count}) =>
+      trackEvent('file_shared', {'count': count});
+
   void fileDroppedOut() => trackEvent('file_dropped_out');
+
   void shakeWindowCreated() => trackEvent('shake_window_created');
+
+  void shakeDetected(double x, double y) =>
+      trackEvent('shake_detected', {'x': x, 'y': y});
+
   void fileLimitReached() => trackEvent('file_limit_reached');
+
+  void updateCheckStarted() => trackEvent('update_check_started');
+
   void updateAvailable(String version) =>
       trackEvent('update_available', {'version': version});
+
+  void settingsOpened() => trackEvent('settings_opened');
+
+  void settingsChanged(String key, dynamic value) =>
+      trackEvent('settings_changed', {'key': key, 'value': value});
 
   // --- Logging Methods ---
 

@@ -61,6 +61,7 @@ class SystemHelper with WindowListener {
       ),
     );
     await window.show();
+    AnalyticsService.instance.settingsOpened();
   }
 
   static Future<void> open() async {
@@ -116,6 +117,7 @@ class SystemHelper with WindowListener {
       final args = call.arguments as Map;
       final x = (args['x'] as num).toDouble();
       final y = (args['y'] as num).toDouble();
+      AnalyticsService.instance.shakeDetected(x, y);
       await _createNewWindow(x, y);
     }
   }
