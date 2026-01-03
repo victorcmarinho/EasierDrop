@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,14 +10,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MacosScaffold(
-      backgroundColor: Colors.transparent,
-      toolBar: ToolBar(
-        title: const Text('Preferences'),
-        titleWidth: 150.0,
-        centerTitle: true,
-        decoration: BoxDecoration(color: Colors.transparent),
-        dividerColor: Colors.transparent,
-      ),
+      backgroundColor: MacosTheme.of(context).canvasColor,
       children: [
         ContentArea(
           builder: (context, scrollController) {
@@ -30,99 +22,99 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
-        child: Container(
-          color: MacosTheme.of(context).canvasColor.withValues(alpha: 0.5),
-          child: AnimatedBuilder(
-            animation: SettingsService.instance,
-            builder: (context, _) {
-              final settings = SettingsService.instance;
-              final loc = AppLocalizations.of(context)!;
+    return AnimatedBuilder(
+      animation: SettingsService.instance,
+      builder: (context, _) {
+        final settings = SettingsService.instance;
+        final loc = AppLocalizations.of(context)!;
 
-              return ListView(
-                padding: const EdgeInsets.all(24),
-                children: [
-                  _buildSectionHeader(loc.settingsGeneral),
-                  const SizedBox(height: 12),
-                  _buildSettingsGroup([
-                    _buildSettingsItem(
-                      icon: CupertinoIcons.rocket_fill,
-                      label: loc.settingsLaunchAtLogin,
-                      child: MacosSwitch(
-                        value: settings.settings.launchAtLogin,
-                        onChanged: (v) => settings.setLaunchAtLogin(v),
-                      ),
-                    ),
-                    _buildDivider(),
-                    _buildSettingsItem(
-                      icon: CupertinoIcons.eye_slash_fill,
-                      label: loc.settingsAutoHide,
-                      child: MacosSwitch(
-                        value: settings.settings.isAutoHideEnabled,
-                        onChanged: (v) => settings.setAutoHide(v),
-                      ),
-                    ),
-                    _buildDivider(),
-                    _buildSettingsItem(
-                      icon: CupertinoIcons.pin_fill,
-                      label: loc.settingsAlwaysOnTop,
-                      child: MacosSwitch(
-                        value: settings.settings.isAlwaysOnTop,
-                        onChanged: (v) => settings.setAlwaysOnTop(v),
-                      ),
-                    ),
-                  ]),
-                  const SizedBox(height: 24),
-                  _buildSectionHeader(loc.languageLabel),
-                  const SizedBox(height: 12),
-                  _buildSettingsGroup([
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 16,
-                      ),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: CupertinoSegmentedControl<String>(
-                          children: {
-                            'en': Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 6,
-                              ),
-                              child: Text(loc.languageEnglish),
-                            ),
-                            'pt_BR': Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 6,
-                              ),
-                              child: Text(loc.languagePortuguese),
-                            ),
-                            'es': Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 6,
-                              ),
-                              child: Text(loc.languageSpanish),
-                            ),
-                          },
-                          groupValue: settings.localeCode ?? 'en',
-                          onValueChanged: (v) => settings.setLocale(v),
-                          padding: EdgeInsets.zero,
+        return ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 24.0),
+              child: Center(
+                child: Text(
+                  'Preferences',
+                  style: MacosTheme.of(context).typography.title2,
+                ),
+              ),
+            ),
+            _buildSectionHeader(loc.settingsGeneral),
+            const SizedBox(height: 12),
+            _buildSettingsGroup([
+              _buildSettingsItem(
+                icon: CupertinoIcons.rocket_fill,
+                label: loc.settingsLaunchAtLogin,
+                child: MacosSwitch(
+                  value: settings.settings.launchAtLogin,
+                  onChanged: (v) => settings.setLaunchAtLogin(v),
+                ),
+              ),
+              _buildDivider(),
+              _buildSettingsItem(
+                icon: CupertinoIcons.eye_slash_fill,
+                label: loc.settingsAutoHide,
+                child: MacosSwitch(
+                  value: settings.settings.isAutoHideEnabled,
+                  onChanged: (v) => settings.setAutoHide(v),
+                ),
+              ),
+              _buildDivider(),
+              _buildSettingsItem(
+                icon: CupertinoIcons.pin_fill,
+                label: loc.settingsAlwaysOnTop,
+                child: MacosSwitch(
+                  value: settings.settings.isAlwaysOnTop,
+                  onChanged: (v) => settings.setAlwaysOnTop(v),
+                ),
+              ),
+            ]),
+            const SizedBox(height: 24),
+            _buildSectionHeader(loc.languageLabel),
+            const SizedBox(height: 12),
+            _buildSettingsGroup([
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: CupertinoSegmentedControl<String>(
+                    children: {
+                      'en': Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
                         ),
+                        child: Text(loc.languageEnglish),
                       ),
-                    ),
-                  ]),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
+                      'pt_BR': Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        child: Text(loc.languagePortuguese),
+                      ),
+                      'es': Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        child: Text(loc.languageSpanish),
+                      ),
+                    },
+                    groupValue: settings.localeCode ?? 'en',
+                    onValueChanged: (v) => settings.setLocale(v),
+                    padding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+            ]),
+          ],
+        );
+      },
     );
   }
 
@@ -189,7 +181,7 @@ class SettingsScreen extends StatelessWidget {
       height: 1,
       thickness: 0.5,
       color: MacosColors.separatorColor,
-      indent: 50, // Matches icon offset
+      indent: 50,
     );
   }
 }
