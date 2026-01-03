@@ -9,16 +9,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MacosScaffold(
-      backgroundColor: MacosTheme.of(context).canvasColor,
-      children: [
-        ContentArea(
-          builder: (context, scrollController) {
-            return _buildBody(context);
-          },
-        ),
-      ],
-    );
+    return _buildBody(context);
   }
 
   Widget _buildBody(BuildContext context) {
