@@ -4,18 +4,15 @@ import QuickLookThumbnailing
 
 class MacOSFileIconChannel: NSObject {
     static let shared = MacOSFileIconChannel()
-    private var channel: FlutterMethodChannel?
-    
-    private override init() {
-        super.init()
-    }
+    private var channels: [FlutterMethodChannel] = []
     
     func setup(binaryMessenger: FlutterBinaryMessenger) {
-        channel = FlutterMethodChannel(
+        let channel = FlutterMethodChannel(
             name: "file_icon_channel",
             binaryMessenger: binaryMessenger
         )
-        channel?.setMethodCallHandler(handleMethodCall)
+        channel.setMethodCallHandler(handleMethodCall)
+        channels.append(channel)
     }
     
     private func handleMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -70,7 +67,7 @@ class MacOSFileIconChannel: NSObject {
          )
          
          QLThumbnailGenerator.shared.generateBestRepresentation(for: request) { (thumbnail, error) in
-             if let error = error {
+             if error != nil {
                  result(nil)
                  return
              }
