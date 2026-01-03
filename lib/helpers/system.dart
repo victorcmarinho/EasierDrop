@@ -23,18 +23,41 @@ class SystemHelper with WindowListener {
     AnalyticsService.instance.trackEvent('window_hidden');
   }
 
+  static Map<String, dynamic> _createWindowArgs({
+    required String args,
+    String? title,
+    double width = AppConstants.defaultWindowSize,
+    double height = AppConstants.defaultWindowSize,
+    bool center = true,
+    bool resizable = false,
+    bool maximizable = false,
+    double? x,
+    double? y,
+  }) {
+    return {
+      'args': args,
+      if (title != null) 'title': title,
+      'width': width,
+      'height': height,
+      'center': center,
+      'resizable': resizable,
+      'maximizable': maximizable,
+      if (x != null) 'x': x,
+      if (y != null) 'y': y,
+    };
+  }
+
   static Future<void> openSettings() async {
     final window = await WindowController.create(
       WindowConfiguration(
-        arguments: jsonEncode({
-          'args': 'settings_window',
-          'title': 'Preferences',
-          'width': 600.0,
-          'height': 500.0,
-          'center': true,
-          'resizable': false,
-          'maximizable': false,
-        }),
+        arguments: jsonEncode(
+          _createWindowArgs(
+            args: 'settings_window',
+            title: 'Preferences',
+            width: 600.0,
+            height: 500.0,
+          ),
+        ),
       ),
     );
     await window.show();
@@ -90,6 +113,7 @@ class SystemHelper with WindowListener {
         'Shake event received via channel',
         tag: 'SystemHelper',
       );
+      print('DEBUG: SystemHelper received - Shake detected!');
       final args = call.arguments as Map;
       final x = (args['x'] as num).toDouble();
       final y = (args['y'] as num).toDouble();
@@ -157,13 +181,15 @@ class SystemHelper with WindowListener {
 
     await WindowController.create(
       WindowConfiguration(
-        arguments: jsonEncode({
-          'args': 'shake_window',
-          'x': left,
-          'y': top,
-          'width': size,
-          'height': size,
-        }),
+        arguments: jsonEncode(
+          _createWindowArgs(
+            args: 'shake_window',
+            x: left,
+            y: top,
+            width: size,
+            height: size,
+          ),
+        ),
       ),
     );
     AnalyticsService.instance.shakeWindowCreated();
@@ -171,6 +197,8 @@ class SystemHelper with WindowListener {
 
   static Future<void> _configureWindow() async {
     await windowManager.ensureInitialized();
+    await windowManager.setResizable(false);
+    await windowManager.setMaximizable(false);
 
     const defaultSize = Size(
       AppConstants.defaultWindowSize,
@@ -186,6 +214,7 @@ class SystemHelper with WindowListener {
       titleBarStyle: TitleBarStyle.hidden,
       title: 'Easier Drop',
       windowButtonVisibility: true,
+      fullScreen: false,
       skipTaskbar: false,
     );
 
@@ -195,7 +224,6 @@ class SystemHelper with WindowListener {
       await Future.wait([
         windowManager.setPreventClose(true),
         windowManager.setVisibleOnAllWorkspaces(true),
-        windowManager.setMaximizable(false),
       ]);
     });
   }
@@ -225,6 +253,7 @@ class SystemHelper with WindowListener {
     await Future.wait([
       windowManager.setOpacity(s.windowOpacity),
       windowManager.setAlwaysOnTop(s.isAlwaysOnTop),
+      windowManager.setMaximizable(false),
     ]);
   }
 

@@ -37,6 +37,13 @@ class MacOSShakeMonitor: NSObject {
             options: .defaultTap,
             eventsOfInterest: CGEventMask(mask),
             callback: { (proxy, type, event, refcon) -> Unmanaged<CGEvent>? in
+                if type == .tapDisabledByTimeout {
+                    print("MacOSShakeMonitor: Event tap disabled by timeout. Re-enabling...")
+                    if let tap = MacOSShakeMonitor.shared.eventTap {
+                        CGEvent.tapEnable(tap: tap, enable: true)
+                    }
+                    return nil
+                }
                 MacOSShakeMonitor.shared.handleEvent(event)
                 return Unmanaged.passUnretained(event)
             },
@@ -133,6 +140,7 @@ class MacOSShakeMonitor: NSObject {
         ]
         
         DispatchQueue.main.async { [weak self] in
+            print("MacOSShakeMonitor: Invoking method channel shake_detected")
             self?.methodChannel?.invokeMethod("shake_detected", arguments: args)
         }
     }

@@ -35,7 +35,6 @@ Future<void> main(List<String> args) async {
 
     await SystemHelper.initialize(isSecondaryWindow: true, windowId: windowId);
 
-    // Determine initial route based on arguments
     final String initialRoute;
     if (argument['args'] == 'settings_window') {
       initialRoute = AppConstants.routeSettings;
