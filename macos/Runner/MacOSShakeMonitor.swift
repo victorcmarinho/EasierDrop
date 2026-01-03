@@ -8,6 +8,7 @@ class MacOSShakeMonitor: NSObject {
     private var runLoopSource: CFRunLoopSource?
     
     private var methodChannel: FlutterMethodChannel?
+    private var isSetup = false
     
     // Shake detection variables
     private var lastLocation: CGPoint = .zero
@@ -23,12 +24,14 @@ class MacOSShakeMonitor: NSObject {
     private var lastDirectionY: Int = 0 // -1 up, 1 down, 0 none
     
     func setup(binaryMessenger: FlutterBinaryMessenger) {
+        if isSetup { return }
         methodChannel = FlutterMethodChannel(name: "com.easier_drop/shake", binaryMessenger: binaryMessenger)
         startMonitoring()
+        isSetup = true
     }
     
     func startMonitoring() {
-        let mask = (1 << CGEventType.leftMouseDragged.rawValue)
+        let mask = (1 << CGEventType.leftMouseDragged.rawValue) | (1 << CGEventType.leftMouseUp.rawValue)
         
         eventTap = CGEvent.tapCreate(
             tap: .cgSessionEventTap,
@@ -56,6 +59,13 @@ class MacOSShakeMonitor: NSObject {
     }
 
     private func handleEvent(_ event: CGEvent) {
+        if event.type == .leftMouseUp {
+            reversalCount = 0
+            lastDirectionX = 0
+            lastDirectionY = 0
+            return
+        }
+        
         let currentLocation = event.location
         let currentTime = Date().timeIntervalSince1970
         
@@ -67,6 +77,16 @@ class MacOSShakeMonitor: NSObject {
         
         let deltaX = currentLocation.x - lastLocation.x
         let deltaY = currentLocation.y - lastLocation.y
+        
+        // Skip large jumps (could be starting a new drag at a different location)
+        let jumpThreshold: CGFloat = 100.0
+        if abs(deltaX) > jumpThreshold || abs(deltaY) > jumpThreshold {
+            lastLocation = currentLocation
+            reversalCount = 0
+            lastDirectionX = 0
+            lastDirectionY = 0
+            return
+        }
         
         // Determine direction for X
         var currentDirectionX = 0

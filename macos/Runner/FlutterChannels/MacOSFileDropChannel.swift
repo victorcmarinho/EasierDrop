@@ -12,7 +12,10 @@ class MacOSFileDropChannel: NSObject {
         super.init()
     }
     
+    private var isSetup = false
+    
     func setup(binaryMessenger: FlutterBinaryMessenger) {
+        if isSetup { return }
         
         channel = FlutterMethodChannel(name: "file_drop_channel", binaryMessenger: binaryMessenger)
         eventChannel = FlutterEventChannel(name: "file_drop_channel/events", binaryMessenger: binaryMessenger)
@@ -20,6 +23,7 @@ class MacOSFileDropChannel: NSObject {
         channel?.setMethodCallHandler(handleMethodCall)
         eventChannel?.setStreamHandler(self)
         
+        isSetup = true
     }
     
     private func handleMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
