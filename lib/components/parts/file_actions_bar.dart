@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:easier_drop/components/share_button.dart';
 import 'package:easier_drop/components/remove_button.dart';
-import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
