@@ -71,7 +71,6 @@ class MacOSFileIconChannel: NSObject {
          
          QLThumbnailGenerator.shared.generateBestRepresentation(for: request) { (thumbnail, error) in
              if let error = error {
-                 print("QLThumbnailGenerator error: \(error)")
                  result(nil)
                  return
              }

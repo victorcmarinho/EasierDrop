@@ -15,9 +15,9 @@ class MacOSShakeMonitor: NSObject {
     private var lastReversalTime: TimeInterval = 0
     
     // Configurable parameters
-    private let shakeThreshold: CGFloat = 5.0 // Significantly decreased
-    private let reversalTimeout: TimeInterval = 1.0 // Increased window
-    private let requiredReversals = 2 // Reduced to minimum viable
+    private let shakeThreshold: CGFloat = 10.0
+    private let reversalTimeout: TimeInterval = 0.8
+    private let requiredReversals = 4
     
     private var lastDirectionX: Int = 0 // -1 left, 1 right, 0 none
     private var lastDirectionY: Int = 0 // -1 up, 1 down, 0 none
@@ -109,7 +109,6 @@ class MacOSShakeMonitor: NSObject {
                 reversalCount += 1
             } else {
                 reversalCount = 1
-                // print("MacOSShakeMonitor: Reset count (timeout)")
             }
             
             lastReversalTime = currentTime
