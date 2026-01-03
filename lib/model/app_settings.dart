@@ -9,6 +9,10 @@ class AppSettings {
   final double? windowH;
   final String? localeCode;
   final bool telemetryEnabled;
+  final bool isAutoHideEnabled;
+  final bool isAlwaysOnTop;
+  final bool launchAtLogin;
+  final double windowOpacity;
 
   const AppSettings({
     this.maxFiles = 100,
@@ -18,6 +22,10 @@ class AppSettings {
     this.windowH,
     this.localeCode,
     this.telemetryEnabled = true,
+    this.isAutoHideEnabled = false,
+    this.isAlwaysOnTop = false,
+    this.launchAtLogin = false,
+    this.windowOpacity = 1.0,
   });
 
   factory AppSettings.fromMap(Map<String, dynamic> map) {
@@ -29,6 +37,10 @@ class AppSettings {
       windowH: (map['windowH'] as num?)?.toDouble(),
       localeCode: map['locale'] as String?,
       telemetryEnabled: (map['telemetryEnabled'] as bool?) ?? true,
+      isAutoHideEnabled: (map['isAutoHideEnabled'] as bool?) ?? false,
+      isAlwaysOnTop: (map['isAlwaysOnTop'] as bool?) ?? false,
+      launchAtLogin: (map['launchAtLogin'] as bool?) ?? false,
+      windowOpacity: (map['windowOpacity'] as num?)?.toDouble() ?? 1.0,
     );
   }
 
@@ -43,6 +55,10 @@ class AppSettings {
       if (windowW != null) 'windowW': windowW,
       if (windowH != null) 'windowH': windowH,
       'telemetryEnabled': telemetryEnabled,
+      'isAutoHideEnabled': isAutoHideEnabled,
+      'isAlwaysOnTop': isAlwaysOnTop,
+      'launchAtLogin': launchAtLogin,
+      'windowOpacity': windowOpacity,
     };
   }
 
@@ -54,6 +70,10 @@ class AppSettings {
     double? windowH,
     String? localeCode,
     bool? telemetryEnabled,
+    bool? isAutoHideEnabled,
+    bool? isAlwaysOnTop,
+    bool? launchAtLogin,
+    double? windowOpacity,
   }) {
     return AppSettings(
       maxFiles: maxFiles ?? this.maxFiles,
@@ -63,6 +83,10 @@ class AppSettings {
       windowH: windowH ?? this.windowH,
       localeCode: localeCode ?? this.localeCode,
       telemetryEnabled: telemetryEnabled ?? this.telemetryEnabled,
+      isAutoHideEnabled: isAutoHideEnabled ?? this.isAutoHideEnabled,
+      isAlwaysOnTop: isAlwaysOnTop ?? this.isAlwaysOnTop,
+      launchAtLogin: launchAtLogin ?? this.launchAtLogin,
+      windowOpacity: windowOpacity ?? this.windowOpacity,
     );
   }
 }

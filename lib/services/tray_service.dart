@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
-import 'package:easier_drop/services/settings_service.dart';
+
 import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/services/update_service.dart';
@@ -42,6 +42,7 @@ class TrayService with ChangeNotifier {
           MenuItem(key: 'update_available', label: '🌟 ${loc.updateAvailable}'),
           MenuItem.separator(),
         ],
+        MenuItem(key: 'preferences', label: loc.preferences),
         MenuItem(key: 'show_window', label: loc.openTray),
         MenuItem(
           key: 'files_count',
@@ -50,23 +51,10 @@ class TrayService with ChangeNotifier {
           toolTip: loc.filesCountTooltip,
         ),
         MenuItem.separator(),
-        MenuItem(key: 'lang_label', label: loc.languageLabel),
-        _buildLangItem('en', loc.languageEnglish, currentLocale == 'en'),
-        _buildLangItem(
-          'pt',
-          loc.languagePortuguese,
-          currentLocale == 'pt' || currentLocale == 'pt_BR',
-        ),
-        _buildLangItem('es', loc.languageSpanish, currentLocale == 'es'),
-        MenuItem.separator(),
         MenuItem(key: 'exit_app', label: loc.trayExit),
       ],
     );
     await trayManager.setContextMenu(menu);
-  }
-
-  MenuItem _buildLangItem(String key, String label, bool isSelected) {
-    return MenuItem(key: 'lang_$key', label: isSelected ? '• $label' : label);
   }
 
   Future<void> handleMenuItemClick(MenuItem menuItem) async {
@@ -75,18 +63,13 @@ class TrayService with ChangeNotifier {
         case 'update_available':
           if (_updateUrl != null) await launchUrl(Uri.parse(_updateUrl!));
           break;
+        case 'preferences':
+          await SystemHelper.openSettings();
+          break;
         case 'show_window':
           await SystemHelper.open();
           break;
-        case 'lang_en':
-          SettingsService.instance.setLocale('en');
-          break;
-        case 'lang_pt':
-          SettingsService.instance.setLocale('pt_BR');
-          break;
-        case 'lang_es':
-          SettingsService.instance.setLocale('es');
-          break;
+
         case 'exit_app':
           await SystemHelper.exit();
           break;

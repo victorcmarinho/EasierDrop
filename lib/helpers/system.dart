@@ -23,6 +23,23 @@ class SystemHelper with WindowListener {
     AnalyticsService.instance.trackEvent('window_hidden');
   }
 
+  static Future<void> openSettings() async {
+    final window = await WindowController.create(
+      WindowConfiguration(
+        arguments: jsonEncode({
+          'args': 'settings_window',
+          'title': 'Preferences',
+          'width': 600.0,
+          'height': 500.0,
+          'center': true,
+          'resizable': false,
+          'maximizable': false,
+        }),
+      ),
+    );
+    await window.show();
+  }
+
   static Future<void> open() async {
     await Future.wait([
       windowManager.show(),
@@ -49,6 +66,7 @@ class SystemHelper with WindowListener {
     String? windowId,
   }) async {
     await SettingsService.instance.load();
+    SettingsService.instance.addListener(_onSettingsChanged);
 
     if (isSecondaryWindow) {
       await _setupSecondaryWindow(windowId);
@@ -79,21 +97,26 @@ class SystemHelper with WindowListener {
     await windowManager.ensureInitialized();
     await windowManager.setTitleBarStyle(
       TitleBarStyle.hidden,
-      windowButtonVisibility: false,
+      windowButtonVisibility: true,
     );
+    await windowManager.setResizable(false);
+    await windowManager.setMaximizable(false);
 
     try {
       final controller = await WindowController.fromCurrentEngine();
       final args = jsonDecode(controller.arguments) as Map<String, dynamic>;
 
-      if (args['x'] != null && args['y'] != null) {
-        final double width =
-            (args['width'] as num?)?.toDouble() ??
-            AppConstants.defaultWindowSize;
-        final double height =
-            (args['height'] as num?)?.toDouble() ??
-            AppConstants.defaultWindowSize;
+      if (args['title'] != null) {
+        await windowManager.setTitle(args['title'] as String);
+      }
 
+      final double width =
+          (args['width'] as num?)?.toDouble() ?? AppConstants.defaultWindowSize;
+      final double height =
+          (args['height'] as num?)?.toDouble() ??
+          AppConstants.defaultWindowSize;
+
+      if (args['x'] != null && args['y'] != null) {
         await windowManager.setBounds(
           Rect.fromLTWH(
             (args['x'] as num).toDouble(),
@@ -102,6 +125,12 @@ class SystemHelper with WindowListener {
             height,
           ),
         );
+      } else {
+        await windowManager.setSize(Size(width, height));
+      }
+
+      if (args['center'] == true) {
+        await windowManager.center();
       }
 
       await controller.show();
@@ -180,6 +209,14 @@ class SystemHelper with WindowListener {
   void onWindowResize() async {
     final size = await windowManager.getSize();
     SettingsService.instance.setWindowBounds(w: size.width, h: size.height);
+  }
+
+  static Future<void> _onSettingsChanged() async {
+    final s = SettingsService.instance.settings;
+    await Future.wait([
+      windowManager.setOpacity(s.windowOpacity),
+      windowManager.setAlwaysOnTop(s.isAlwaysOnTop),
+    ]);
   }
 
   @override

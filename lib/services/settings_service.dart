@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:easier_drop/services/analytics_service.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:easier_drop/model/app_settings.dart';
 
@@ -34,6 +36,16 @@ class SettingsService with ChangeNotifier {
 
   Future<void> load() async {
     if (_loaded) return;
+
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      launchAtStartup.setup(
+        appName: packageInfo.appName,
+        appPath: Platform.resolvedExecutable,
+      );
+    } catch (e) {
+      AnalyticsService.instance.warn('Failed to setup launch_at_startup: $e');
+    }
 
     try {
       final file = await _getSettingsFile();
@@ -71,6 +83,36 @@ class SettingsService with ChangeNotifier {
   void setTelemetryEnabled(bool enabled) {
     if (_settings.telemetryEnabled == enabled) return;
     _updateSettings(_settings.copyWith(telemetryEnabled: enabled));
+  }
+
+  void setAutoHide(bool enabled) {
+    if (_settings.isAutoHideEnabled == enabled) return;
+    _updateSettings(_settings.copyWith(isAutoHideEnabled: enabled));
+  }
+
+  void setAlwaysOnTop(bool enabled) {
+    if (_settings.isAlwaysOnTop == enabled) return;
+    _updateSettings(_settings.copyWith(isAlwaysOnTop: enabled));
+  }
+
+  Future<void> setLaunchAtLogin(bool enabled) async {
+    if (_settings.launchAtLogin == enabled) return;
+
+    try {
+      if (enabled) {
+        await launchAtStartup.enable();
+      } else {
+        await launchAtStartup.disable();
+      }
+      _updateSettings(_settings.copyWith(launchAtLogin: enabled));
+    } catch (e) {
+      AnalyticsService.instance.error('Failed to change launch at login: $e');
+    }
+  }
+
+  void setWindowOpacity(double opacity) {
+    if (_settings.windowOpacity == opacity) return;
+    _updateSettings(_settings.copyWith(windowOpacity: opacity));
   }
 
   void _updateSettings(AppSettings newSettings) {

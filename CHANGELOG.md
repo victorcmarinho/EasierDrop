@@ -17,6 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Minimalist Multi-Window UI**: Secondary windows now feature a cleaner, borderless interface without title bars or system buttons.
 - **Clipboard Integration**: Now supports pasting files directly into the drop zone using `Cmd + V`. Copy files in Finder and paste them seamlessly!
 - **Video Demo**: Added a video demonstration to the documentation and homepage for better onboarding.
+- **Settings Window**: Dedicated preferences window with "Liquid Glass" UI design (Blur + Translucency).
+- **Window Management**:
+    - **Opacity Control**: Adjust window opacity in real-time.
+    - **Always on Top**: Toggle to keep the drop zone above other windows.
+    - **Auto-Hide**: Option to automatically hide the window after dropping files.
+- **System Integration**:
+    - **Launch at Login**: Option to start the app automatically.
+    - **Shortcuts**: `Cmd + ,` to open Preferences.
+    - **Tray Menu**: Added "Preferences..." option.
+- **Localization**: Settings UI fully localized (English, Portuguese, Spanish).
 
 ### Improved
 - **Architecture**: Migrated to a Repository pattern with `FileRepository` for cleaner separation of concerns.

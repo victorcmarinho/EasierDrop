@@ -18,8 +18,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clearFilesTitle => '¿Limpiar archivos?';
 
   @override
-  String get clearFilesMessage =>
-      'Esta acción eliminará todos los archivos recolectados.';
+  String get clearFilesMessage => 'Esta acción eliminará todos los archivos recolectados.';
 
   @override
   String get clearCancel => 'Cancelar';
@@ -151,4 +150,25 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get updateAvailable => 'Actualización Disponible';
+
+  @override
+  String get preferences => 'Preferencias...';
+
+  @override
+  String get settingsGeneral => 'General';
+
+  @override
+  String get settingsAppearance => 'Apariencia';
+
+  @override
+  String get settingsLaunchAtLogin => 'Iniciar al iniciar sesión';
+
+  @override
+  String get settingsAutoHide => 'Auto-ocultar al soltar';
+
+  @override
+  String get settingsAlwaysOnTop => 'Siempre visible';
+
+  @override
+  String get settingsOpacity => 'Opacidad de la ventana';
 }

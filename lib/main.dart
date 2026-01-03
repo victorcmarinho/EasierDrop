@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:easier_drop/helpers/system.dart';
+import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:easier_drop/services/analytics_service.dart';
 
 import 'package:easier_drop/providers/files_provider.dart';
@@ -8,6 +10,7 @@ import 'package:easier_drop/services/settings_service.dart';
 import 'package:easier_drop/helpers/keyboard_shortcuts.dart';
 
 import 'package:easier_drop/screens/file_transfer_screen.dart';
+import 'package:easier_drop/screens/settings_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:provider/provider.dart';
@@ -23,12 +26,21 @@ Future<void> main(List<String> args) async {
   if (args.firstOrNull == 'multi_window') {
     final windowId = args[1];
 
+    final controller = await WindowController.fromCurrentEngine();
+    final argument =
+        controller.arguments.isNotEmpty
+            ? jsonDecode(controller.arguments) as Map<String, dynamic>
+            : <String, dynamic>{};
+
     await SystemHelper.initialize(isSecondaryWindow: true, windowId: windowId);
 
     runApp(
       MultiProvider(
         providers: [ChangeNotifierProvider(create: (_) => FilesProvider())],
-        child: const EasierDrop(isSecondaryWindow: true),
+        child: EasierDrop(
+          isSecondaryWindow: true,
+          isSettingsWindow: argument['args'] == 'settings_window',
+        ),
       ),
     );
   } else {
@@ -45,8 +57,13 @@ Future<void> main(List<String> args) async {
 
 class EasierDrop extends StatelessWidget {
   final bool isSecondaryWindow;
+  final bool isSettingsWindow;
 
-  const EasierDrop({super.key, this.isSecondaryWindow = false});
+  const EasierDrop({
+    super.key,
+    this.isSecondaryWindow = false,
+    this.isSettingsWindow = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +92,9 @@ class EasierDrop extends StatelessWidget {
           theme: MacosThemeData.light(),
           darkTheme: MacosThemeData.dark(),
           home:
-              isSecondaryWindow
+              isSettingsWindow
+                  ? const MacosWindow(child: SettingsScreen())
+                  : isSecondaryWindow
                   ? const MacosWindow(child: FileTransferScreen())
                   : const WelcomeScreen(),
         );

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:pasteboard/pasteboard.dart';
+import 'package:easier_drop/helpers/system.dart';
 
 class ClearAllIntent extends Intent {
   const ClearAllIntent();
@@ -17,12 +18,19 @@ class PasteFilesIntent extends Intent {
   const PasteFilesIntent();
 }
 
+class PreferencesIntent extends Intent {
+  const PreferencesIntent();
+}
+
 class KeyboardShortcuts {
   static final Map<LogicalKeySet, Intent> shortcuts = {
     LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.backspace):
         const ClearAllIntent(),
     LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.delete):
         const ClearAllIntent(),
+
+    LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.comma):
+        const PreferencesIntent(),
 
     // Compartilhar: Cmd+Shift+C ou Cmd+Enter
     LogicalKeySet(
@@ -64,6 +72,12 @@ class KeyboardShortcuts {
             final fileRefs = files.map((path) => FileReference(pathname: path));
             await provider.addFiles(fileRefs);
           }
+          return null;
+        },
+      ),
+      PreferencesIntent: CallbackAction<PreferencesIntent>(
+        onInvoke: (intent) async {
+          await SystemHelper.openSettings();
           return null;
         },
       ),

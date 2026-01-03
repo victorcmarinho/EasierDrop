@@ -42,5 +42,12 @@
   ,"semHandleLabel": "Barra de arraste"
   ,"semHandleHint": "Arraste para mover a janela",
   "welcomeTo": "Olá, bem-vindo ao",
-  "updateAvailable": "Atualização Disponível"
+  "updateAvailable": "Atualização Disponível",
+  "preferences": "Preferências...",
+  "settingsGeneral": "Geral",
+  "settingsAppearance": "Aparência",
+  "settingsLaunchAtLogin": "Iniciar no Login",
+  "settingsAutoHide": "Auto-ocultar após soltar",
+  "settingsAlwaysOnTop": "Sempre no Topo",
+  "settingsOpacity": "Opacidade da Janela"
 }

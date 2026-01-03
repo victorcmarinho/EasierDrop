@@ -42,5 +42,12 @@
   ,"semHandleLabel": "Window handle"
   ,"semHandleHint": "Drag to move the window",
   "welcomeTo": "Hello, welcome to",
-  "updateAvailable": "Update Available"
+  "updateAvailable": "Update Available",
+  "preferences": "Preferences...",
+  "settingsGeneral": "General",
+  "settingsAppearance": "Appearance",
+  "settingsLaunchAtLogin": "Launch at Login",
+  "settingsAutoHide": "Auto-hide after Drop",
+  "settingsAlwaysOnTop": "Always on Top",
+  "settingsOpacity": "Window Opacity"
 }

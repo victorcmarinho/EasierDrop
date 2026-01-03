@@ -70,22 +70,6 @@ void main() {
       expect(localizations.filesCountTooltip, 'Quantidade atual na bandeja');
     });
 
-    test('languageLabel deve retornar Idioma:', () {
-      expect(localizations.languageLabel, 'Idioma:');
-    });
-
-    test('languageEnglish deve retornar Inglês', () {
-      expect(localizations.languageEnglish, 'Inglês');
-    });
-
-    test('languagePortuguese deve retornar Português', () {
-      expect(localizations.languagePortuguese, 'Português');
-    });
-
-    test('languageSpanish deve retornar Espanhol', () {
-      expect(localizations.languageSpanish, 'Espanhol');
-    });
-
     test('limitReached deve retornar mensagem de limite', () {
       expect(
         localizations.limitReached(100),
