@@ -52,7 +52,7 @@ class SystemHelper with WindowListener {
       WindowConfiguration(
         arguments: jsonEncode(
           _createWindowArgs(
-            args: 'settings_window',
+            args: AppConstants.routeSettings,
             title: 'Preferences',
             width: 600.0,
             height: 500.0,
@@ -183,7 +183,7 @@ class SystemHelper with WindowListener {
       WindowConfiguration(
         arguments: jsonEncode(
           _createWindowArgs(
-            args: 'shake_window',
+            args: AppConstants.routeShare,
             x: left,
             y: top,
             width: size,

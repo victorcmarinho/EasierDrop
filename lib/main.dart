@@ -35,14 +35,7 @@ Future<void> main(List<String> args) async {
 
     await SystemHelper.initialize(isSecondaryWindow: true, windowId: windowId);
 
-    final String initialRoute;
-    if (argument['args'] == 'settings_window') {
-      initialRoute = AppConstants.routeSettings;
-    } else if (argument['args'] == 'shake_window') {
-      initialRoute = AppConstants.routeShare;
-    } else {
-      initialRoute = AppConstants.routeHome;
-    }
+    final String initialRoute = argument['args'] ?? AppConstants.routeHome;
 
     runApp(
       MultiProvider(
