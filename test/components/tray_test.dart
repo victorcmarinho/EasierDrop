@@ -7,7 +7,6 @@ import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
-import 'package:easier_drop/services/settings_service.dart';
 
 // Mock para o FilesProvider
 class MockFilesProvider extends Mock implements FilesProvider {}

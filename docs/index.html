@@ -4,93 +4,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easier Drop - The missing drag and drop shelf for macOS</title>
+    <title>Easier Drop | Your Essential macOS Drag-and-Drop Shelf</title>
     <meta name="description"
-        content="A native macOS shelf to make drag and drop easier. Collect files, stack them, and move them in bulk.">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/png" href="../assets/images/icon.icns">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    </style>
+        content="Stop window-shuffling. Stash files, images, and text in a native macOS floating shelf and drop them all at once.">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <nav class="navbar">
+    <header class="glass">
         <div class="container">
-            <a href="#" class="logo">Easier Drop</a>
-            <div class="nav-links">
-                <a href="https://github.com/victorcmarinho/EasierDrop" target="_blank" class="github-link">GitHub</a>
-                <a href="https://github.com/victorcmarinho/EasierDrop/releases/latest"
-                    class="btn-download-nav">Download</a>
-            </div>
-        </div>
-    </nav>
-
-    <header class="hero">
-        <div class="container hero-content">
-            <h1 class="hero-title">Drag. Collect. <span class="gradient-text">Move.</span></h1>
-            <p class="hero-subtitle">The missing drag-and-drop shelf for macOS. Stash files temporarily and move them
-                all at once.</p>
-
-            <div class="hero-actions">
-                <a href="https://github.com/victorcmarinho/EasierDrop/releases/latest" class="btn btn-primary">
-                    Download for macOS
-                </a>
-                <p class="version-text">v1.0.0 • macOS 10.15+</p>
-            </div>
-
-            <div class="hero-image-container">
-                <video class="demo-video" autoplay loop muted playsinline>
-                    <source src="../assets/promo/useged.webm" type="video/webm">
-                    <source src="../assets/promo/useged.mov" type="video/quicktime">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
+            <nav style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div class="logo">
+                    <img src="../assets/icon/icon.png" alt="Easier Drop Logo">
+                    <span>Easier Drop</span>
+                </div>
+                <div>
+                    <a href="https://github.com/victorcmarinho/easier_drop/releases" class="btn btn-primary">Download
+                        v1.1.0</a>
+                </div>
+            </nav>
         </div>
     </header>
 
-    <section id="features" class="features">
-        <div class="container">
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="icon">📦</div>
-                    <h3>Collect Anywhere</h3>
-                    <p>Drag files, images, or text from Finder, Safari, or any other app directly into the shelf.</p>
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1>The missing shelf for macOS.</h1>
+                <p>Drag files from anywhere, stash them in a floating zone, and drop them at your destination in one go.
+                    Free, open-source, and natively fast.</p>
+                <div class="hero-actions">
+                    <a href="https://github.com/victorcmarinho/easier_drop/releases" class="btn btn-primary"
+                        style="padding: 15px 40px; font-size: 1.1rem;">Get Started for Free</a>
                 </div>
-                <div class="feature-card">
-                    <div class="icon">🚀</div>
-                    <h3>Bulk Actions</h3>
-                    <p>Once you've gathered your files, drag the entire stack to your destination in one go.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">⚡️</div>
-                    <h3>Native Speed</h3>
-                    <p>Built exclusively for macOS using native technologies for maximum performance and integration.
-                    </p>
+                <div class="hero-media glass">
+                    <img src="../assets/promo/useged.gif" alt="Easier Drop in action">
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="open-source">
-        <div class="container">
-            <h2>Free & Open Source</h2>
-            <p>Easier Drop is a free, open-source alternative to paid shelf apps. Privacy-focused and community-driven.
-            </p>
-            <div class="os-actions">
-                <a href="https://github.com/victorcmarinho/EasierDrop" class="btn btn-secondary">View Source Code</a>
-                <a href="https://github.com/sponsors/victorcmarinho" class="btn btn-outline">Sponsor Project</a>
+        <!-- Value Proposition -->
+        <section class="features">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Everything you need to stay in flow.</h2>
+                </div>
+                <div class="feature-grid">
+                    <!-- Collect -->
+                    <div class="feature-card glass">
+                        <i class="icon-collect">📦</i>
+                        <h3>Collect Anywhere</h3>
+                        <p>Stash text, images, or files from Finder, Safari, or Chrome directly into your shelf.</p>
+                        <div class="feature-visual">
+                            <img src="../assets/promo/collect_files.gif" alt="Collect files placeholder">
+                        </div>
+                    </div>
+                    <!-- Multi-Window -->
+                    <div class="feature-card glass">
+                        <i class="icon-multi">🛠️</i>
+                        <h3>Multi-Window Power</h3>
+                        <p>Manage different stacks for different projects with multiple floating windows.</p>
+                        <div class="feature-visual">
+                            <img src="../assets/promo/multi_window.gif" alt="Multi-window placeholder">
+                        </div>
+                    </div>
+                    <!-- Native Shake -->
+                    <div class="feature-card glass">
+                        <i class="icon-shake">🤝</i>
+                        <h3>Native Shake</h3>
+                        <p>Shake your mouse while dragging a file to spawn a new drop zone exactly at your cursor.</p>
+                        <div class="feature-visual">
+                            <img src="../assets/promo/shake_gesture.gif" alt="Shake gesture placeholder">
+                        </div>
+                    </div>
+                    <!-- Clipboard -->
+                    <div class="feature-card glass">
+                        <i class="icon-clipboard">📋</i>
+                        <h3>Clipboard Paste</h3>
+                        <p>Use Cmd + V to paste files directly into the shelf from your system clipboard.</p>
+                        <div class="feature-visual">
+                            <img src="../assets/promo/clipboard_paste.gif" alt="Clipboard paste placeholder">
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- How it Works -->
+        <section class="how-it-works">
+            <div class="container">
+                <div class="section-title">
+                    <h2>How it works.</h2>
+                </div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Drag & Stash</h3>
+                        <p>Grab anything and drop it into the Easier Drop window.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Navigate</h3>
+                        <p>Find your destination app or folder without losing your files.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Drop & Go</h3>
+                        <p>Drag the whole stack out to its final destination.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <footer>
-        <div class="container footer-content">
-            <p>&copy; 2025 Victor Marinho. Released under MIT License.</p>
+        <div class="container">
             <div class="footer-links">
-                <a href="https://github.com/victorcmarinho">GitHub</a>
+                <a href="https://github.com/victorcmarinho/easier_drop">GitHub</a>
+                <a href="https://github.com/victorcmarinho/easier_drop/blob/main/LICENSE">License</a>
+                <a href="https://github.com/victorcmarinho/easier_drop/releases">Releases</a>
+                <a href="https://github.com/sponsors/victorcmarinho">Sponsor</a>
             </div>
+            <p class="copyright">Built with ❤️ using Flutter for macOS. &copy; 2026 Victor Marinho.</p>
         </div>
     </footer>
 
