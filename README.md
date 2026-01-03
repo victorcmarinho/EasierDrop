@@ -29,7 +29,7 @@ Easier Drop is your native macOS productivity companion that ends the window-shu
 
 ### 📦 Collect Anywhere, Instantly
 Drag from Finder, Safari, Photos, or even your code editor. Your files stay put until you're ready to move them.
-> ![Collecting Files](assets/promo/collect_files.gif)
+> ![Collecting Files](assets/promo/useged-2.png)
 > *Stash files from multiple sources into one organized stack.*
 
 ### 🛠️ Multi-Window Magic
@@ -60,7 +60,7 @@ Built with Flutter and native macOS hooks, Easier Drop is incredibly lightweight
 ## 🛠 Installation
 
 ### Download App
-[**Download Latest Release**](https://github.com/victorcmarinho/easier_drop/releases)
+[**Download Latest Release**](https://github.com/victorcmarinho/EasierDrop/releases)
 
 ---
 

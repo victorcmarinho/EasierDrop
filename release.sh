@@ -199,7 +199,7 @@ ${CHANGELOG_NOTES}
 *Built with Flutter*
 "
 
-  echo -e "${GREEN}🎉 Release published: https://github.com/victorcmarinho/easier_drop/releases/tag/${VERSION}${NC}"
+  echo -e "${GREEN}🎉 Release published: https://github.com/victorcmarinho/EasierDrop/releases/tag/${VERSION}${NC}"
 else
   echo -e "${YELLOW}ℹ️  To publish to GitHub, use: ./release.sh --deploy${NC}"
 fi
