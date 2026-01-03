@@ -23,6 +23,13 @@ class SettingsService with ChangeNotifier {
   Timer? _debounce;
   AppSettings _settings = const AppSettings();
 
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
   bool get isLoaded => _loaded;
   AppSettings get settings => _settings;
 
@@ -60,7 +67,41 @@ class SettingsService with ChangeNotifier {
       AnalyticsService.instance.warn('Falha ao carregar settings: $e');
     } finally {
       _loaded = true;
+      _startWatching();
       notifyListeners();
+    }
+  }
+
+  StreamSubscription<FileSystemEvent>? _subscription;
+
+  Future<void> _startWatching() async {
+    _subscription?.cancel();
+    final file = await _getSettingsFile();
+    _subscription = file.parent.watch(events: FileSystemEvent.modify).listen((
+      event,
+    ) async {
+      if (p.basename(event.path) == _fileName) {
+        await _reloadSettings();
+      }
+    });
+  }
+
+  Future<void> _reloadSettings() async {
+    try {
+      final file = await _getSettingsFile();
+      if (await file.exists()) {
+        final content = await file.readAsString();
+        if (content.trim().isNotEmpty) {
+          final map = jsonDecode(content) as Map<String, dynamic>;
+          final newSettings = AppSettings.fromMap(map);
+          if (_settings != newSettings) {
+            _settings = newSettings;
+            notifyListeners();
+          }
+        }
+      }
+    } catch (e) {
+      AnalyticsService.instance.warn('Failed to reload settings: $e');
     }
   }
 
