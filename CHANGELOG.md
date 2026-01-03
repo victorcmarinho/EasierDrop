@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Native Shake Detection**: Added native macOS shake gesture detection for seamless multi-window interaction.
 - **Visual Feedback**: Real-time file processing states with shimmer effects, success animations, and improved error visibility using `AsyncFileWrapper`.
 - **Analytics & Telemetry**: Integrated Aptabase for anonymous usage insights and error tracking, replacing the internal logger.
-- **Environment Configuration**: Added support for `.env` files and a unified `AppConfig` for managing service settings and API keys.
+- **Environment Configuration**: Added support for `.env` files processed at build-time using `--dart-define`, accessed via a unified `AppConfig` (removing `flutter_dotenv`).
 - **Tray Management**: Introduced `TrayService` for more reliable and consistent system tray interactions.
 - **Minimalist Multi-Window UI**: Secondary windows now feature a cleaner, borderless interface without title bars or system buttons.
 - **Clipboard Integration**: Now supports pasting files directly into the drop zone using `Cmd + V`. Copy files in Finder and paste them seamlessly!
@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Performance**: Optimized file addition with parallel validation, batch updates, and cached file lists for smoother operation.
 - **Rendering**: Significantly reduced widget rebuilds in the file grid, improving UI responsiveness.
 - **Service Refactoring**: Refactored `UpdateService` and `TrayService` with dependency injection and improved testability.
-- **Testing Suite**: Expanded the codebase with comprehensive unit and widget tests using a TDD approach.
+- **Testing Suite**: Replaced obsolete tests with a comprehensive new suite of unit and widget tests using a TDD approach, ensuring >85% coverage.
 - **Native Integration**: Centralized custom channel setup for more robust multi-window communication.
 - **Code Centralization**: Unified file addition logic in `FilesProvider` to support both Drag & Drop and Clipboard operations consistently.
 
@@ -50,6 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Replaced the custom `AppLogger` with a unified `AnalyticsService`.
 - Refactored `FilesProvider` and window management logic for better maintainability.
+- Moved `flutter_launcher_icons` to `dev_dependencies` to streamline production builds.
+
+### Removed
+- **Lottie Dependency**: Removed the `lottie` package to reduce application bundle size and complexity.
+- **Obsolete Tests**: Cleaned up the test directory by removing outdated or redundant test files.
 
 ## [1.0.4] - 2025-12-28
 
