@@ -29,7 +29,7 @@ class MacOSShakeMonitor: NSObject {
     
     func startMonitoring() {
         print("MacOSShakeMonitor: startMonitoring called")
-        let mask = (1 << CGEventType.mouseMoved.rawValue) | (1 << CGEventType.leftMouseDragged.rawValue)
+        let mask = (1 << CGEventType.leftMouseDragged.rawValue)
         
         eventTap = CGEvent.tapCreate(
             tap: .cgSessionEventTap,
