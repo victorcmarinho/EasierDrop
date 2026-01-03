@@ -86,6 +86,10 @@ class SystemHelper with WindowListener {
 
   static Future<void> _handleShakeEvent(MethodCall call) async {
     if (call.method == 'shake_detected') {
+      AnalyticsService.instance.debug(
+        'Shake event received via channel',
+        tag: 'SystemHelper',
+      );
       final args = call.arguments as Map;
       final x = (args['x'] as num).toDouble();
       final y = (args['y'] as num).toDouble();
@@ -143,6 +147,10 @@ class SystemHelper with WindowListener {
   }
 
   static Future<void> _createNewWindow(double x, double y) async {
+    AnalyticsService.instance.debug(
+      'Creating shake window at $x, $y',
+      tag: 'SystemHelper',
+    );
     const size = AppConstants.defaultWindowSize;
     final left = x - (size / 2);
     final top = y - (size / 2);

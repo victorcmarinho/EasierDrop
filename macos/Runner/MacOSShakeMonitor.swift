@@ -15,9 +15,9 @@ class MacOSShakeMonitor: NSObject {
     private var lastReversalTime: TimeInterval = 0
     
     // Configurable parameters
-    private let shakeThreshold: CGFloat = 15.0 // Decreased threshold for easier detection
-    private let reversalTimeout: TimeInterval = 0.4 // Time window for next reversal
-    private let requiredReversals = 5 // Reduced slightly
+    private let shakeThreshold: CGFloat = 5.0 // Significantly decreased
+    private let reversalTimeout: TimeInterval = 1.0 // Increased window
+    private let requiredReversals = 2 // Reduced to minimum viable
     
     private var lastDirectionX: Int = 0 // -1 left, 1 right, 0 none
     private var lastDirectionY: Int = 0 // -1 up, 1 down, 0 none
@@ -116,7 +116,7 @@ class MacOSShakeMonitor: NSObject {
             lastReversalTime = currentTime
             
             if reversalCount >= requiredReversals {
-                print("MacOSShakeMonitor: Shake detected! Triggering...")
+                print("MacOSShakeMonitor: Shake detected! Triggering at \(currentLocation)...")
                 triggerShake(location: currentLocation)
                 reversalCount = 0
             }
