@@ -64,6 +64,16 @@ class SettingsService with ChangeNotifier {
     }
   }
 
+  @visibleForTesting
+  void resetForTesting() {
+    _loaded = false;
+    _settings = const AppSettings();
+    _subscription?.cancel();
+    _subscription = null;
+    _debounce?.cancel();
+    _debounce = null;
+  }
+
   StreamSubscription<FileSystemEvent>? _subscription;
 
   Future<void> _startWatching() async {

@@ -34,6 +34,7 @@ void main() {
   setUp(() async {
     windowLog.clear();
     multiWindowLog.clear();
+    SettingsService.instance.resetForTesting();
 
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(windowChannel, (MethodCall methodCall) async {
