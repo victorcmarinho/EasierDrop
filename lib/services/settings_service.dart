@@ -49,6 +49,7 @@ class SettingsService with ChangeNotifier {
       launchAtStartup.setup(
         appName: packageInfo.appName,
         appPath: Platform.resolvedExecutable,
+        packageName: packageInfo.packageName,
       );
     } catch (e) {
       AnalyticsService.instance.warn('Failed to setup launch_at_startup: $e');
