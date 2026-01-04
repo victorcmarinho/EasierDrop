@@ -25,6 +25,7 @@
 		13ADC8B82E5A830C00E032D0 /* MacOSFileDropChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13ADC8B72E5A830A00E032D0 /* MacOSFileDropChannel.swift */; };
 		13ADC8BA2E5A833200E032D0 /* MacOSFileIconChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13ADC8B92E5A833000E032D0 /* MacOSFileIconChannel.swift */; };
 		13ADC8BD2E5A900000E032D0 /* MacOSDragOutChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13ADC8BC2E5A900000E032D0 /* MacOSDragOutChannel.swift */; };
+		13B8A9B12F09F8DA0012C83F /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		331C80D8294CF71000263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C80D7294CF71000263BE5 /* RunnerTests.swift */; };
 		335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */; };
 		33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC10F02044A3C60003C045 /* AppDelegate.swift */; };
@@ -111,6 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13B8A9B12F09F8DA0012C83F /* BuildFile in Frameworks */,
 				4093E9AF845F952F1CA0DD87 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -311,6 +313,9 @@
 				Base,
 			);
 			mainGroup = 33CC10E42044A3C60003C045;
+			packageReferences = (
+				13B8A9B02F09F8DA0012C83F /* XCRemoteSwiftPackageReference "LaunchAtLogin" */,
+			);
 			productRefGroup = 33CC10EE2044A3C60003C045 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -849,6 +854,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		13B8A9B02F09F8DA0012C83F /* XCRemoteSwiftPackageReference "LaunchAtLogin" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 33CC10E52044A3C60003C045 /* Project object */;
 }

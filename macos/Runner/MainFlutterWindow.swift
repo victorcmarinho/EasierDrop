@@ -1,6 +1,7 @@
 import Cocoa
 import FlutterMacOS
 import desktop_multi_window
+import ServiceManagement
 
 class MainFlutterWindow: NSWindow, NSDraggingDestination {
     
@@ -20,6 +21,51 @@ class MainFlutterWindow: NSWindow, NSDraggingDestination {
         
         self.fileDropChannel = MacOSFileDropChannel.shared
         
+        FlutterMethodChannel(
+            name: "launch_at_startup",
+            binaryMessenger: flutterViewController.engine.binaryMessenger
+        ).setMethodCallHandler { (_ call: FlutterMethodCall, result: @escaping FlutterResult) in
+            switch call.method {
+            case "launchAtStartupIsEnabled":
+                if #available(macOS 13.0, *) {
+                    let service = SMAppService.mainApp
+                    result(service.status == .enabled)
+                } else {
+                    // For macOS < 13, we can't reliably check the status
+                    result(false)
+                }
+            case "launchAtStartupSetEnabled":
+                if let arguments = call.arguments as? [String: Any],
+                   let setEnabled = arguments["setEnabledValue"] as? Bool {
+                    if #available(macOS 13.0, *) {
+                        let service = SMAppService.mainApp
+                        do {
+                            if setEnabled {
+                                try service.register()
+                            } else {
+                                try service.unregister()
+                            }
+                            result(nil)
+                        } catch {
+                            result(FlutterError(code: "LAUNCH_AT_STARTUP_ERROR",
+                                              message: "Failed to \(setEnabled ? "enable" : "disable") launch at startup: \(error.localizedDescription)",
+                                              details: nil))
+                        }
+                    } else {
+                        result(FlutterError(code: "UNSUPPORTED_OS",
+                                          message: "Launch at startup requires macOS 13.0 or later",
+                                          details: nil))
+                    }
+                } else {
+                    result(FlutterError(code: "INVALID_ARGUMENTS",
+                                      message: "Invalid arguments for setEnabled",
+                                      details: nil))
+                }
+            default:
+                result(FlutterMethodNotImplemented)
+            }
+        }
+        
         RegisterGeneratedPlugins(registry: flutterViewController)
         
         FlutterMultiWindowPlugin.setOnWindowCreatedCallback { controller in
@@ -29,7 +75,6 @@ class MainFlutterWindow: NSWindow, NSDraggingDestination {
                 appDelegate.setupCustomChannels(messenger: controller.engine.binaryMessenger, view: controller.view)
             }
             
-            // Allow secondary windows to receive file drops using an overlay view
             let dropOverlay = FileDropHandlerView(frame: controller.view.bounds)
             dropOverlay.messenger = controller.engine.binaryMessenger
             dropOverlay.autoresizingMask = [.width, .height]
@@ -37,8 +82,6 @@ class MainFlutterWindow: NSWindow, NSDraggingDestination {
             dropOverlay.registerForDraggedTypes([.fileURL])
         }
     }
-    
-    // MARK: - NSDraggingDestination for Main Window
     
     func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
         return .copy
