@@ -1,11 +1,11 @@
 name: easier_drop
 description: "App Flutter desktop para coletar arquivos temporariamente e arrastar em lote para outro destino."
 publish_to: 'none'
-version: 1.0.4
+version: 1.1.0
 repository: https://github.com/victorcmarinho/EasierDrop
 
 environment:
-  sdk: ^3.7.0
+  sdk: ^3.10.0
 
 dependencies:
   window_manager: ^0.5.1
@@ -21,28 +21,34 @@ dependencies:
   path_provider: ^2.1.5
   path: ^1.9.1
   intl: ^0.20.2
-  text_marquee: ^0.0.2
-  flutter_launcher_icons: ^0.14.4
   http: ^1.6.0
   pub_semver: ^2.2.0
-  package_info_plus: ^9.0.0
+  package_info_plus: ^8.3.1
   url_launcher: ^6.3.2
+  desktop_multi_window: ^0.3.0
+  shimmer: ^3.0.0
+  aptabase_flutter: ^0.4.1
+  pasteboard: ^0.4.0
+  marquee_text: ^2.5.0+1
+  cupertino_native: ^0.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons: ^0.14.4
   flutter_lints: ^6.0.0
   path_provider_platform_interface: ^2.1.2
   mocktail: ^1.0.4
   mockito: ^5.5.1
   build_runner: ^2.9.0
+  plugin_platform_interface: ^2.1.8
 
 flutter:
   generate: true
   uses-material-design: true
 
   assets:
+
     - assets/icon/icon.png
     - assets/icon/icon.icns
 
@@ -57,4 +63,4 @@ l10n:
 
 
 macos:
-  min_os_version: '10.15'
+  min_os_version: '13.5'

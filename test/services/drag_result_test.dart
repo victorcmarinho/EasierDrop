@@ -21,6 +21,18 @@ void main() {
     );
   });
 
+  group('DragOperation.name', () {
+    test('copy.name returns "copy"', () {
+      expect(DragOperation.copy.name, equals('copy'));
+    });
+    test('move.name returns "move"', () {
+      expect(DragOperation.move.name, equals('move'));
+    });
+    test('unknown.name returns "unknown"', () {
+      expect(DragOperation.unknown.name, equals('unknown'));
+    });
+  });
+
   group('ChannelDragResult.parse legacy string', () {
     test('legacy copy string', () {
       final r = ChannelDragResult.parse('copy');

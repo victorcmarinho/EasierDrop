@@ -1,79 +1,93 @@
 import Cocoa
 import FlutterMacOS
 
-final class MacOSDragOutChannel: NSObject, NSDraggingSource {
-	static let shared = MacOSDragOutChannel()
-	private var channel: FlutterMethodChannel?
-	private weak var view: NSView?
-	private var forceCopyFromCmd: Bool = false
+final class MacOSDragOutChannel: NSObject {
+    static let shared = MacOSDragOutChannel()
+    private var handlers: [ObjectIdentifier: IndividualDragOutHandler] = [:]
 
-	func setup(view: NSView, messenger: FlutterBinaryMessenger) {
-		self.view = view
-		channel = FlutterMethodChannel(name: "file_drag_out_channel", binaryMessenger: messenger)
-		channel?.setMethodCallHandler(handle)
-	}
+    func setup(view: NSView, messenger: FlutterBinaryMessenger) {
+        let key = ObjectIdentifier(messenger as AnyObject)
+        if handlers[key] == nil {
+            handlers[key] = IndividualDragOutHandler(view: view, messenger: messenger)
+        }
+    }
+}
 
-	private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-		switch call.method {
-		case "beginDrag":
-			guard let args = call.arguments as? [String: Any],
-				  let items = args["items"] as? [String], !items.isEmpty else {
-				result(nil)
-				return
-			}
-			beginDrag(paths: items, result: result)
-		default:
-			result(FlutterMethodNotImplemented)
-		}
-	}
+final class IndividualDragOutHandler: NSObject, NSDraggingSource {
+    private weak var view: NSView?
+    private let messenger: FlutterBinaryMessenger
+    private var channel: FlutterMethodChannel?
+    private var forceCopyFromCmd: Bool = false
 
-	private func beginDrag(paths: [String], result: FlutterResult) {
-		guard let view = view else {
-			result(FlutterError(code: "NO_VIEW", message: "Flutter view ausente", details: nil))
-			return
-		}
-		let fileManager = FileManager.default
-		let urls = paths.compactMap { p -> URL? in
-			if fileManager.fileExists(atPath: p) { return URL(fileURLWithPath: p) }
-			return nil
-		}
-		if urls.isEmpty {
-			result(FlutterError(code: "NO_FILES", message: "Nenhum arquivo válido", details: nil))
-			return
-		}
+    init(view: NSView, messenger: FlutterBinaryMessenger) {
+        self.view = view
+        self.messenger = messenger
+        super.init()
+        channel = FlutterMethodChannel(name: "file_drag_out_channel", binaryMessenger: messenger)
+        channel?.setMethodCallHandler(handle)
+    }
 
-		let items: [NSDraggingItem] = urls.enumerated().map { (index, url) in
-			let provider = url as NSURL
-			let draggingItem = NSDraggingItem(pasteboardWriter: provider)
-			let icon = NSWorkspace.shared.icon(forFile: url.path)
-			icon.size = NSSize(width: 64, height: 64)
-			
-			let offset = CGFloat(index * 120)
-			let frame = NSRect(x: offset, y: 0, width: icon.size.width, height: icon.size.height)
-			
-			draggingItem.setDraggingFrame(frame, contents: icon)
-			return draggingItem
-		}
+    private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        switch call.method {
+        case "beginDrag":
+            guard let args = call.arguments as? [String: Any],
+                  let items = args["items"] as? [String], !items.isEmpty else {
+                result(nil)
+                return
+            }
+            beginDrag(paths: items, result: result)
+        default:
+            result(FlutterMethodNotImplemented)
+        }
+    }
 
-		guard let event = NSApp.currentEvent else {
-			result(FlutterError(code: "NO_EVENT", message: "Evento atual ausente", details: nil))
-			return
-		}
+    private func beginDrag(paths: [String], result: FlutterResult) {
+        guard let view = view else {
+            result(FlutterError(code: "NO_VIEW", message: "Flutter view ausente", details: nil))
+            return
+        }
+        let fileManager = FileManager.default
+        let urls = paths.compactMap { p -> URL? in
+            if fileManager.fileExists(atPath: p) { return URL(fileURLWithPath: p) }
+            return nil
+        }
+        if urls.isEmpty {
+            result(FlutterError(code: "NO_FILES", message: "Nenhum arquivo válido", details: nil))
+            return
+        }
 
-		forceCopyFromCmd = event.modifierFlags.contains(.command)
+        let items: [NSDraggingItem] = urls.enumerated().map { (index, url) in
+            let provider = url as NSURL
+            let draggingItem = NSDraggingItem(pasteboardWriter: provider)
+            let icon = NSWorkspace.shared.icon(forFile: url.path)
+            icon.size = NSSize(width: 64, height: 64)
+            
+            let offset = CGFloat(index * 120)
+            let frame = NSRect(x: offset, y: 0, width: icon.size.width, height: icon.size.height)
+            
+            draggingItem.setDraggingFrame(frame, contents: icon)
+            return draggingItem
+        }
 
-		view.beginDraggingSession(with: items, event: event, source: self)
-		result(nil)
-	}
+        guard let event = NSApp.currentEvent else {
+            result(FlutterError(code: "NO_EVENT", message: "Evento atual ausente", details: nil))
+            return
+        }
 
-	func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
-		return [.copy, .move]
-	}
+        forceCopyFromCmd = event.modifierFlags.contains(.command)
 
-	func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
-		let effectiveOp: NSDragOperation = forceCopyFromCmd ? .copy : operation
-		let op = effectiveOp == .move ? "move" : "copy"
-		channel?.invokeMethod("fileDropped", arguments: op)
-		forceCopyFromCmd = false
-	}
+        view.beginDraggingSession(with: items, event: event, source: self)
+        result(nil)
+    }
+
+    func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
+        return [.copy, .move]
+    }
+
+    func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
+        let effectiveOp: NSDragOperation = forceCopyFromCmd ? .copy : operation
+        let op = effectiveOp == .move ? "move" : "copy"
+        channel?.invokeMethod("fileDropped", arguments: op)
+        forceCopyFromCmd = false
+    }
 }

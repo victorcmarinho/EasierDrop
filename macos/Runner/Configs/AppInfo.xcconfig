@@ -8,7 +8,7 @@
 PRODUCT_NAME = easier_drop
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.easierDrop
+PRODUCT_BUNDLE_IDENTIFIER = com.victorcmarinho.easierDrop
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 Victor Marinho. All rights reserved.

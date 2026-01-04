@@ -18,8 +18,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clearFilesTitle => '¿Limpiar archivos?';
 
   @override
-  String get clearFilesMessage =>
-      'Esta acción eliminará todos los archivos recolectados.';
+  String get clearFilesMessage => 'Esta acción eliminará todos los archivos recolectados.';
 
   @override
   String get clearCancel => 'Cancelar';
@@ -88,21 +87,10 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get trayFilesNone => '📂 Sin archivos';
-
-  @override
-  String trayFilesCount(int count) {
-    return '📁 Archivos: $count';
-  }
-
-  @override
   String get trayExit => 'Cerrar la aplicación';
 
   @override
   String get openTray => 'Abrir bandeja';
-
-  @override
-  String get filesCountTooltip => 'Cantidad actual en la bandeja';
 
   @override
   String get languageLabel => 'Idioma:';
@@ -151,4 +139,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get updateAvailable => 'Actualización Disponible';
+
+  @override
+  String get preferences => 'Preferencias';
+
+  @override
+  String get settingsGeneral => 'General';
+
+  @override
+  String get settingsAppearance => 'Apariencia';
+
+  @override
+  String get settingsLaunchAtLogin => 'Iniciar al iniciar sesión';
+
+  @override
+  String get settingsAlwaysOnTop => 'Siempre visible';
+
+  @override
+  String get settingsOpacity => 'Opacidad de la ventana';
 }

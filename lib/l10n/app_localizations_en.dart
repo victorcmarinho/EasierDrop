@@ -87,21 +87,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get trayFilesNone => '📂 No files';
-
-  @override
-  String trayFilesCount(int count) {
-    return '📁 Files: $count';
-  }
-
-  @override
   String get trayExit => 'Quit application';
 
   @override
   String get openTray => 'Open tray';
-
-  @override
-  String get filesCountTooltip => 'Current number of files';
 
   @override
   String get languageLabel => 'Language:';
@@ -150,4 +139,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateAvailable => 'Update Available';
+
+  @override
+  String get preferences => 'Preferences';
+
+  @override
+  String get settingsGeneral => 'General';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsLaunchAtLogin => 'Launch at Login';
+
+  @override
+  String get settingsAlwaysOnTop => 'Always on Top';
+
+  @override
+  String get settingsOpacity => 'Window Opacity';
 }

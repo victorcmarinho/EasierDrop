@@ -58,9 +58,28 @@ flutter pub get
 rm -rf "$BUILD_OUTPUT_DIR"
 mkdir -p "$BUILD_OUTPUT_DIR"
 
+# 2.1 LOAD ENV VARS
+echo -e "${BLUE}🔑 2.1 Loading environment variables...${NC}"
+DART_DEFINES=""
+if [ -f .env ]; then
+  while IFS='=' read -r key value; do
+    # Skip comments and empty lines
+    if [[ ! $key =~ ^# && -n $key ]]; then
+      # Trim whitespace
+      key=$(echo "$key" | xargs)
+      value=$(echo "$value" | xargs)
+      DART_DEFINES="$DART_DEFINES --dart-define=$key=$value"
+    fi
+  done < .env
+  echo -e "${GREEN}✅ Environment variables loaded.${NC}"
+else
+  echo -e "${YELLOW}⚠️  .env file not found. Building without secrets.${NC}"
+fi
+
 # 3. BUILD DEBUG
-echo -e "${BLUE}🐞 3. Building DEBUG version...${NC}"
-flutter build macos --debug
+echo -e "${BLUE}🐞 3. Building DEBUG version...${NC} "
+
+flutter build macos --debug $DART_DEFINES
 
 DEBUG_SRC="build/macos/Build/Products/Debug/easier_drop.app"
 if [[ -d "$DEBUG_SRC" ]]; then
@@ -73,7 +92,7 @@ fi
 
 # 4. BUILD RELEASE
 echo -e "${BLUE}📦 4. Building RELEASE version...${NC}"
-flutter build macos --release
+flutter build macos --release $DART_DEFINES
 
 RELEASE_SRC="build/macos/Build/Products/Release/easier_drop.app"
 RELEASE_DEST="$BUILD_OUTPUT_DIR/$APP_BUNDLE_NAME"
@@ -149,6 +168,15 @@ if [[ "$DEPLOY" == true ]]; then
       git push origin "$VERSION"
   fi
 
+  # Extract Changelog for this version
+  RAW_VERSION=${VERSION#v}
+  echo "   📄 Extracting changelog for version $RAW_VERSION..."
+  CHANGELOG_NOTES=$(awk "/^## \[${RAW_VERSION}\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md)
+
+  if [[ -z "$CHANGELOG_NOTES" ]]; then
+    CHANGELOG_NOTES="Official macOS release."
+  fi
+
   echo "   Creating GitHub Release..."
   gh release create "$VERSION" "$DMG_PATH" "$BUILD_OUTPUT_DIR/$ZIP_NAME" \
     --title "${APP_NAME} ${VERSION}" \
@@ -156,7 +184,7 @@ if [[ "$DEPLOY" == true ]]; then
     --notes "
 🚀 **${APP_NAME} ${VERSION}**
 
-Official macOS release.
+${CHANGELOG_NOTES}
 
 ## 📦 Downloads
 - **DMG Installer**: Drag and drop installation.
@@ -171,7 +199,7 @@ Official macOS release.
 *Built with Flutter*
 "
 
-  echo -e "${GREEN}🎉 Release published: https://github.com/victorcmarinho/easier_drop/releases/tag/${VERSION}${NC}"
+  echo -e "${GREEN}🎉 Release published: https://github.com/victorcmarinho/EasierDrop/releases/tag/${VERSION}${NC}"
 else
   echo -e "${YELLOW}ℹ️  To publish to GitHub, use: ./release.sh --deploy${NC}"
 fi

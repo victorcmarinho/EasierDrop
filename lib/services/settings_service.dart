@@ -3,52 +3,46 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'logger.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 
-/// Serviço responsável pelo gerenciamento de configurações da aplicação
-///
-/// Fornece persistência automática de configurações incluindo:
-/// - Limite máximo de arquivos
-/// - Posição e tamanho da janela
-/// - Localização preferida
-/// - Auto-clear de arquivos (futuro)
+import 'package:easier_drop/model/app_settings.dart';
+
 class SettingsService with ChangeNotifier {
   SettingsService._();
   static final SettingsService instance = SettingsService._();
 
-  // Constantes de configuração
   static const String _fileName = 'settings.json';
   static const Duration _debounceDuration = Duration(milliseconds: 250);
   static const int _currentSchemaVersion = 1;
+  static const MethodChannel _launchAtLoginChannel = MethodChannel(
+    'com.easierdrop/launch_at_login',
+  );
 
-  // Chaves do JSON
-  static const String _kSchemaVersion = 'schemaVersion';
-  static const String _kMaxFiles = 'maxFiles';
-  static const String _kWinX = 'windowX';
-  static const String _kWinY = 'windowY';
-  static const String _kWinW = 'windowW';
-  static const String _kWinH = 'windowH';
-  static const String _kLocale = 'locale';
-  static const String _kAutoClearInbound = 'autoClearInbound';
-
-  // Estado interno
   bool _loaded = false;
   Timer? _debounce;
+  AppSettings _settings = const AppSettings();
 
-  // Configurações públicas
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
   bool get isLoaded => _loaded;
-  bool get autoClearInbound => false; // Função futura
+  AppSettings get settings => _settings;
 
-  int maxFiles = 100;
-  double? windowX;
-  double? windowY;
-  double? windowW;
-  double? windowH;
-  String? localeCode;
+  int get maxFiles => _settings.maxFiles;
+  double? get windowX => _settings.windowX;
+  double? get windowY => _settings.windowY;
+  double? get windowW => _settings.windowW;
+  double? get windowH => _settings.windowH;
+  String? get localeCode => _settings.localeCode;
+  bool get telemetryEnabled => _settings.telemetryEnabled;
 
-  /// Carrega as configurações do arquivo
   Future<void> load() async {
     if (_loaded) return;
 
@@ -57,100 +51,181 @@ class SettingsService with ChangeNotifier {
       if (await file.exists()) {
         final content = await file.readAsString();
         if (content.trim().isNotEmpty) {
-          await _parseSettings(content);
+          final map = jsonDecode(content) as Map<String, dynamic>;
+          _settings = AppSettings.fromMap(map);
+        }
+      } else {
+        // First run configuration
+        String defaultLocale = 'en';
+        try {
+          final sysLocale = Platform.localeName.toLowerCase();
+          if (sysLocale.startsWith('pt')) {
+            defaultLocale = 'pt_BR';
+          } else if (sysLocale.startsWith('es')) {
+            defaultLocale = 'es';
+          }
+        } catch (_) {}
+
+        _settings = _settings.copyWith(
+          isAlwaysOnTop: true,
+          localeCode: defaultLocale,
+        );
+        // Persist default settings
+        await persist();
+      }
+    } catch (e) {
+      AnalyticsService.instance.warn('Falha ao carregar settings: $e');
+    } finally {
+      _loaded = true;
+      _startWatching();
+      notifyListeners();
+    }
+  }
+
+  @visibleForTesting
+  void resetForTesting() {
+    _loaded = false;
+    _settings = const AppSettings();
+    _subscription?.cancel();
+    _subscription = null;
+    _debounce?.cancel();
+    _debounce = null;
+  }
+
+  StreamSubscription<FileSystemEvent>? _subscription;
+
+  Future<void> _startWatching() async {
+    _subscription?.cancel();
+    final file = await _getSettingsFile();
+    _subscription = file.parent.watch(events: FileSystemEvent.modify).listen((
+      event,
+    ) async {
+      if (p.basename(event.path) == _fileName) {
+        await _reloadSettings();
+      }
+    });
+  }
+
+  Future<void> _reloadSettings() async {
+    try {
+      final file = await _getSettingsFile();
+      if (await file.exists()) {
+        final content = await file.readAsString();
+        if (content.trim().isNotEmpty) {
+          final map = jsonDecode(content) as Map<String, dynamic>;
+          final newSettings = AppSettings.fromMap(map);
+          if (_settings != newSettings) {
+            _settings = newSettings;
+            notifyListeners();
+          }
         }
       }
-      _loaded = true;
     } catch (e) {
-      AppLogger.warn('Falha ao carregar settings: $e');
-      _loaded = true; // Marca como carregado mesmo com erro
+      AnalyticsService.instance.warn('Failed to reload settings: $e');
     }
   }
 
-  /// Faz o parse das configurações do JSON
-  Future<void> _parseSettings(String jsonContent) async {
-    try {
-      final map = jsonDecode(jsonContent) as Map<String, dynamic>;
-
-      // Carrega configurações com valores padrão
-      if (map[_kMaxFiles] is int) {
-        maxFiles = map[_kMaxFiles] as int;
-      }
-
-      windowX = (map[_kWinX] as num?)?.toDouble();
-      windowY = (map[_kWinY] as num?)?.toDouble();
-      windowW = (map[_kWinW] as num?)?.toDouble();
-      windowH = (map[_kWinH] as num?)?.toDouble();
-
-      if (map[_kLocale] is String) {
-        localeCode = map[_kLocale] as String;
-      }
-    } catch (e) {
-      AppLogger.warn('Erro ao fazer parse das configurações: $e');
-    }
-  }
-
-  /// Define o número máximo de arquivos
   void setMaxFiles(int value) {
-    if (value <= 0 || maxFiles == value) return;
-
-    maxFiles = value;
-    _schedulePersist();
-    notifyListeners();
+    if (value <= 0 || _settings.maxFiles == value) return;
+    _updateSettings(_settings.copyWith(maxFiles: value));
+    AnalyticsService.instance.settingsChanged('maxFiles', value);
   }
 
-  /// Define os limites da janela
   void setWindowBounds({double? x, double? y, double? w, double? h}) {
-    windowX = x ?? windowX;
-    windowY = y ?? windowY;
-    windowW = w ?? windowW;
-    windowH = h ?? windowH;
-    _schedulePersist();
+    _updateSettings(
+      _settings.copyWith(windowX: x, windowY: y, windowW: w, windowH: h),
+    );
   }
 
-  /// Define a localização
   void setLocale(String? code) {
-    if (localeCode == code) return;
+    if (_settings.localeCode == code) return;
+    _updateSettings(_settings.copyWith(localeCode: code));
+    AnalyticsService.instance.settingsChanged('locale', code);
+  }
 
-    localeCode = code;
+  void setTelemetryEnabled(bool enabled) {
+    if (_settings.telemetryEnabled == enabled) return;
+    _updateSettings(_settings.copyWith(telemetryEnabled: enabled));
+    AnalyticsService.instance.settingsChanged('telemetryEnabled', enabled);
+  }
+
+  void setAlwaysOnTop(bool enabled) {
+    if (_settings.isAlwaysOnTop == enabled) return;
+    _updateSettings(_settings.copyWith(isAlwaysOnTop: enabled));
+    AnalyticsService.instance.settingsChanged('alwaysOnTop', enabled);
+  }
+
+  Future<void> setLaunchAtLogin(bool enabled) async {
+    if (_settings.launchAtLogin == enabled) return;
+
+    try {
+      await _launchAtLoginChannel.invokeMethod('setEnabled', {
+        'enabled': enabled,
+      });
+      _updateSettings(_settings.copyWith(launchAtLogin: enabled));
+      AnalyticsService.instance.settingsChanged('launchAtLogin', enabled);
+    } catch (e) {
+      AnalyticsService.instance.error('Failed to change launch at login: $e');
+    }
+  }
+
+  Future<bool> checkLaunchAtLoginPermission() async {
+    try {
+      final hasPermission = await _launchAtLoginChannel.invokeMethod<bool>(
+        'checkPermission',
+      );
+      return hasPermission ?? false;
+    } catch (e) {
+      AnalyticsService.instance.warn(
+        'Failed to check launch at login permission: $e',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> getLaunchAtLoginStatus() async {
+    try {
+      final isEnabled = await _launchAtLoginChannel.invokeMethod<bool>(
+        'isEnabled',
+      );
+      return isEnabled ?? false;
+    } catch (e) {
+      AnalyticsService.instance.warn(
+        'Failed to get launch at login status: $e',
+      );
+      return false;
+    }
+  }
+
+  void setWindowOpacity(double opacity) {
+    if (_settings.windowOpacity == opacity) return;
+    _updateSettings(_settings.copyWith(windowOpacity: opacity));
+    AnalyticsService.instance.settingsChanged('windowOpacity', opacity);
+  }
+
+  void _updateSettings(AppSettings newSettings) {
+    _settings = newSettings;
     _schedulePersist();
     notifyListeners();
   }
 
-  /// Agenda a persistência para evitar writes excessivos
   void _schedulePersist() {
     _debounce?.cancel();
     _debounce = Timer(_debounceDuration, persist);
   }
 
-  /// Persiste as configurações no arquivo
   Future<void> persist() async {
     try {
       final file = await _getSettingsFile();
-      final settings = _buildSettingsMap();
-      final jsonContent = const JsonEncoder.withIndent('  ').convert(settings);
-
+      final jsonContent = const JsonEncoder.withIndent(
+        '  ',
+      ).convert(_settings.toMap(_currentSchemaVersion));
       await file.writeAsString(jsonContent);
     } catch (e) {
-      AppLogger.warn('Falha ao salvar settings: $e');
+      AnalyticsService.instance.warn('Falha ao salvar settings: $e');
     }
   }
 
-  /// Constrói o mapa de configurações para persistência
-  Map<String, dynamic> _buildSettingsMap() {
-    return {
-      _kSchemaVersion: _currentSchemaVersion,
-      _kAutoClearInbound: false,
-      _kMaxFiles: maxFiles,
-      if (localeCode != null) _kLocale: localeCode,
-      if (windowX != null) _kWinX: windowX,
-      if (windowY != null) _kWinY: windowY,
-      if (windowW != null) _kWinW: windowW,
-      if (windowH != null) _kWinH: windowH,
-    };
-  }
-
-  /// Obtém o arquivo de configurações
   Future<File> _getSettingsFile() async {
     final dir = await getApplicationSupportDirectory();
     return File(p.join(dir.path, _fileName));

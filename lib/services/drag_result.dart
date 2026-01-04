@@ -1,4 +1,4 @@
-import 'package:easier_drop/services/logger.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 
 enum DragOperation { copy, move, unknown }
 
@@ -47,8 +47,11 @@ sealed class ChannelDragResult {
       }
       return const ChannelDragSuccess(DragOperation.unknown);
     } catch (e, st) {
-      AppLogger.warn('Failed to parse drag result: $e', tag: 'DragResult');
-      AppLogger.debug(st.toString(), tag: 'DragResult');
+      AnalyticsService.instance.warn(
+        'Failed to parse drag result: $e',
+        tag: 'DragResult',
+      );
+      AnalyticsService.instance.debug(st.toString(), tag: 'DragResult');
       return const ChannelDragSuccess(DragOperation.unknown);
     }
   }

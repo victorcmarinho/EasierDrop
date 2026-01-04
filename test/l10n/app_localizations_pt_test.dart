@@ -56,20 +56,6 @@ void main() {
       expect(localizations.openTray, 'Abrir bandeja');
     });
 
-    test('trayFilesNone deve retornar mensagem sem arquivos', () {
-      expect(localizations.trayFilesNone, '📂 Sem arquivos');
-    });
-
-    test('trayFilesCount deve retornar contagem formatada', () {
-      expect(localizations.trayFilesCount(1), '📁 Arquivos: 1');
-      expect(localizations.trayFilesCount(2), '📁 Arquivos: 2');
-      expect(localizations.trayFilesCount(5), '📁 Arquivos: 5');
-    });
-
-    test('filesCountTooltip deve retornar dica', () {
-      expect(localizations.filesCountTooltip, 'Quantidade atual na bandeja');
-    });
-
     test('languageLabel deve retornar Idioma:', () {
       expect(localizations.languageLabel, 'Idioma:');
     });
@@ -171,6 +157,38 @@ void main() {
 
     test('semHandleHint deve retornar dica da barra', () {
       expect(localizations.semHandleHint, 'Arraste para mover a janela');
+    });
+
+    test('welcomeTo deve retornar mensagem de boas-vindas', () {
+      expect(localizations.welcomeTo, 'Olá, bem-vindo ao');
+    });
+
+    test('updateAvailable deve retornar Atualização Disponível', () {
+      expect(localizations.updateAvailable, 'Atualização Disponível');
+    });
+
+    test('preferences deve retornar Preferências', () {
+      expect(localizations.preferences, 'Preferências');
+    });
+
+    test('settingsGeneral deve retornar Geral', () {
+      expect(localizations.settingsGeneral, 'Geral');
+    });
+
+    test('settingsAppearance deve retornar Aparência', () {
+      expect(localizations.settingsAppearance, 'Aparência');
+    });
+
+    test('settingsLaunchAtLogin deve retornar Iniciar no Login', () {
+      expect(localizations.settingsLaunchAtLogin, 'Iniciar no Login');
+    });
+
+    test('settingsAlwaysOnTop deve retornar Sempre no Topo', () {
+      expect(localizations.settingsAlwaysOnTop, 'Sempre no Topo');
+    });
+
+    test('settingsOpacity deve retornar Opacidade da Janela', () {
+      expect(localizations.settingsOpacity, 'Opacidade da Janela');
     });
   });
 }

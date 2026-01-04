@@ -1,4 +1,6 @@
 import 'package:easier_drop/components/drag_drop.dart';
+import 'package:easier_drop/components/parts/files_surface.dart';
+
 import 'package:easier_drop/controllers/drag_coordinator.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/model/file_reference.dart';
@@ -6,6 +8,7 @@ import 'package:easier_drop/providers/files_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -283,5 +286,80 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(DragDrop), findsOneWidget);
+  });
+
+  testWidgets(
+    'DragDrop executa filesProvider.clear ao acionar o botão de remover',
+    (tester) async {
+      final files = [const TestFileReference('/path/test.txt')];
+      when(mockFilesProvider.files).thenReturn(files);
+      when(mockFilesProvider.hasFiles).thenReturn(true);
+
+      await tester.pumpWidget(
+        TestWrapper(
+          filesProvider: mockFilesProvider,
+          child: const Scaffold(body: DragDrop()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(SemanticKeys.removeButton));
+      await tester.pumpAndSettle();
+
+      verify(mockFilesProvider.clear()).called(1);
+    },
+  );
+
+  testWidgets(
+    'DragDrop executa filesProvider.shared ao acionar o botão de share',
+    (tester) async {
+      when(
+        mockFilesProvider.files,
+      ).thenReturn([const TestFileReference('/path/test.txt')]);
+      when(mockFilesProvider.hasFiles).thenReturn(true);
+      when(mockFilesProvider.fileCount).thenReturn(1);
+      when(
+        mockFilesProvider.shared(position: captureAnyNamed('position')),
+      ).thenAnswer((_) async => 'success');
+
+      await tester.pumpWidget(
+        TestWrapper(
+          filesProvider: mockFilesProvider,
+          child: const Scaffold(body: DragDrop()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DragDrop), findsOneWidget);
+      expect(find.byType(FilesSurface), findsOneWidget);
+
+      await tester.tap(find.byKey(SemanticKeys.shareButton));
+      await tester.pumpAndSettle();
+
+      verify(
+        mockFilesProvider.shared(position: captureAnyNamed('position')),
+      ).called(1);
+    },
+  );
+
+  testWidgets('DragDrop initiates drag sequence on pan', (tester) async {
+    when(
+      mockFilesProvider.files,
+    ).thenReturn([const TestFileReference('/path/test.txt')]);
+    when(mockFilesProvider.hasFiles).thenReturn(true);
+
+    await tester.pumpWidget(
+      TestWrapper(
+        filesProvider: mockFilesProvider,
+        child: const Scaffold(body: DragDrop()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Perform a drag to trigger _isDragArea and callback
+    await tester.drag(find.byType(DragDrop), const Offset(0, 50));
+    await tester.pump();
   });
 }

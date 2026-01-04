@@ -20,12 +20,10 @@
   "semRemoveHintNone": "Nenhum arquivo para remover",
   "semRemoveHintSome": "Remover {count, plural, one{{count} arquivo} other{{count} arquivos}}",
   "@semRemoveHintSome": {"placeholders": {"count": {"type": "int"}}},
-  "trayFilesNone": "📂 Sem arquivos",
-  "trayFilesCount": "📁 Arquivos: {count}",
-  "@trayFilesCount": {"placeholders": {"count": {"type": "int"}}},
+
   "trayExit": "Fechar o aplicativo",
   "openTray": "Abrir bandeja",
-  "filesCountTooltip": "Quantidade atual na bandeja",
+
   "languageLabel": "Idioma:",
   "languageEnglish": "Inglês",
   "languagePortuguese": "Português",
@@ -42,5 +40,12 @@
   ,"semHandleLabel": "Barra de arraste"
   ,"semHandleHint": "Arraste para mover a janela",
   "welcomeTo": "Olá, bem-vindo ao",
-  "updateAvailable": "Atualização Disponível"
+  "updateAvailable": "Atualização Disponível",
+  "preferences": "Preferências",
+  "settingsGeneral": "Geral",
+  "settingsAppearance": "Aparência",
+  "settingsLaunchAtLogin": "Iniciar no Login",
+
+  "settingsAlwaysOnTop": "Sempre no Topo",
+  "settingsOpacity": "Opacidade da Janela"
 }

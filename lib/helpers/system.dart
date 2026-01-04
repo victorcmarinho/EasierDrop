@@ -1,20 +1,68 @@
-// coverage: ignore-file
-
+import 'dart:io' as io;
 import 'package:flutter/material.dart';
-import 'package:easier_drop/l10n/app_localizations.dart';
-import 'package:easier_drop/services/settings_service.dart';
-import 'package:tray_manager/tray_manager.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:easier_drop/services/logger.dart';
+import 'package:easier_drop/services/settings_service.dart';
+import 'package:easier_drop/services/tray_service.dart';
+import 'package:easier_drop/helpers/app_constants.dart';
+import 'package:flutter/services.dart';
+import 'package:desktop_multi_window/desktop_multi_window.dart';
+import 'dart:convert';
 
 class SystemHelper with WindowListener {
   static final SystemHelper _instance = SystemHelper();
+
+  static const MethodChannel _shakeChannel = MethodChannel(
+    AppConstants.shakeChannelName,
+  );
 
   static Future<void> hide() async {
     await Future.wait([
       windowManager.hide(),
       windowManager.setSkipTaskbar(true),
     ]);
+    AnalyticsService.instance.trackEvent('window_hidden');
+  }
+
+  static Map<String, dynamic> _createWindowArgs({
+    required String args,
+    String? title,
+    double width = AppConstants.defaultWindowSize,
+    double height = AppConstants.defaultWindowSize,
+    bool center = true,
+    bool resizable = false,
+    bool maximizable = false,
+    double? x,
+    double? y,
+  }) {
+    return {
+      'args': args,
+      if (title != null) 'title': title,
+      'width': width,
+      'height': height,
+      'center': center,
+      'resizable': resizable,
+      'maximizable': maximizable,
+      if (x != null) 'x': x,
+      if (y != null) 'y': y,
+    };
+  }
+
+  static Future<void> openSettings() async {
+    final window = await WindowController.create(
+      WindowConfiguration(
+        arguments: jsonEncode(
+          _createWindowArgs(
+            args: AppConstants.routeSettings,
+            title: 'Preferences',
+            width: 600.0,
+            height: 500.0,
+          ),
+        ),
+      ),
+    );
+    await window.show();
+    AnalyticsService.instance.settingsOpened();
   }
 
   static Future<void> open() async {
@@ -23,55 +71,158 @@ class SystemHelper with WindowListener {
       windowManager.focus(),
       windowManager.setSkipTaskbar(false),
     ]);
+    AnalyticsService.instance.trackEvent('window_shown');
   }
 
   static Future<void> exit() async {
-    await Future.wait([trayManager.destroy(), windowManager.destroy()]);
+    await Future.wait([
+      TrayService.instance.destroy(),
+      windowManager.destroy(),
+    ]);
+    io.exit(0);
   }
 
   @override
   Future<void> onWindowClose() async {
     await hide();
-    return;
   }
 
-  static Future<void> setup() async {
+  static Future<void> initialize({
+    bool isSecondaryWindow = false,
+    String? windowId,
+  }) async {
     await SettingsService.instance.load();
+    SettingsService.instance.addListener(_onSettingsChanged);
+
+    if (isSecondaryWindow) {
+      await _setupSecondaryWindow(windowId);
+      return;
+    }
+
+    await _setupMainWindow();
+  }
+
+  static Future<void> _setupMainWindow() async {
     windowManager.addListener(_instance);
-    await Future.wait([
-      SystemHelper._configureTray(),
-      SystemHelper._configureWindow(),
-    ]);
+
+    await Future.wait([TrayService.instance.configure(), _configureWindow()]);
+
+    _shakeChannel.setMethodCallHandler(_handleShakeEvent);
+  }
+
+  static Future<void> _handleShakeEvent(MethodCall call) async {
+    if (call.method == 'shake_detected') {
+      AnalyticsService.instance.debug(
+        'Shake event received via channel',
+        tag: 'SystemHelper',
+      );
+      final args = call.arguments as Map;
+      final x = (args['x'] as num).toDouble();
+      final y = (args['y'] as num).toDouble();
+      AnalyticsService.instance.shakeDetected(x, y);
+      await _createNewWindow(x, y);
+    }
+  }
+
+  static Future<void> _setupSecondaryWindow(String? windowId) async {
+    await windowManager.ensureInitialized();
+    await windowManager.setTitleBarStyle(
+      TitleBarStyle.hidden,
+      windowButtonVisibility: true,
+    );
+    await windowManager.setResizable(false);
+    await windowManager.setMaximizable(false);
+
+    try {
+      final controller = await WindowController.fromCurrentEngine();
+      final args = jsonDecode(controller.arguments) as Map<String, dynamic>;
+
+      if (args['title'] != null) {
+        await windowManager.setTitle(args['title'] as String);
+      }
+
+      final double width =
+          (args['width'] as num?)?.toDouble() ?? AppConstants.defaultWindowSize;
+      final double height =
+          (args['height'] as num?)?.toDouble() ??
+          AppConstants.defaultWindowSize;
+
+      if (args['x'] != null && args['y'] != null) {
+        await windowManager.setBounds(
+          Rect.fromLTWH(
+            (args['x'] as num).toDouble(),
+            (args['y'] as num).toDouble(),
+            width,
+            height,
+          ),
+        );
+      } else {
+        await windowManager.setSize(Size(width, height));
+      }
+
+      if (args['center'] == true) {
+        await windowManager.center();
+      }
+
+      await controller.show();
+    } catch (e) {
+      AnalyticsService.instance.warn('Failed to setup secondary window: $e');
+      if (windowId != null) {
+        WindowController.fromWindowId(windowId).show();
+      }
+    }
+  }
+
+  static Future<void> _createNewWindow(double x, double y) async {
+    AnalyticsService.instance.debug(
+      'Creating shake window at $x, $y',
+      tag: 'SystemHelper',
+    );
+    const size = AppConstants.defaultWindowSize;
+    final left = x - (size / 2);
+    final top = y - (size / 2);
+
+    await WindowController.create(
+      WindowConfiguration(
+        arguments: jsonEncode(
+          _createWindowArgs(
+            args: AppConstants.routeShare,
+            x: left,
+            y: top,
+            width: size,
+            height: size,
+          ),
+        ),
+      ),
+    );
+    AnalyticsService.instance.shakeWindowCreated();
   }
 
   static Future<void> _configureWindow() async {
     await windowManager.ensureInitialized();
+    await windowManager.setResizable(false);
+    await windowManager.setMaximizable(false);
 
-    final s = SettingsService.instance;
-    final initialSize = const Size(250, 250);
+    const defaultSize = Size(
+      AppConstants.defaultWindowSize,
+      AppConstants.defaultWindowSize,
+    );
+
     final options = WindowOptions(
-      minimumSize: const Size(250, 250),
-      maximumSize: const Size(250, 250),
-      size: initialSize,
+      minimumSize: defaultSize,
+      maximumSize: defaultSize,
+      size: defaultSize,
       backgroundColor: Colors.transparent,
       alwaysOnTop: true,
       titleBarStyle: TitleBarStyle.hidden,
       title: 'Easier Drop',
-      windowButtonVisibility: false,
+      windowButtonVisibility: true,
+      fullScreen: false,
       skipTaskbar: false,
     );
 
     await windowManager.waitUntilReadyToShow(options, () async {
-      if (s.windowX != null && s.windowY != null) {
-        try {
-          await windowManager.setPosition(
-            Offset(s.windowX!.toDouble(), s.windowY!.toDouble()),
-            animate: false,
-          );
-        } catch (e) {
-          AppLogger.warn('Failed to restore window position: $e');
-        }
-      }
+      await _restoreWindowPosition();
 
       await Future.wait([
         windowManager.setPreventClose(true),
@@ -80,38 +231,33 @@ class SystemHelper with WindowListener {
     });
   }
 
-  static Future<void> _configureTray() async {
-    try {
-      await trayManager.setIcon('assets/icon/icon.icns');
-    } catch (e) {
-      AppLogger.warn('Failed to load tray icon: $e');
+  static Future<void> _restoreWindowPosition() async {
+    final s = SettingsService.instance;
+    if (s.windowX != null && s.windowY != null) {
+      try {
+        await windowManager.setPosition(
+          Offset(s.windowX!.toDouble(), s.windowY!.toDouble()),
+          animate: false,
+        );
+      } catch (e) {
+        AnalyticsService.instance.warn('Failed to restore window position: $e');
+      }
     }
-
-    final code = SettingsService.instance.localeCode;
-    final locale =
-        code != null
-            ? (code.contains('_')
-                ? Locale(code.split('_')[0], code.split('_')[1])
-                : Locale(code))
-            : const Locale('en');
-    final loc = lookupAppLocalizations(locale);
-
-    await trayManager.setContextMenu(
-      Menu(
-        items: [
-          MenuItem(key: 'show_window', label: loc.openTray),
-          MenuItem(key: 'files_count', label: loc.trayFilesNone),
-          MenuItem.separator(),
-          MenuItem(key: 'exit_app', label: loc.trayExit),
-        ],
-      ),
-    );
   }
 
   @override
   void onWindowResize() async {
     final size = await windowManager.getSize();
     SettingsService.instance.setWindowBounds(w: size.width, h: size.height);
+  }
+
+  static Future<void> _onSettingsChanged() async {
+    final s = SettingsService.instance.settings;
+    await Future.wait([
+      windowManager.setOpacity(s.windowOpacity),
+      windowManager.setAlwaysOnTop(s.isAlwaysOnTop),
+      windowManager.setMaximizable(false),
+    ]);
   }
 
   @override

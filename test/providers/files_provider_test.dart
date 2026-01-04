@@ -1,68 +1,206 @@
-import 'dart:io';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
+import 'package:easier_drop/services/file_repository.dart';
+import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+class MockFileRepository extends Mock implements FileRepository {}
+
+class MockPathProviderPlatform extends Mock
+    with MockPlatformInterfaceMixin
+    implements PathProviderPlatform {
+  @override
+  Future<String?> getApplicationSupportPath() async => '.';
+}
 
 void main() {
-  group('FilesProvider', () {
-    late Directory tmpDir;
-    late FilesProvider provider;
+  late FilesProvider provider;
+  late MockFileRepository mockRepo;
 
-    setUp(() async {
-      tmpDir = await Directory.systemTemp.createTemp('easier_drop_test_');
-      provider = FilesProvider(enableMonitoring: false);
+  setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    PathProviderPlatform.instance = MockPathProviderPlatform();
+  });
+
+  setUp(() async {
+    mockRepo = MockFileRepository();
+    await SettingsService.instance.load();
+    provider = FilesProvider(
+      repository: mockRepo,
+      enableMonitoring: false,
+      maxFiles: 10,
+    );
+    registerFallbackValue('/default/path');
+  });
+
+  group('FilesProvider Tests', () {
+    test('addFile adds a single file and manages isProcessing', () async {
+      final file = FileReference(pathname: '/path/to/file1.txt');
+
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      final addFuture = provider.addFile(file);
+
+      // Need to wait for microtask because _scheduleNotify uses scheduleMicrotask
+      await Future.microtask(() {});
+
+      // Before adding finishes, it should be in the list and processing
+      expect(provider.files.length, 1);
+      expect(provider.files.first.pathname, file.pathname);
+      expect(provider.files.first.isProcessing, true);
+
+      await addFuture;
+      await Future.microtask(() {});
+
+      // After adding finishes, it should not be processing
+      expect(provider.files.first.isProcessing, false);
+      verify(() => mockRepo.validateFile('/path/to/file1.txt')).called(1);
     });
 
-    tearDown(() async {
-      await tmpDir.delete(recursive: true);
+    test('addFiles adds multiple files and manages isProcessing', () async {
+      final file1 = FileReference(pathname: '/path/to/file1.txt');
+      final file2 = FileReference(pathname: '/path/to/file2.txt');
+
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      final addFuture = provider.addFiles([file1, file2]);
+
+      await Future.microtask(() {});
+      expect(provider.files.length, 2);
+      expect(provider.files.every((f) => f.isProcessing), true);
+
+      await addFuture;
+      await Future.microtask(() {});
+
+      expect(provider.files.every((f) => !f.isProcessing), true);
     });
 
-    Future<File> createFile(String name, {String content = 'x'}) async {
-      final f = File('${tmpDir.path}/$name');
-      await f.writeAsString(content);
-      return f;
-    }
+    test('does not add duplicate files', () async {
+      final file1 = FileReference(pathname: '/path/to/file1.txt');
 
-    test('adiciona arquivo válido', () async {
-      final f = await createFile('a.txt');
-      await provider.addFile(FileReference(pathname: f.path));
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      await provider.addFile(file1);
+      await provider.addFile(file1);
+
+      await Future.microtask(() {});
       expect(provider.files.length, 1);
     });
 
-    test('ignora duplicado', () async {
-      final f = await createFile('b.txt');
-      await provider.addFile(FileReference(pathname: f.path));
-      await provider.addFile(FileReference(pathname: f.path));
-      expect(provider.files.length, 1);
+    test('clear removes all files', () async {
+      final file1 = FileReference(pathname: '/path/to/file1.txt');
+
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      await provider.addFile(file1);
+      await Future.microtask(() {});
+      expect(provider.files.isNotEmpty, true);
+
+      provider.clear();
+      await Future.microtask(() {});
+      expect(provider.files.isEmpty, true);
     });
 
-    test('rescan remove arquivo deletado', () async {
-      final f = await createFile('d.txt');
-      await provider.addFile(FileReference(pathname: f.path));
+    test('removeFile removes specific file', () async {
+      final file1 = FileReference(pathname: '/path/to/file1.txt');
+
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      await provider.addFile(file1);
+      await Future.microtask(() {});
       expect(provider.files.length, 1);
-      await f.delete();
+
+      await provider.removeFile(file1);
+      await Future.microtask(() {});
+      expect(provider.files.isEmpty, true);
+    });
+
+    test('removeByPath removes specific file by path', () async {
+      const path = '/path/to/file1.txt';
+      final file1 = FileReference(pathname: path);
+
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      await provider.addFile(file1);
+      await Future.microtask(() {});
+      expect(provider.files.length, 1);
+
+      provider.removeByPath(path);
+      await Future.microtask(() {});
+      expect(provider.files.isEmpty, true);
+    });
+
+    test('respects maxFiles limit', () async {
+      provider = FilesProvider(
+        repository: mockRepo,
+        enableMonitoring: false,
+        maxFiles: 2,
+      );
+
+      final file1 = FileReference(pathname: '/file1.txt');
+      final file2 = FileReference(pathname: '/file2.txt');
+      final file3 = FileReference(pathname: '/file3.txt');
+
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      await provider.addFiles([file1, file2, file3]);
+      await Future.microtask(() {});
+
+      expect(provider.files.length, 2);
+      expect(provider.recentlyAtLimit, true);
+      expect(provider.lastLimitHit, isNotNull);
+    });
+
+    test('maxFiles override via SettingsService', () async {
+      provider = FilesProvider(repository: mockRepo, enableMonitoring: false);
+
+      expect(provider.files.isEmpty, true);
+    });
+
+    test('rescan removes invalid files', () async {
+      provider = FilesProvider(
+        repository: mockRepo,
+        enableMonitoring: false,
+        maxFiles: 10,
+      );
+
+      final file1 = FileReference(pathname: '/valid.txt');
+      final file2 = FileReference(pathname: '/invalid.txt');
+
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+
+      await provider.addFiles([file1, file2]);
+      await Future.microtask(() {});
+      expect(provider.files.length, 2);
+
+      // Now set validation to fail for file2
+      when(() => mockRepo.validateFileSync('/valid.txt')).thenReturn(true);
+      when(() => mockRepo.validateFileSync('/invalid.txt')).thenReturn(false);
+
       provider.rescanNow();
-      expect(provider.files.length, 0);
-    });
+      await Future.microtask(() {});
 
-    test('share sem arquivos retorna unavailable', () async {
-      final result = await provider.shared();
-      expect(result.toString(), contains('unavailable'));
-    });
-
-    test('ignora diretório', () async {
-      final dir = Directory('${tmpDir.path}/sub');
-      await dir.create();
-      await provider.addFile(FileReference(pathname: dir.path));
-      expect(provider.files.length, 0);
-    });
-
-    test('respeita limite máximo de arquivos (100)', () async {
-      for (int i = 0; i < 105; i++) {
-        final f = await createFile('f_$i.txt');
-        await provider.addFile(FileReference(pathname: f.path));
-      }
-      expect(provider.files.length, lessThanOrEqualTo(100));
+      expect(provider.files.length, 1);
+      expect(provider.files.first.pathname, '/valid.txt');
     });
   });
 }

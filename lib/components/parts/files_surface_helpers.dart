@@ -1,9 +1,7 @@
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 
-class FilesSemanticsHelper {
-  const FilesSemanticsHelper._();
-
+abstract class FilesSemanticsHelper {
   static String generateHint(List<FileReference> files, AppLocalizations loc) {
     return files.isEmpty
         ? loc.semAreaHintEmpty
@@ -25,9 +23,7 @@ class FilesSemanticsHelper {
   }
 }
 
-class FilesSurfaceStyles {
-  const FilesSurfaceStyles._();
-
+abstract class FilesSurfaceStyles {
   static const Duration animationDuration = Duration(milliseconds: 160);
   static const Duration opacityDuration = Duration(milliseconds: 300);
   static const double borderWidth = 4.0;

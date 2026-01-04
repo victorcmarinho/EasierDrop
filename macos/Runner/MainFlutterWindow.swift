@@ -1,5 +1,7 @@
 import Cocoa
 import FlutterMacOS
+import desktop_multi_window
+import ServiceManagement
 
 class MainFlutterWindow: NSWindow, NSDraggingDestination {
     
@@ -15,67 +17,78 @@ class MainFlutterWindow: NSWindow, NSDraggingDestination {
             center()
         }
         
-        
         registerForDraggedTypes([.fileURL])
-        
         
         self.fileDropChannel = MacOSFileDropChannel.shared
         
         RegisterGeneratedPlugins(registry: flutterViewController)
+        
+        FlutterMultiWindowPlugin.setOnWindowCreatedCallback { controller in
+            RegisterGeneratedPlugins(registry: controller)
+            
+            if let appDelegate = NSApp.delegate as? AppDelegate {
+                appDelegate.setupCustomChannels(messenger: controller.engine.binaryMessenger, view: controller.view)
+            }
+            
+            let dropOverlay = FileDropHandlerView(frame: controller.view.bounds)
+            dropOverlay.messenger = controller.engine.binaryMessenger
+            dropOverlay.autoresizingMask = [.width, .height]
+            controller.view.addSubview(dropOverlay)
+            dropOverlay.registerForDraggedTypes([.fileURL])
+        }
     }
     
-    
-    
     func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        Swift.print("[MainFlutterWindow] Dragging Entered. Pasteboard types: \(sender.draggingPasteboard.types ?? [])")
-        let sourceDragMask = sender.draggingSourceOperationMask
-        if sourceDragMask.contains(.copy) {
-            return .copy
-        }
-        return []
+        return .copy
     }
     
     func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
         return .copy
     }
     
-    func draggingExited(_ sender: NSDraggingInfo?) {
-        Swift.print("[MainFlutterWindow] Dragging Exited.")
-    }
-    
-    func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        Swift.print("[MainFlutterWindow] Preparing for drag operation.")
-        return true
-    }
-    
     func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        Swift.print("[MainFlutterWindow] Performing drag operation.")
-        
-        let pasteboard = sender.draggingPasteboard
-        
-        
-        guard let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL], !urls.isEmpty else {
-            Swift.print("[MainFlutterWindow] Could not get file URLs from pasteboard.")
+        guard let urls = sender.draggingPasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL], !urls.isEmpty else {
             return false
         }
         
         let filePaths = urls.map { $0.path }
         
-        if !filePaths.isEmpty {
-            Swift.print("[MainFlutterWindow] Sending \(filePaths.count) file(s) to Flutter.")
-            fileDropChannel?.sendDropEvent(filePaths: filePaths)
+        if let controller = self.contentViewController as? FlutterViewController {
+            MacOSFileDropChannel.shared.sendDropEvent(messenger: controller.engine.binaryMessenger, filePaths: filePaths)
             return true
         }
         
-        Swift.print("[MainFlutterWindow] No valid file paths found.")
         return false
-    }
-    
-    func concludeDragOperation(_ sender: NSDraggingInfo?) {
-        Swift.print("[MainFlutterWindow] Concluding drag operation.")
     }
 }
 
+// MARK: - Overlay View for Multi-Windows
+class FileDropHandlerView: NSView {
+    var messenger: FlutterBinaryMessenger?
+    
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        // Return nil to allow mouse events to pass through to Flutter
+        return nil
+    }
+    
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        return .copy
+    }
+    
+    override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
+        return .copy
+    }
+    
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        guard let urls = sender.draggingPasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL], !urls.isEmpty, let messenger = messenger else {
+            return false
+        }
+        
+        let filePaths = urls.map { $0.path }
+        MacOSFileDropChannel.shared.sendDropEvent(messenger: messenger, filePaths: filePaths)
+        return true
+    }
+}
 
 extension MainFlutterWindow: NSDraggingSource {
     func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
@@ -83,7 +96,5 @@ extension MainFlutterWindow: NSDraggingSource {
     }
 
     func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
-        
-        print("[MainFlutterWindow] Dragging session ended.")
     }
 }

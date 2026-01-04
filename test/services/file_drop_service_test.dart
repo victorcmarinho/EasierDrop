@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
 import 'package:easier_drop/services/file_drop_service.dart';
 
 void main() {
@@ -41,19 +42,44 @@ void main() {
     });
 
     test('setMethodCallHandler configura um handler', () {
-      // Função de callback
-      Future<dynamic> handler(dynamic call) async {
+      Future<dynamic> handler(MethodCall call) async {
         return null;
       }
 
-      // Deve ser possível definir um handler
       expect(() => service.setMethodCallHandler(handler), returnsNormally);
-
-      // Limpar: remover o handler
       service.setMethodCallHandler(null);
     });
 
-    // Nota: não podemos testar start(), stop() e dispose() diretamente
-    // porque eles dependem de plugins nativos que não estão disponíveis nos testes
+    test('start/stop/dispose works with mocked channels', () async {
+      const channel = MethodChannel('file_drop_channel');
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+            return null;
+          });
+
+      // We can't easily mock the stream portion of EventChannel without more setup,
+      // but we can at least invoke the methods and check monitoring state.
+
+      await service.start();
+      expect(service.isMonitoring, isTrue);
+
+      // Test double start
+      await service.start();
+      expect(service.isMonitoring, isTrue);
+
+      await service.stop();
+      expect(service.isMonitoring, isFalse);
+
+      // Test double stop
+      await service.stop();
+      expect(service.isMonitoring, isFalse);
+
+      await service.dispose();
+      expect(service.isMonitoring, isFalse);
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null);
+    });
   });
 }

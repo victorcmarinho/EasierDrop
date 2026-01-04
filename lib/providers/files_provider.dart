@@ -1,32 +1,41 @@
 import 'dart:async';
-import 'package:easier_drop/helpers/macos/file_icon_helper.dart';
+import 'package:easier_drop/services/analytics_service.dart';
+
+import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/model/file_reference.dart';
-import 'package:easier_drop/services/logger.dart';
+import 'package:easier_drop/services/file_repository.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
-/// Provider responsável pelo gerenciamento de arquivos no aplicativo.
-///
-/// Fornece funcionalidades para:
-/// - Adicionar/remover arquivos
-/// - Validação automática de arquivos
-/// - Compartilhamento de arquivos
-/// - Monitoramento de integridade dos arquivos
 class FilesProvider with ChangeNotifier {
-  static const Duration _notificationDelay = Duration(seconds: 2);
-  static const Duration _monitorInterval = Duration(seconds: 5);
-
+  final int? _maxFilesOverride;
+  final FileRepository _repository;
   final Map<String, FileReference> _files = {};
+
   List<FileReference>? _cachedFilesList;
+  List<XFile>? _cachedXFiles;
   DateTime? _lastLimitHit;
   Timer? _monitorTimer;
   bool _notifyScheduled = false;
-  bool _monitoringEnabled = true;
+
+  FilesProvider({
+    FileRepository repository = const FileRepository(),
+    bool enableMonitoring = true,
+    int? maxFiles,
+  }) : _repository = repository,
+       _maxFilesOverride = maxFiles {
+    if (enableMonitoring) {
+      _monitorTimer = Timer.periodic(
+        AppConstants.monitorInterval,
+        (_) => _rescanInternal(),
+      );
+    }
+  }
 
   // Getters públicos
-  int get _maxFiles => SettingsService.instance.maxFiles;
+  int get _maxFiles => _maxFilesOverride ?? SettingsService.instance.maxFiles;
   DateTime? get lastLimitHit => _lastLimitHit;
   bool get isEmpty => _files.isEmpty;
   bool get hasFiles => _files.isNotEmpty;
@@ -34,18 +43,29 @@ class FilesProvider with ChangeNotifier {
 
   bool get recentlyAtLimit =>
       _lastLimitHit != null &&
-      DateTime.now().difference(_lastLimitHit!) < _notificationDelay;
+      DateTime.now().difference(_lastLimitHit!) <
+          AppConstants.limitNotificationDuration;
 
-  List<FileReference> get files =>
-      _cachedFilesList ??= List.unmodifiable(_files.values);
+  List<FileReference> get files {
+    final list = _cachedFilesList ??= List.unmodifiable(_files.values);
+    AnalyticsService.instance.debug(
+      'files getter called. Map size: ${_files.length}, List size: ${list.length}',
+      tag: 'FilesProvider',
+    );
+    return list;
+  }
 
-  List<XFile> get validXFiles =>
-      _files.values
-          .where((file) => file.isValidSync())
-          .map((file) => XFile(file.pathname))
-          .toList();
+  List<XFile> get validXFiles {
+    if (_cachedXFiles != null) return _cachedXFiles!;
 
-  /// Agenda uma notificação para evitar múltiplas atualizações
+    _cachedXFiles =
+        _files.values
+            .where((file) => _repository.validateFileSync(file.pathname))
+            .map((file) => XFile(file.pathname))
+            .toList();
+    return _cachedXFiles!;
+  }
+
   void _scheduleNotify() {
     if (_notifyScheduled) return;
     _notifyScheduled = true;
@@ -55,175 +75,193 @@ class FilesProvider with ChangeNotifier {
     });
   }
 
-  /// Invalida o cache da lista de arquivos
-  void _invalidateCache() => _cachedFilesList = null;
+  void _invalidateCache() {
+    _cachedFilesList = null;
+    _cachedXFiles = null;
+  }
 
-  FilesProvider({bool enableMonitoring = true}) {
-    _monitoringEnabled = enableMonitoring;
-    if (_monitoringEnabled) {
-      _monitorTimer = Timer.periodic(
-        _monitorInterval,
-        (_) => _rescanInternal(),
+  /// Adiciona um arquivo ao provider
+  Future<void> addFile(FileReference file) async {
+    await addFiles([file]);
+  }
+
+  Future<void> _loadFileThumbnails(String pathname) async {
+    try {
+      await Future.wait([_loadFileIcon(pathname), _loadFilePreview(pathname)]);
+    } finally {
+      if (_files.containsKey(pathname)) {
+        _files[pathname] = _files[pathname]!.withProcessing(false);
+        _invalidateCache();
+        _scheduleNotify();
+      }
+    }
+  }
+
+  Future<void> _loadFileIcon(String pathname) async {
+    final iconData = await _repository.getIcon(pathname);
+    if (iconData != null && _files.containsKey(pathname)) {
+      final current = _files[pathname]!;
+      if (current.iconData == null) {
+        _files[pathname] = current.withIcon(iconData);
+        _invalidateCache();
+        _scheduleNotify();
+      }
+    }
+  }
+
+  Future<void> _loadFilePreview(String pathname) async {
+    final previewData = await _repository.getPreview(pathname);
+    if (previewData != null && _files.containsKey(pathname)) {
+      final current = _files[pathname]!;
+      if (current.previewData == null) {
+        _files[pathname] = current.withPreview(previewData);
+        _invalidateCache();
+        _scheduleNotify();
+      }
+    }
+  }
+
+  Future<void> addFiles(Iterable<FileReference> files) async {
+    if (files.isEmpty) return;
+
+    try {
+      final validated = await Future.wait(
+        files.map((f) async {
+          if (_files.containsKey(f.pathname)) return null;
+          return await _repository.validateFile(f.pathname) ? f : null;
+        }),
+      );
+
+      final validFiles = validated.whereType<FileReference>().toList();
+      if (validFiles.isEmpty) return;
+
+      final availableSlots = _maxFiles - _files.length;
+      if (availableSlots <= 0) {
+        _handleLimitReached();
+        return;
+      }
+
+      final filesToAdd = validFiles.take(availableSlots).toList();
+      if (validFiles.length > availableSlots) _handleLimitReached();
+
+      for (final file in filesToAdd) {
+        _files[file.pathname] = file.withProcessing(true);
+        _loadFileThumbnails(file.pathname);
+        AnalyticsService.instance.fileAdded(
+          extension: file.fileName.split('.').lastOrNull,
+        );
+      }
+
+      if (filesToAdd.isNotEmpty) {
+        AnalyticsService.instance.info(
+          'Batch added: ${filesToAdd.length} files',
+          tag: 'FilesProvider',
+        );
+        _invalidateCache();
+        notifyListeners();
+      }
+    } catch (e) {
+      AnalyticsService.instance.error(
+        'Error adding files: $e',
+        tag: 'FilesProvider',
       );
     }
   }
 
-  /// Adiciona um arquivo ao provider
-  ///
-  /// Verifica se o limite não foi atingido e se o arquivo é válido
-  /// antes de adicioná-lo. Também carrega o ícone do arquivo assincronamente.
-  Future<void> addFile(FileReference file) async {
-    try {
-      if (_files.length >= _maxFiles) {
-        _lastLimitHit = DateTime.now();
-        AppLogger.warn('File limit reached ($_maxFiles)', tag: 'FilesProvider');
-        _scheduleNotify();
-        return;
-      }
+  void _handleLimitReached() {
+    _lastLimitHit = DateTime.now();
+    AnalyticsService.instance.warn(
+      'File limit reached ($_maxFiles)',
+      tag: 'FilesProvider',
+    );
+    AnalyticsService.instance.fileLimitReached();
+    _scheduleNotify();
+  }
 
-      if (!await file.isValidAsync()) {
-        AppLogger.debug(
-          'Invalid file skipped: ${file.pathname}',
-          tag: 'FilesProvider',
-        );
-        return;
-      }
-
-      if (_files.containsKey(file.pathname)) {
-        AppLogger.debug(
-          'Duplicate file ignored: ${file.pathname}',
-          tag: 'FilesProvider',
-        );
-        return;
-      }
-
-      _files[file.pathname] = file;
+  Future<void> removeFile(FileReference file) async {
+    if (_files.remove(file.pathname) != null) {
       _invalidateCache();
       _scheduleNotify();
-
-      // Carrega ícone e preview em paralelo
-      _loadFileIcon(file);
-      _loadFilePreview(file);
-
-      AppLogger.info('File added: ${file.fileName}', tag: 'FilesProvider');
-    } catch (e) {
-      AppLogger.error('Error adding file: $e', tag: 'FilesProvider');
+      AnalyticsService.instance.fileRemoved(
+        extension: file.fileName.split('.').lastOrNull,
+      );
+      AnalyticsService.instance.info(
+        'File removed: ${file.fileName}',
+        tag: 'FilesProvider',
+      );
     }
   }
 
-  /// Carrega o ícone do arquivo de forma assíncrona
-  Future<void> _loadFileIcon(FileReference file) async {
-    final iconData = await FileIconHelper.getFileIcon(file.pathname);
-    if (iconData != null) {
-      if (!_files.containsKey(file.pathname)) return;
-
-      final current = _files[file.pathname];
-      if (current != null && current.iconData == null) {
-        _files[file.pathname] = current.withIcon(iconData);
-        _invalidateCache();
-        _scheduleNotify();
-      }
-    }
-  }
-
-  /// Carrega o preview do arquivo de forma assíncrona
-  Future<void> _loadFilePreview(FileReference file) async {
-    final previewData = await FileIconHelper.getFilePreview(file.pathname);
-    if (previewData != null) {
-      if (!_files.containsKey(file.pathname)) return; // Cleanup check
-
-      final current = _files[file.pathname];
-      if (current != null && current.previewData == null) {
-        _files[file.pathname] = current.withPreview(previewData);
-        _invalidateCache();
-        _scheduleNotify();
-      }
-    }
-  }
-
-  /// Adiciona múltiplos arquivos
-  Future<void> addFiles(Iterable<FileReference> files) async {
-    for (final file in files) {
-      await addFile(file);
-    }
-  }
-
-  /// Remove um arquivo específico
-  Future<void> removeFile(FileReference file) async {
-    try {
-      if (_files.remove(file.pathname) != null) {
-        _invalidateCache();
-        _scheduleNotify();
-        AppLogger.info('File removed: ${file.fileName}', tag: 'FilesProvider');
-      }
-    } catch (e) {
-      AppLogger.error('Error removing file: $e', tag: 'FilesProvider');
-    }
-  }
-
-  /// Remove um arquivo pelo caminho
   void removeByPath(String pathname) {
-    try {
-      if (_files.remove(pathname) != null) {
-        _invalidateCache();
-        _scheduleNotify();
-        AppLogger.info('File removed: $pathname', tag: 'FilesProvider');
-      }
-    } catch (e) {
-      AppLogger.error('Error removing file by path: $e', tag: 'FilesProvider');
+    if (_files.remove(pathname) != null) {
+      _invalidateCache();
+      _scheduleNotify();
+      AnalyticsService.instance.fileRemoved(
+        extension: pathname.split('.').lastOrNull,
+      );
+      AnalyticsService.instance.fileDroppedOut();
+      AnalyticsService.instance.info(
+        'File removed: $pathname',
+        tag: 'FilesProvider',
+      );
     }
   }
 
-  /// Remove todos os arquivos
   void clear() {
     if (_files.isEmpty) return;
-
     final count = _files.length;
     _files.clear();
     _invalidateCache();
     _scheduleNotify();
-
-    AppLogger.info('$count file(s) cleared', tag: 'FilesProvider');
+    AnalyticsService.instance.fileDroppedOut();
+    AnalyticsService.instance.info(
+      '$count file(s) cleared',
+      tag: 'FilesProvider',
+    );
   }
 
-  /// Compartilha os arquivos válidos
   Future<Object> shared({Offset? position}) async {
     try {
-      final validFiles = validXFiles;
-      if (validFiles.isEmpty) {
+      final validFilesList = validXFiles;
+      if (validFilesList.isEmpty) {
         return ShareResult('shareNone', ShareResultStatus.unavailable);
       }
 
       final params = ShareParams(
-        files: validFiles,
+        files: validFilesList,
         sharePositionOrigin:
             position != null
-                ? Rect.fromLTRB(
+                ? Rect.fromLTWH(
                   position.dx,
                   position.dy,
-                  position.dx + 40,
-                  position.dy + 40,
+                  AppConstants.shareOriginSize,
+                  AppConstants.shareOriginSize,
                 )
                 : null,
       );
 
-      return SharePlus.instance.share(params);
+      final result = await SharePlus.instance.share(params);
+      AnalyticsService.instance.fileShared(count: validFilesList.length);
+      return result;
     } catch (e) {
-      AppLogger.error('Error sharing files: $e', tag: 'FilesProvider');
+      AnalyticsService.instance.error(
+        'Error sharing files: $e',
+        tag: 'FilesProvider',
+      );
       return ShareResult('shareError', ShareResultStatus.unavailable);
     }
   }
 
-  /// Faz um scan interno dos arquivos para remover inválidos
   void _rescanInternal() {
     if (_files.isEmpty) return;
 
-    final toRemove = <String>[];
-    for (final entry in _files.entries) {
-      if (!entry.value.isValidSync()) {
-        toRemove.add(entry.key);
-      }
-    }
+    final toRemove =
+        _files.entries
+            .where(
+              (entry) => !_repository.validateFileSync(entry.value.pathname),
+            )
+            .map((entry) => entry.key)
+            .toList();
 
     if (toRemove.isEmpty) return;
 
@@ -233,14 +271,12 @@ class FilesProvider with ChangeNotifier {
 
     _invalidateCache();
     _scheduleNotify();
-
-    AppLogger.info(
+    AnalyticsService.instance.info(
       '${toRemove.length} invalid file(s) removed after rescan',
       tag: 'FilesProvider',
     );
   }
 
-  /// Resolve mensagens de compartilhamento para exibição
   static String resolveShareMessage(String rawMessage, AppLocalizations loc) {
     switch (rawMessage) {
       case 'shareNone':
@@ -252,7 +288,6 @@ class FilesProvider with ChangeNotifier {
     }
   }
 
-  /// Força um rescan imediato dos arquivos
   void rescanNow() => _rescanInternal();
 
   @override

@@ -6,13 +6,10 @@ import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
-import 'package:easier_drop/model/file_reference.dart';
 import '../mocks/mock_tray.dart';
 
 // Mock classes
 class MockFilesProvider extends Mock implements FilesProvider {}
-
-class MockFileReference extends Mock implements FileReference {}
 
 // Custom widget que implementa TrayListener para testar métodos específicos
 class TrayListenerWidget extends StatefulWidget {
@@ -25,9 +22,6 @@ class TrayListenerWidget extends StatefulWidget {
 
 class _TrayListenerWidgetState extends State<TrayListenerWidget>
     with TrayListener {
-  int _lastCount = 0;
-  FilesProvider? _filesProvider;
-
   TrayManager get _trayManager => widget.trayManager ?? trayManager;
 
   @override
@@ -35,26 +29,18 @@ class _TrayListenerWidgetState extends State<TrayListenerWidget>
     super.initState();
     _trayManager.addListener(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _filesProvider = context.read<FilesProvider>();
-      _filesProvider?.addListener(_onFilesChanged);
-      _lastCount = _filesProvider?.files.length ?? 0;
       _rebuildMenu();
     });
   }
 
   @override
   void dispose() {
-    if (_filesProvider != null) {
-      _filesProvider!.removeListener(_onFilesChanged);
-      _filesProvider = null;
-    }
     _trayManager.removeListener(this);
     super.dispose();
   }
 
   @override
   void onTrayIconMouseDown() {
-    // Simula o comportamento do tray original
     _trayManager.popUpContextMenu();
   }
 
@@ -63,22 +49,17 @@ class _TrayListenerWidgetState extends State<TrayListenerWidget>
     try {
       switch (menuItem.key) {
         case 'show_window':
-          // Simula SystemHelper.open()
           break;
         case 'lang_en':
-          // Simula SettingsService.instance.setLocale('en')
           _rebuildMenu();
           break;
         case 'lang_pt':
-          // Simula SettingsService.instance.setLocale('pt_BR')
           _rebuildMenu();
           break;
         case 'lang_es':
-          // Simula SettingsService.instance.setLocale('es')
           _rebuildMenu();
           break;
         case 'exit_app':
-          // Simula SystemHelper.exit()
           break;
         default:
           debugPrint('Menu item desconhecido: ${menuItem.key}');
@@ -93,26 +74,12 @@ class _TrayListenerWidgetState extends State<TrayListenerWidget>
     return Container();
   }
 
-  void _onFilesChanged() {
-    final provider = context.read<FilesProvider>();
-    final count = provider.files.length;
-    if (count == _lastCount) return;
-    _lastCount = count;
-    _rebuildMenu();
-  }
-
   Future<void> _rebuildMenu() async {
     final loc = AppLocalizations.of(context)!;
-    final count = _lastCount;
     const current = 'en'; // Simula current locale
     final menu = Menu(
       items: [
         MenuItem(key: 'show_window', label: loc.openTray),
-        MenuItem(
-          key: 'files_count',
-          label: count > 0 ? loc.trayFilesCount(count) : loc.trayFilesNone,
-          toolTip: loc.filesCountTooltip,
-        ),
         MenuItem.separator(),
         MenuItem(key: 'lang_label', label: loc.languageLabel),
         MenuItem(
@@ -144,16 +111,15 @@ class _TrayListenerWidgetState extends State<TrayListenerWidget>
   }
 
   // Métodos públicos para teste
-  void testOnFilesChanged() => _onFilesChanged();
   Future<void> testRebuildMenu() => _rebuildMenu();
 }
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  Widget buildWidget(FilesProvider filesProvider) {
+  Widget buildWidget() {
     return ChangeNotifierProvider<FilesProvider>.value(
-      value: filesProvider,
+      value: MockFilesProvider(),
       child: MaterialApp(
         localizationsDelegates: const [
           AppLocalizations.delegate,
@@ -174,12 +140,7 @@ void main() {
 
   group('TrayListener Coverage Tests', () {
     testWidgets('onTrayMenuItemClick - show_window', (tester) async {
-      final filesProvider = MockFilesProvider();
-      when(() => filesProvider.files).thenReturn([]);
-      when(() => filesProvider.addListener(any())).thenReturn(null);
-      when(() => filesProvider.removeListener(any())).thenReturn(null);
-
-      await tester.pumpWidget(buildWidget(filesProvider));
+      await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
       final state = tester.state<_TrayListenerWidgetState>(
@@ -194,12 +155,7 @@ void main() {
     });
 
     testWidgets('onTrayMenuItemClick - lang_en', (tester) async {
-      final filesProvider = MockFilesProvider();
-      when(() => filesProvider.files).thenReturn([]);
-      when(() => filesProvider.addListener(any())).thenReturn(null);
-      when(() => filesProvider.removeListener(any())).thenReturn(null);
-
-      await tester.pumpWidget(buildWidget(filesProvider));
+      await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
       final state = tester.state<_TrayListenerWidgetState>(
@@ -214,12 +170,7 @@ void main() {
     });
 
     testWidgets('onTrayMenuItemClick - lang_pt', (tester) async {
-      final filesProvider = MockFilesProvider();
-      when(() => filesProvider.files).thenReturn([]);
-      when(() => filesProvider.addListener(any())).thenReturn(null);
-      when(() => filesProvider.removeListener(any())).thenReturn(null);
-
-      await tester.pumpWidget(buildWidget(filesProvider));
+      await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
       final state = tester.state<_TrayListenerWidgetState>(
@@ -234,12 +185,7 @@ void main() {
     });
 
     testWidgets('onTrayMenuItemClick - lang_es', (tester) async {
-      final filesProvider = MockFilesProvider();
-      when(() => filesProvider.files).thenReturn([]);
-      when(() => filesProvider.addListener(any())).thenReturn(null);
-      when(() => filesProvider.removeListener(any())).thenReturn(null);
-
-      await tester.pumpWidget(buildWidget(filesProvider));
+      await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
       final state = tester.state<_TrayListenerWidgetState>(
@@ -254,12 +200,7 @@ void main() {
     });
 
     testWidgets('onTrayMenuItemClick - exit_app', (tester) async {
-      final filesProvider = MockFilesProvider();
-      when(() => filesProvider.files).thenReturn([]);
-      when(() => filesProvider.addListener(any())).thenReturn(null);
-      when(() => filesProvider.removeListener(any())).thenReturn(null);
-
-      await tester.pumpWidget(buildWidget(filesProvider));
+      await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
       final state = tester.state<_TrayListenerWidgetState>(
@@ -274,31 +215,32 @@ void main() {
     });
 
     testWidgets('onTrayMenuItemClick - default case', (tester) async {
-      final filesProvider = MockFilesProvider();
-      when(() => filesProvider.files).thenReturn([]);
-      when(() => filesProvider.addListener(any())).thenReturn(null);
-      when(() => filesProvider.removeListener(any())).thenReturn(null);
+      final log = <String>[];
+      final originalDebugPrint = debugPrint;
+      debugPrint = (String? message, {int? wrapWidth}) {
+        log.add(message ?? '');
+      };
 
-      await tester.pumpWidget(buildWidget(filesProvider));
-      await tester.pumpAndSettle();
+      try {
+        await tester.pumpWidget(buildWidget());
+        await tester.pumpAndSettle();
 
-      final state = tester.state<_TrayListenerWidgetState>(
-        find.byType(TrayListenerWidget),
-      );
+        final state = tester.state<_TrayListenerWidgetState>(
+          find.byType(TrayListenerWidget),
+        );
 
-      final menuItem = MenuItem(key: 'unknown_key', label: 'Unknown');
-      state.onTrayMenuItemClick(menuItem);
+        final menuItem = MenuItem(key: 'unknown_key', label: 'Unknown');
+        state.onTrayMenuItemClick(menuItem);
 
-      await tester.pumpAndSettle();
-      expect(find.byType(TrayListenerWidget), findsOneWidget);
+        await tester.pumpAndSettle();
+        expect(find.byType(TrayListenerWidget), findsOneWidget);
+      } finally {
+        debugPrint = originalDebugPrint;
+      }
     });
 
     testWidgets('onTrayIconMouseDown', (tester) async {
-      final filesProvider = MockFilesProvider();
-      when(() => filesProvider.files).thenReturn([]);
-      when(() => filesProvider.addListener(any())).thenReturn(null);
-
-      await tester.pumpWidget(buildWidget(filesProvider));
+      await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
       final state = tester.state<_TrayListenerWidgetState>(
@@ -311,56 +253,8 @@ void main() {
       expect(find.byType(TrayListenerWidget), findsOneWidget);
     });
 
-    testWidgets('_onFilesChanged - sem mudança', (tester) async {
-      final filesProvider = MockFilesProvider();
-      when(() => filesProvider.files).thenReturn([]);
-      when(() => filesProvider.addListener(any())).thenReturn(null);
-
-      await tester.pumpWidget(buildWidget(filesProvider));
-      await tester.pumpAndSettle();
-
-      final state = tester.state<_TrayListenerWidgetState>(
-        find.byType(TrayListenerWidget),
-      );
-
-      // Chama _onFilesChanged quando count == _lastCount (early return)
-      state.testOnFilesChanged();
-
-      await tester.pumpAndSettle();
-      expect(find.byType(TrayListenerWidget), findsOneWidget);
-    });
-
-    testWidgets('_onFilesChanged - com mudança', (tester) async {
-      final filesProvider = MockFilesProvider();
-      final files = <FileReference>[];
-      when(() => filesProvider.files).thenReturn(files);
-      when(() => filesProvider.addListener(any())).thenReturn(null);
-
-      await tester.pumpWidget(buildWidget(filesProvider));
-      await tester.pumpAndSettle();
-
-      final state = tester.state<_TrayListenerWidgetState>(
-        find.byType(TrayListenerWidget),
-      );
-
-      // Adiciona um arquivo para mudar a contagem
-      final mockFile = MockFileReference();
-      when(() => mockFile.pathname).thenReturn('/test/file.txt');
-      files.add(mockFile);
-
-      // Chama _onFilesChanged quando count != _lastCount
-      state.testOnFilesChanged();
-
-      await tester.pumpAndSettle();
-      expect(find.byType(TrayListenerWidget), findsOneWidget);
-    });
-
     testWidgets('_rebuildMenu direto', (tester) async {
-      final filesProvider = MockFilesProvider();
-      when(() => filesProvider.files).thenReturn([]);
-      when(() => filesProvider.addListener(any())).thenReturn(null);
-
-      await tester.pumpWidget(buildWidget(filesProvider));
+      await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
       final state = tester.state<_TrayListenerWidgetState>(

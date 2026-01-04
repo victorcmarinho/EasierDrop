@@ -5,6 +5,58 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-12-31
+
+### Added
+- **Multi-Window Support**: Now supports multiple windows! Shake your mouse while dragging files to spawn a new EasierDrop window at your cursor location.
+- **Native Shake Detection**: Added native macOS shake gesture detection for seamless multi-window interaction.
+- **Visual Feedback**: Real-time file processing states with shimmer effects, success animations, and improved error visibility using `AsyncFileWrapper`.
+- **Analytics & Telemetry**: Integrated Aptabase for anonymous usage insights and error tracking, replacing the internal logger.
+- **Environment Configuration**: Added support for `.env` files processed at build-time using `--dart-define`, accessed via a unified `AppConfig` (removing `flutter_dotenv`).
+- **Tray Management**: Introduced `TrayService` for more reliable and consistent system tray interactions.
+- **Minimalist Multi-Window UI**: Secondary windows now feature a cleaner, borderless interface without title bars or system buttons.
+- **Clipboard Integration**: Now supports pasting files directly into the drop zone using `Cmd + V`. Copy files in Finder and paste them seamlessly!
+- **Video Demo**: Added a video demonstration to the documentation and homepage for better onboarding.
+- **Settings Window**: Dedicated preferences window with "Liquid Glass" UI design (Blur + Translucency).
+- **Window Management**:
+    - **Opacity Control**: Adjust window opacity in real-time.
+    - **Always on Top**: Toggle to keep the drop zone above other windows.
+- **System Integration**:
+    - **Launch at Login**: Option to start the app automatically.
+    - **Shortcuts**: `Cmd + ,` to open Preferences.
+    - **Tray Menu**: Added "Preferences..." option.
+- **Localization**: Settings UI fully localized (English, Portuguese, Spanish).
+
+### Improved
+- **Architecture**: Migrated to a Repository pattern with `FileRepository` for cleaner separation of concerns.
+- **Performance**: Optimized file addition with parallel validation, batch updates, and cached file lists for smoother operation.
+- **Rendering**: Significantly reduced widget rebuilds in the file grid, improving UI responsiveness.
+- **Service Refactoring**: Refactored `UpdateService` and `TrayService` with dependency injection and improved testability.
+- **Testing Suite**: Replaced obsolete tests with a comprehensive new suite of unit and widget tests using a TDD approach, ensuring >85% coverage.
+- **Native Integration**: Centralized custom channel setup for more robust multi-window communication.
+- **Code Centralization**: Unified file addition logic in `FilesProvider` to support both Drag & Drop and Clipboard operations consistently.
+
+### Improved
+- **Shake Gesture Sensitivity**: Significantly lowered the shake threshold and reduced required reversals, making the "Shake to Select" gesture much easier and more reliable to trigger.
+- **Navigation Architecture**: Refactored screen selection to use modern named routes (`/`, `/settings`, `/share`), improving code maintainability and scalability.
+
+### Fixed
+- **Shake Gesture Reliability**: Addressed issues where the shake gesture was difficult to trigger by tuning native parameters and adding robust logging for easier debugging.
+
+
+### Fixed
+- **UI Stability**: Resolved `ScrollController` assertion errors by replacing `text_marquee` with the more stable `marquee_text` package, restoring smooth filename scrolling.
+
+### Changed
+- Replaced the custom `AppLogger` with a unified `AnalyticsService`.
+- Refactored `FilesProvider` and window management logic for better maintainability.
+- Moved `flutter_launcher_icons` to `dev_dependencies` to streamline production builds.
+
+### Removed
+- **Tray File Count item**: Removed the file count display from the tray menu to keep a cleaner interface.
+- **Lottie Dependency**: Removed the `lottie` package to reduce application bundle size and complexity.
+- **Obsolete Tests**: Cleaned up the test directory by removing outdated or redundant test files.
+
 ## [1.0.4] - 2025-12-28
 
 ### Fixed

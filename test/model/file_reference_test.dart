@@ -1,53 +1,83 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('FileReference validation', () {
-    late Directory tmp;
-
-    setUp(() async {
-      tmp = await Directory.systemTemp.createTemp('fr_test_');
+  group('FileReference getters', () {
+    test('fileName extracts filename correctly', () {
+      final fileRef = FileReference(pathname: '/path/to/test_file.txt');
+      expect(fileRef.fileName, 'test_file.txt');
     });
 
-    tearDown(() async {
-      await tmp.delete(recursive: true);
+    test('extension extracts extension correctly', () {
+      final fileRef1 = FileReference(pathname: '/path/to/test_file.txt');
+      expect(fileRef1.extension, 'txt');
+
+      final fileRef2 = FileReference(pathname: '/path/to/test_file');
+      expect(fileRef2.extension, 'test_file');
     });
 
-    test('valid file sync/async', () async {
-      final f = File('${tmp.path}/a.txt');
-      await f.writeAsString('hello');
-      final ref = FileReference(pathname: f.path);
-      expect(ref.isValidSync(), isTrue);
-      expect(await ref.isValidAsync(), isTrue);
+    test('extension handles edge cases correctly', () {
+      final fileRef1 = FileReference(pathname: '/path/to/.gitignore');
+      expect(fileRef1.extension, '.gitignore');
+
+      final fileRef2 = FileReference(pathname: '/path/to/file.');
+      expect(fileRef2.extension, 'file.');
+
+      final fileRef3 = FileReference(pathname: '/path/to/FILE.TXT');
+      expect(fileRef3.extension, 'txt');
+    });
+  });
+
+  group('FileReference withProcessing', () {
+    test('withProcessing creates new reference with processing state', () {
+      final originalRef = const FileReference(pathname: '/path/to/file.txt');
+      final newRef = originalRef.withProcessing(true);
+
+      expect(newRef.pathname, originalRef.pathname);
+      expect(newRef.isProcessing, isTrue);
+    });
+  });
+
+  group('FileReference other', () {
+    test('toString returns correct format', () {
+      final fileRef = const FileReference(pathname: '/file.txt');
+      expect(fileRef.toString(), contains('FileReference(pathname: /file.txt'));
+    });
+  });
+
+  group('FileReference withIcon and withPreview', () {
+    test('withIcon creates new reference with icon', () {
+      final originalRef = FileReference(pathname: '/path/to/file.txt');
+      final mockIcon = Uint8List.fromList([1, 2, 3, 4]);
+      final newRef = originalRef.withIcon(mockIcon);
+
+      expect(newRef.pathname, originalRef.pathname);
+      expect(newRef.iconData, mockIcon);
     });
 
-    test('non existing file invalid', () async {
-      final ref = FileReference(pathname: '${tmp.path}/missing.txt');
-      expect(ref.isValidSync(), isFalse);
-      expect(await ref.isValidAsync(), isFalse);
-    });
+    test('withPreview creates new reference with preview', () {
+      final originalRef = FileReference(pathname: '/path/to/file.txt');
+      final mockPreview = Uint8List.fromList([5, 6, 7, 8]);
+      final newRef = originalRef.withPreview(mockPreview);
 
-    test('directory invalid', () async {
-      final dir = Directory('${tmp.path}/sub');
-      await dir.create();
-      final ref = FileReference(pathname: dir.path);
-      expect(ref.isValidSync(), isFalse);
-      expect(await ref.isValidAsync(), isFalse);
+      expect(newRef.pathname, originalRef.pathname);
+      expect(newRef.previewData, mockPreview);
     });
+  });
 
-    test('extension, size and withIcon/equality', () async {
-      final f = File('${tmp.path}/b.data.long');
-      await f.writeAsBytes(List.generate(10, (i) => i));
-      final ref = FileReference(pathname: f.path);
-      expect(ref.extension, 'long');
-      final sz = await ref.size;
-      expect(sz, 10);
-      final ref2 = ref.withIcon(Uint8List.fromList([1, 2, 3]));
-      expect(ref2.iconData, isNotNull);
-      expect(ref2.pathname, ref.pathname);
-      expect(ref, equals(FileReference(pathname: f.path)));
+  group('FileReference equality and hashCode', () {
+    test('References to same path are equal regardless of metadata', () {
+      final ref1 = FileReference(pathname: '/path/to/file.txt');
+      final ref2 = FileReference(pathname: '/path/to/file.txt');
+      final ref3 = FileReference(
+        pathname: '/path/to/file.txt',
+        iconData: Uint8List.fromList([1, 2, 3]),
+      );
+
+      expect(ref1 == ref2, isTrue);
+      expect(ref1 == ref3, isTrue);
+      expect(ref1.hashCode, ref2.hashCode);
     });
   });
 }

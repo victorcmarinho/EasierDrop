@@ -1,7 +1,6 @@
-import 'package:easier_drop/screens/file_transfer_screen.dart';
-import 'package:easier_drop/l10n/app_localizations.dart';
+import 'package:easier_drop/components/welcome/animated_welcome_content.dart';
+import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:flutter/cupertino.dart';
-
 import 'package:macos_ui/macos_ui.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -13,54 +12,35 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
+  late final AnimationController _controller;
+  late final Animation<double> _fadeAnimation;
+  late final Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
 
-    // Configurar o controller de animação
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: AppConstants.welcomeAnimationDuration,
       vsync: this,
     );
 
-    // Animação de fade-in (opacidade)
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
-    // Animação de scale (escala)
     _scaleAnimation = Tween<double>(
       begin: 0.8,
       end: 1.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
-    // Iniciar a animação
     _controller.forward();
 
-    // Navegar para a tela principal após 3 segundos
-    Future.delayed(const Duration(seconds: 3), () {
+    _navigateToMain();
+  }
+
+  void _navigateToMain() {
+    Future.delayed(AppConstants.welcomeNavigationDelay, () {
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder:
-                (context, animation, secondaryAnimation) =>
-                    const MacosWindow(child: FileTransferScreen()),
-            transitionsBuilder: (
-              context,
-              animation,
-              secondaryAnimation,
-              child,
-            ) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 500),
-          ),
-        );
+        Navigator.of(context).pushReplacementNamed(AppConstants.routeShare);
       }
     });
   }
@@ -75,49 +55,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   Widget build(BuildContext context) {
     return MacosWindow(
       child: Center(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return Opacity(
-              opacity: _fadeAnimation.value,
-              child: Transform.scale(
-                scale: _scaleAnimation.value,
-                child: child,
-              ),
-            );
-          },
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Ícone ou logo (opcional)
-              Icon(
-                CupertinoIcons.cloud_download,
-                size: 48,
-                color: MacosTheme.of(context).primaryColor,
-              ),
-              const SizedBox(height: 16),
-              // Texto de boas-vindas
-              Text(
-                AppLocalizations.of(context)!.welcomeTo,
-                style: MacosTheme.of(context).typography.headline.copyWith(
-                  color: MacosTheme.of(context).typography.headline.color,
-                  fontSize: 13,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Easier Drop',
-                style: MacosTheme.of(context).typography.headline.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: MacosTheme.of(context).primaryColor,
-                  fontSize: 18,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+        child: AnimatedWelcomeContent(
+          fadeAnimation: _fadeAnimation,
+          scaleAnimation: _scaleAnimation,
         ),
       ),
     );
