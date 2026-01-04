@@ -22,7 +22,7 @@ class UpdateService {
   UpdateService({UpdateClient? client})
     : _client = client ?? GitHubUpdateClient();
 
-  static final UpdateService instance = UpdateService();
+  static UpdateService instance = UpdateService();
 
   Future<String?> checkForUpdates() async {
     AnalyticsService.instance.updateCheckStarted();

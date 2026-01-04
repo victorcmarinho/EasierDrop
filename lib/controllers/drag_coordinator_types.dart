@@ -24,9 +24,7 @@ enum DragOperationType {
 }
 
 /// Configurações para o DragCoordinator
-class DragCoordinatorConfig {
-  const DragCoordinatorConfig._();
-
+abstract class DragCoordinatorConfig {
   static const Duration dragEndDelay = Duration(milliseconds: 400);
   static const String logTag = 'DragCoordinator';
 }
