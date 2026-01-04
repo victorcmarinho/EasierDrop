@@ -31,10 +31,11 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            _buildSectionHeader(loc.settingsGeneral),
+            _buildSectionHeader(context, loc.settingsGeneral),
             const SizedBox(height: 12),
             _buildSettingsGroup([
               _buildSettingsItem(
+                context: context,
                 icon: CupertinoIcons.rocket_fill,
                 label: loc.settingsLaunchAtLogin,
                 child: MacosSwitch(
@@ -45,6 +46,7 @@ class SettingsScreen extends StatelessWidget {
 
               _buildDivider(),
               _buildSettingsItem(
+                context: context,
                 icon: CupertinoIcons.pin_fill,
                 label: loc.settingsAlwaysOnTop,
                 child: MacosSwitch(
@@ -54,7 +56,7 @@ class SettingsScreen extends StatelessWidget {
               ),
             ]),
             const SizedBox(height: 24),
-            _buildSectionHeader(loc.languageLabel),
+            _buildSectionHeader(context, loc.languageLabel),
             const SizedBox(height: 12),
             _buildSettingsGroup([
               Padding(
@@ -64,33 +66,43 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 child: SizedBox(
                   width: double.infinity,
-                  child: CupertinoSegmentedControl<String>(
+                  child: CupertinoSlidingSegmentedControl<String>(
                     children: {
                       'en': Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
-                          vertical: 6,
+                          vertical: 4,
                         ),
-                        child: Text(loc.languageEnglish),
+                        child: Text(
+                          loc.languageEnglish,
+                          style: MacosTheme.of(context).typography.body,
+                        ),
                       ),
                       'pt_BR': Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
-                          vertical: 6,
+                          vertical: 4,
                         ),
-                        child: Text(loc.languagePortuguese),
+                        child: Text(
+                          loc.languagePortuguese,
+                          style: MacosTheme.of(context).typography.body,
+                        ),
                       ),
                       'es': Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
-                          vertical: 6,
+                          vertical: 4,
                         ),
-                        child: Text(loc.languageSpanish),
+                        child: Text(
+                          loc.languageSpanish,
+                          style: MacosTheme.of(context).typography.body,
+                        ),
                       ),
                     },
                     groupValue: settings.localeCode ?? 'en',
-                    onValueChanged: (v) => settings.setLocale(v),
-                    padding: EdgeInsets.zero,
+                    onValueChanged: (v) {
+                      if (v != null) settings.setLocale(v);
+                    },
                   ),
                 ),
               ),
@@ -101,15 +113,13 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, bottom: 4),
       child: Text(
         title.toUpperCase(),
-        style: const TextStyle(
-          fontSize: 11,
+        style: MacosTheme.of(context).typography.caption1.copyWith(
           fontWeight: FontWeight.w600,
-          color: MacosColors.secondaryLabelColor,
           letterSpacing: 0.5,
         ),
       ),
@@ -131,6 +141,7 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget _buildSettingsItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required Widget child,
@@ -148,10 +159,7 @@ class SettingsScreen extends StatelessWidget {
             child: Icon(icon, size: 16, color: MacosColors.labelColor),
           ),
           const SizedBox(width: 12),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 13, color: MacosColors.labelColor),
-          ),
+          Text(label, style: MacosTheme.of(context).typography.body),
           const Spacer(),
           child,
         ],

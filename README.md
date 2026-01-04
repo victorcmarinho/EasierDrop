@@ -34,7 +34,7 @@ Drag from Finder, Safari, Photos, or even your code editor. Your files stay put 
 
 ### 🛠️ Multi-Window Magic
 Need to keep separate piles for different projects? Open multiple Easier Drop windows anywhere on your screen.
-> ![Multi-Window Support](assets/promo/multi_window.gif)
+> ![Multi-Window Support](assets/promo/multi_window.png)
 > *Productivity doubled: manage different stacks for different tasks.*
 
 ### 🤝 Native Shake-to-Select

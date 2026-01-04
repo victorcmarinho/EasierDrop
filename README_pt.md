@@ -34,7 +34,7 @@ Arraste do Finder, Safari, Fotos ou até mesmo do seu editor de código. Seus ar
 
 ### 🛠️ Magia Multi-Janela
 Precisa manter pilhas separadas para projetos diferentes? Abra várias janelas do Easier Drop em qualquer lugar da tela.
-> ![Suporte Multi-Janela](assets/promo/multi_window.gif)
+> ![Suporte Multi-Janela](assets/promo/multi_window.png)
 > *Produtividade dobrada: gerencie pilhas diferentes para tarefas diferentes.*
 
 ### 🤝 Agite para Selecionar (Native Shake)

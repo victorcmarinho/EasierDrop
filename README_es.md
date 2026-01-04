@@ -34,7 +34,7 @@ Arrastra desde Finder, Safari, Fotos o incluso tu editor de código. Tus archivo
 
 ### 🛠️ Magia Multi-Ventana
 ¿Necesitas mantener pilas separadas para diferentes proyectos? Abre múltiples ventanas de Easier Drop en cualquier lugar de tu pantalla.
-> ![Soporte Multi-Ventana](assets/promo/multi_window.gif)
+> ![Soporte Multi-Ventana](assets/promo/multi_window.png)
 > *Productividad duplicada: gestiona diferentes pilas para diferentes tareas.*
 
 ### 🤝 Agitar para Seleccionar (Native Shake)
