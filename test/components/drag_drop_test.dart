@@ -1,6 +1,6 @@
 import 'package:easier_drop/components/drag_drop.dart';
 import 'package:easier_drop/components/parts/files_surface.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:easier_drop/controllers/drag_coordinator.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/model/file_reference.dart';

@@ -176,8 +176,9 @@ void main() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(multiWindowChannel, (call) async {
             if (call.method == 'createWindow') return 1; // Try int
-            if (call.method == 'getWindowArguments')
+            if (call.method == 'getWindowArguments') {
               return jsonEncode({'args': 'test'});
+            }
             return null;
           });
 
@@ -188,8 +189,9 @@ void main() {
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
             .setMockMethodCallHandler(multiWindowChannel, (call) async {
               if (call.method == 'createWindow') return '1';
-              if (call.method == 'getWindowArguments')
+              if (call.method == 'getWindowArguments') {
                 return jsonEncode({'args': 'test'});
+              }
               return null;
             });
         await SystemHelper.openSettings();

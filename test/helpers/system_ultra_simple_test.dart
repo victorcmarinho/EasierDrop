@@ -46,8 +46,9 @@ void main() {
           const MethodChannel('mixin.one/desktop_multi_window'),
           (call) async {
             if (call.method == 'createWindow') return 1;
-            if (call.method == 'getWindowArguments')
+            if (call.method == 'getWindowArguments') {
               return jsonEncode({'title': 'test', 'x': 0, 'y': 0});
+            }
             return null;
           },
         );

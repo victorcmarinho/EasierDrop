@@ -6,7 +6,7 @@ import 'package:easier_drop/services/update_service.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'package:tray_manager/tray_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:mocktail/mocktail.dart';
@@ -349,9 +349,6 @@ Future<void> mockHttpCall(
   final headers = MockHttpHeaders();
 
   when(() => client.getUrl(any())).thenAnswer((invocation) async {
-    print(
-      'DEBUG: HttpClient.getUrl hit for ${invocation.positionalArguments[0]}',
-    );
     return request;
   });
   when(() => request.headers).thenReturn(headers);
