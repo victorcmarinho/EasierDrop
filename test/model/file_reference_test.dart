@@ -16,6 +16,34 @@ void main() {
       final fileRef2 = FileReference(pathname: '/path/to/test_file');
       expect(fileRef2.extension, 'test_file');
     });
+
+    test('extension handles edge cases correctly', () {
+      final fileRef1 = FileReference(pathname: '/path/to/.gitignore');
+      expect(fileRef1.extension, '.gitignore');
+
+      final fileRef2 = FileReference(pathname: '/path/to/file.');
+      expect(fileRef2.extension, 'file.');
+
+      final fileRef3 = FileReference(pathname: '/path/to/FILE.TXT');
+      expect(fileRef3.extension, 'txt');
+    });
+  });
+
+  group('FileReference withProcessing', () {
+    test('withProcessing creates new reference with processing state', () {
+      final originalRef = const FileReference(pathname: '/path/to/file.txt');
+      final newRef = originalRef.withProcessing(true);
+
+      expect(newRef.pathname, originalRef.pathname);
+      expect(newRef.isProcessing, isTrue);
+    });
+  });
+
+  group('FileReference other', () {
+    test('toString returns correct format', () {
+      final fileRef = const FileReference(pathname: '/file.txt');
+      expect(fileRef.toString(), contains('FileReference(pathname: /file.txt'));
+    });
   });
 
   group('FileReference withIcon and withPreview', () {

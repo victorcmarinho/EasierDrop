@@ -52,7 +52,9 @@ void main() {
 
       expect(() => s.appStarted(), returnsNormally);
       expect(() => s.fileAdded(extension: 'txt'), returnsNormally);
+      expect(() => s.fileAdded(), returnsNormally);
       expect(() => s.fileRemoved(extension: 'txt'), returnsNormally);
+      expect(() => s.fileRemoved(), returnsNormally);
       expect(() => s.fileShared(count: 2), returnsNormally);
       expect(() => s.fileDroppedOut(), returnsNormally);
       expect(() => s.shakeWindowCreated(), returnsNormally);
@@ -62,6 +64,42 @@ void main() {
       expect(() => s.updateAvailable('1.0.1'), returnsNormally);
       expect(() => s.settingsOpened(), returnsNormally);
       expect(() => s.settingsChanged('test', true), returnsNormally);
+    });
+
+    test('logging methods run normally at all levels', () {
+      final s = AnalyticsService.instance;
+      expect(() => s.trace('trace message'), returnsNormally);
+      expect(() => s.debug('debug message'), returnsNormally);
+      expect(() => s.info('info message'), returnsNormally);
+      expect(() => s.warn('warn message'), returnsNormally);
+      expect(() => s.error('error message'), returnsNormally);
+    });
+
+    test('static logging methods run normally', () {
+      expect(() => AnalyticsService.sTrace('trace'), returnsNormally);
+      expect(() => AnalyticsService.sDebug('debug'), returnsNormally);
+      expect(() => AnalyticsService.sInfo('info'), returnsNormally);
+      expect(() => AnalyticsService.sWarn('warn'), returnsNormally);
+      expect(() => AnalyticsService.sError('error'), returnsNormally);
+    });
+
+    test('initialize runs normally', () async {
+      final s = AnalyticsService.instance;
+      await s.initialize();
+      // Calling twice should return early
+      await s.initialize();
+      expect(true, isTrue);
+    });
+
+    test('trackEvent handles edge cases', () {
+      final s = AnalyticsService.instance;
+      SettingsService.instance.setTelemetryEnabled(true);
+
+      // Test without props
+      expect(() => s.trackEvent('test_no_props'), returnsNormally);
+
+      // Test with error in trackEvent (hard to mock Aptabase but verify no crash)
+      expect(() => s.trackEvent('test', {'prop': 'val'}), returnsNormally);
     });
   });
 }

@@ -2,6 +2,7 @@ import 'package:easier_drop/controllers/drag_coordinator.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
@@ -139,6 +140,60 @@ void main() {
           provider.clear();
         }
       }
+    });
+
+    testWidgets('init and dispose cover more lines', (tester) async {
+      await tester.pumpWidget(buildTestWidget());
+      context = tester.element(find.byType(SizedBox));
+      coordinator = DragCoordinator(context);
+
+      // Mock channels
+      const dropChannel = MethodChannel('file_drop_channel');
+      const dragOutChannel = MethodChannel('file_drag_out_channel');
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(dropChannel, (call) async => null);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(dragOutChannel, (call) async => null);
+
+      await coordinator.init();
+      // Calling init again moves early return
+      await coordinator.init();
+
+      coordinator.setHover(true);
+      expect(coordinator.hovering.value, isTrue);
+
+      coordinator.dispose();
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(dropChannel, null);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(dragOutChannel, null);
+    });
+
+    testWidgets('beginExternalDrag handles states', (tester) async {
+      await tester.pumpWidget(buildTestWidget());
+      context = tester.element(find.byType(SizedBox));
+      coordinator = DragCoordinator(context);
+
+      const dragOutChannel = MethodChannel('file_drag_out_channel');
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(dragOutChannel, (call) async => null);
+
+      // No files case
+      await coordinator.beginExternalDrag();
+      expect(coordinator.draggingOut.value, isFalse);
+
+      // With files
+      provider.addFileForTest(const FileReference(pathname: '/tmp/test'));
+      await coordinator.beginExternalDrag();
+      expect(coordinator.draggingOut.value, isTrue);
+
+      // Wait for timers to complete
+      await tester.pump(const Duration(milliseconds: 500));
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(dragOutChannel, null);
     });
   });
 }
