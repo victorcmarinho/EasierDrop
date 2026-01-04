@@ -215,18 +215,28 @@ void main() {
     });
 
     testWidgets('onTrayMenuItemClick - default case', (tester) async {
-      await tester.pumpWidget(buildWidget());
-      await tester.pumpAndSettle();
+      final log = <String>[];
+      final originalDebugPrint = debugPrint;
+      debugPrint = (String? message, {int? wrapWidth}) {
+        log.add(message ?? '');
+      };
 
-      final state = tester.state<_TrayListenerWidgetState>(
-        find.byType(TrayListenerWidget),
-      );
+      try {
+        await tester.pumpWidget(buildWidget());
+        await tester.pumpAndSettle();
 
-      final menuItem = MenuItem(key: 'unknown_key', label: 'Unknown');
-      state.onTrayMenuItemClick(menuItem);
+        final state = tester.state<_TrayListenerWidgetState>(
+          find.byType(TrayListenerWidget),
+        );
 
-      await tester.pumpAndSettle();
-      expect(find.byType(TrayListenerWidget), findsOneWidget);
+        final menuItem = MenuItem(key: 'unknown_key', label: 'Unknown');
+        state.onTrayMenuItemClick(menuItem);
+
+        await tester.pumpAndSettle();
+        expect(find.byType(TrayListenerWidget), findsOneWidget);
+      } finally {
+        debugPrint = originalDebugPrint;
+      }
     });
 
     testWidgets('onTrayIconMouseDown', (tester) async {

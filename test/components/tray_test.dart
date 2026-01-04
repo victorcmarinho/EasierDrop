@@ -101,4 +101,18 @@ void main() {
     // Deve executar sem erros
     expect(true, isTrue);
   });
+
+  testWidgets('Tray interage com métodos do TrayListener', (tester) async {
+    await tester.pumpWidget(buildWidget());
+    await tester.pumpAndSettle();
+
+    final dynamic state = tester.state(find.byType(Tray));
+
+    // Testa onTrayIconMouseDown
+    expect(() => state.onTrayIconMouseDown(), returnsNormally);
+
+    // Testa onTrayMenuItemClick
+    final menuItem = MenuItem(key: 'test', label: 'Test');
+    expect(() => state.onTrayMenuItemClick(menuItem), returnsNormally);
+  });
 }
