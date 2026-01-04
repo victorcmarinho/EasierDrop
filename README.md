@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/icon/icon.png" width="128" alt="Easier Drop Icon">
+<img src="https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/icon/icon.png" width="128" alt="Easier Drop Icon">
 
 # Easier Drop
 
@@ -29,27 +29,27 @@ Easier Drop is your native macOS productivity companion that ends the window-shu
 
 ### 📦 Collect Anywhere, Instantly
 Drag from Finder, Safari, Photos, or even your code editor. Your files stay put until you're ready to move them.
-> ![Collecting Files](assets/promo/useged-2.png)
+> ![Collecting Files](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/useged-2.png)
 > *Stash files from multiple sources into one organized stack.*
 
 ### 🛠️ Multi-Window Magic
 Need to keep separate piles for different projects? Open multiple Easier Drop windows anywhere on your screen.
-> ![Multi-Window Support](assets/promo/multi_window.png)
+> ![Multi-Window Support](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/multi_window.png)
 > *Productivity doubled: manage different stacks for different tasks.*
 
 ### 🤝 Native Shake-to-Select
 Feeling the "shake"? Just shake your mouse while dragging a file to instantly spawn a new Easier Drop window exactly at your cursor.
-> ![Shake Gesture](assets/promo/shake_gesture.gif)
+> ![Shake Gesture](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/shake_gesture.gif)
 > *The most natural way to spawn a drop zone on the fly.*
 
 ### 📋 Clipboard Integration
 Already copied something? Just `Cmd + V` over the drop zone to add it to your shelf. Seamless integration with Finder and system clipboards.
-> ![Clipboard Integration](assets/promo/clipboard_paste.gif)
+> ![Clipboard Integration](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/clipboard_paste.gif)
 > *Paste files directly into your workflow without redundant dragging.*
 
 ### 💎 "Liquid Glass" Settings
 A beautiful, translucent preferences window that respects your macOS theme with elegant blurs and fluid controls.
-> ![Settings UI](assets/promo/settings_ui.png)
+> ![Settings UI](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/settings_ui.png)
 > *Personalize your experience with a premium, native-feeling interface.*
 
 ### ⚡️ Always on Top & Native Speed

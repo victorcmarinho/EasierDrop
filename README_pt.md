@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/icon/icon.png" width="128" alt="Easier Drop Icon">
+<img src="https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/icon/icon.png" width="128" alt="Easier Drop Icon">
 
 # Easier Drop
 
@@ -29,27 +29,27 @@ O Easier Drop é o seu companheiro nativo de produtividade para macOS que acaba 
 
 ### 📦 Colete de Qualquer Lugar, Instanteamente
 Arraste do Finder, Safari, Fotos ou até mesmo do seu editor de código. Seus arquivos ficam guardados até que você esteja pronto para movê-los.
-> ![Coletando Arquivos](assets/promo/useged-2.png)
+> ![Coletando Arquivos](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/useged-2.png)
 > *Guarde arquivos de várias fontes em uma única pilha organizada.*
 
 ### 🛠️ Magia Multi-Janela
 Precisa manter pilhas separadas para projetos diferentes? Abra várias janelas do Easier Drop em qualquer lugar da tela.
-> ![Suporte Multi-Janela](assets/promo/multi_window.png)
+> ![Suporte Multi-Janela](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/multi_window.png)
 > *Produtividade dobrada: gerencie pilhas diferentes para tarefas diferentes.*
 
 ### 🤝 Agite para Selecionar (Native Shake)
 Sentindo o "sacolejo"? Basta agitar o mouse enquanto arrasta um arquivo para criar instantaneamente uma nova janela do Easier Drop exatamente no seu cursor.
-> ![Gesto de Balançar](assets/promo/shake_gesture.gif)
+> ![Gesto de Balançar](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/shake_gesture.gif)
 > *A maneira mais natural de criar uma zona de drop rapidamente.*
 
 ### 📋 Integração com Área de Transferência
 Já copiou algo? Basta usar `Cmd + V` sobre a zona de drop para adicioná-lo à sua estante. Integração perfeita com o Finder e a área de transferência do sistema.
-> ![Integração com Área de Transferência](assets/promo/clipboard_paste.gif)
+> ![Integração com Área de Transferência](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/clipboard_paste.gif)
 > *Cole arquivos diretamente no seu fluxo de trabalho sem precisar arrastar novamente.*
 
 ### 💎 Configurações "Liquid Glass"
 Uma linda janela de preferências translúcida que respeita o tema do seu macOS com desfoques elegantes e controles fluidos.
-> ![Interface de Configurações](assets/promo/settings_ui.png)
+> ![Interface de Configurações](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/settings_ui.png)
 > *Personalize sua experiência com uma interface premium e nativa.*
 
 ### ⚡️ Sempre no Topo & Velocidade Nativa
