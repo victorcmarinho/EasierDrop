@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "autoClearInbound": false,
+  "maxFiles": 50,
+  "telemetryEnabled": true,
+  "isAlwaysOnTop": false,
+  "launchAtLogin": false,
+  "windowOpacity": 1.0
+}

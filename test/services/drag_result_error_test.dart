@@ -20,4 +20,33 @@ void main() {
     expect(r.isSuccess, isTrue);
     expect(r.operation, DragOperation.move);
   });
+
+  test('ChannelDragResult handles parse exception with stack trace', () {
+    // Initialize analytics to ensure debug logging works
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    // Create a map that will throw during parsing
+    final badMap = {
+      'status': 'ok',
+      'op': Object(), // This will cause a cast exception
+    };
+
+    final r = ChannelDragResult.parse(badMap);
+    // Should return success unknown instead of throwing
+    expect(r.isSuccess, isTrue);
+    expect(r.operation, DragOperation.unknown);
+  });
+
+  test('ChannelDragResult handles parse exception gracefully', () {
+    // Create a map that will throw during parsing
+    final badMap = {
+      'status': 'ok',
+      'op': Object(), // This will cause a cast exception
+    };
+
+    final r = ChannelDragResult.parse(badMap);
+    // Should return success unknown instead of throwing
+    expect(r.isSuccess, isTrue);
+    expect(r.operation, DragOperation.unknown);
+  });
 }
