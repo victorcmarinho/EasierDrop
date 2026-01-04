@@ -49,7 +49,7 @@ Já copiou algo? Basta usar `Cmd + V` sobre a zona de drop para adicioná-lo à 
 
 ### 💎 Configurações "Liquid Glass"
 Uma linda janela de preferências translúcida que respeita o tema do seu macOS com desfoques elegantes e controles fluidos.
-> ![Interface de Configurações](assets/promo/settings_ui.gif)
+> ![Interface de Configurações](assets/promo/settings_ui.png)
 > *Personalize sua experiência com uma interface premium e nativa.*
 
 ### ⚡️ Sempre no Topo & Velocidade Nativa

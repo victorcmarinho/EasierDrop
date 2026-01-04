@@ -49,7 +49,7 @@ Arrastra desde Finder, Safari, Fotos o incluso tu editor de código. Tus archivo
 
 ### 💎 Configuración "Liquid Glass"
 Una hermosa ventana de preferencias translúcida que respeta el tema de tu macOS con desenfoques elegantes y controles fluidos.
-> ![Interfaz de Configuración](assets/promo/settings_ui.gif)
+> ![Interfaz de Configuración](assets/promo/settings_ui.png)
 > *Personaliza tu experiencia con una interfaz premium y nativa.*
 
 ### ⚡️ Siempre Visible y Velocidad Nativa

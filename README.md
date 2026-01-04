@@ -49,7 +49,7 @@ Already copied something? Just `Cmd + V` over the drop zone to add it to your sh
 
 ### 💎 "Liquid Glass" Settings
 A beautiful, translucent preferences window that respects your macOS theme with elegant blurs and fluid controls.
-> ![Settings UI](assets/promo/settings_ui.gif)
+> ![Settings UI](assets/promo/settings_ui.png)
 > *Personalize your experience with a premium, native-feeling interface.*
 
 ### ⚡️ Always on Top & Native Speed
