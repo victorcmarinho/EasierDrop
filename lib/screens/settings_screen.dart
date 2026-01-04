@@ -4,8 +4,33 @@ import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _hasLaunchAtLoginPermission = false;
+  bool _isCheckingPermission = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkPermission();
+  }
+
+  Future<void> _checkPermission() async {
+    final hasPermission =
+        await SettingsService.instance.checkLaunchAtLoginPermission();
+    if (mounted) {
+      setState(() {
+        _hasLaunchAtLoginPermission = hasPermission;
+        _isCheckingPermission = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +51,7 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 24.0),
               child: Center(
                 child: Text(
-                  'Preferences',
+                  loc.preferences,
                   style: MacosTheme.of(context).typography.title2,
                 ),
               ),
@@ -40,7 +65,15 @@ class SettingsScreen extends StatelessWidget {
                 label: loc.settingsLaunchAtLogin,
                 child: MacosSwitch(
                   value: settings.settings.launchAtLogin,
-                  onChanged: (v) => settings.setLaunchAtLogin(v),
+                  onChanged:
+                      _isCheckingPermission || !_hasLaunchAtLoginPermission
+                          ? null
+                          : (v) async {
+                            await settings.setLaunchAtLogin(v);
+                            if (v) {
+                              await _checkPermission();
+                            }
+                          },
                 ),
               ),
 

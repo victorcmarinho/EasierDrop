@@ -3,11 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:easier_drop/services/analytics_service.dart';
-import 'package:launch_at_startup/launch_at_startup.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:easier_drop/model/app_settings.dart';
 
@@ -18,6 +17,9 @@ class SettingsService with ChangeNotifier {
   static const String _fileName = 'settings.json';
   static const Duration _debounceDuration = Duration(milliseconds: 250);
   static const int _currentSchemaVersion = 1;
+  static const MethodChannel _launchAtLoginChannel = MethodChannel(
+    'com.easierdrop/launch_at_login',
+  );
 
   bool _loaded = false;
   Timer? _debounce;
@@ -43,17 +45,6 @@ class SettingsService with ChangeNotifier {
 
   Future<void> load() async {
     if (_loaded) return;
-
-    try {
-      final packageInfo = await PackageInfo.fromPlatform();
-      launchAtStartup.setup(
-        appName: packageInfo.appName,
-        appPath: Platform.resolvedExecutable,
-        packageName: packageInfo.packageName,
-      );
-    } catch (e) {
-      AnalyticsService.instance.warn('Failed to setup launch_at_startup: $e');
-    }
 
     try {
       final file = await _getSettingsFile();
@@ -140,15 +131,41 @@ class SettingsService with ChangeNotifier {
     if (_settings.launchAtLogin == enabled) return;
 
     try {
-      if (enabled) {
-        await launchAtStartup.enable();
-      } else {
-        await launchAtStartup.disable();
-      }
+      await _launchAtLoginChannel.invokeMethod('setEnabled', {
+        'enabled': enabled,
+      });
       _updateSettings(_settings.copyWith(launchAtLogin: enabled));
       AnalyticsService.instance.settingsChanged('launchAtLogin', enabled);
     } catch (e) {
       AnalyticsService.instance.error('Failed to change launch at login: $e');
+    }
+  }
+
+  Future<bool> checkLaunchAtLoginPermission() async {
+    try {
+      final hasPermission = await _launchAtLoginChannel.invokeMethod<bool>(
+        'checkPermission',
+      );
+      return hasPermission ?? false;
+    } catch (e) {
+      AnalyticsService.instance.warn(
+        'Failed to check launch at login permission: $e',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> getLaunchAtLoginStatus() async {
+    try {
+      final isEnabled = await _launchAtLoginChannel.invokeMethod<bool>(
+        'isEnabled',
+      );
+      return isEnabled ?? false;
+    } catch (e) {
+      AnalyticsService.instance.warn(
+        'Failed to get launch at login status: $e',
+      );
+      return false;
     }
   }
 
