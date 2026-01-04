@@ -205,18 +205,6 @@ abstract class AppLocalizations {
   /// **'Remove {count, plural, one{{count} file} other{{count} files}}'**
   String semRemoveHintSome(int count);
 
-  /// No description provided for @trayFilesNone.
-  ///
-  /// In en, this message translates to:
-  /// **'📂 No files'**
-  String get trayFilesNone;
-
-  /// No description provided for @trayFilesCount.
-  ///
-  /// In en, this message translates to:
-  /// **'📁 Files: {count}'**
-  String trayFilesCount(int count);
-
   /// No description provided for @trayExit.
   ///
   /// In en, this message translates to:
@@ -228,12 +216,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open tray'**
   String get openTray;
-
-  /// No description provided for @filesCountTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Current number of files'**
-  String get filesCountTooltip;
 
   /// No description provided for @languageLabel.
   ///
@@ -322,7 +304,7 @@ abstract class AppLocalizations {
   /// No description provided for @preferences.
   ///
   /// In en, this message translates to:
-  /// **'Preferences...'**
+  /// **'Preferences'**
   String get preferences;
 
   /// No description provided for @settingsGeneral.
@@ -342,12 +324,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Launch at Login'**
   String get settingsLaunchAtLogin;
-
-  /// No description provided for @settingsAutoHide.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto-hide after Drop'**
-  String get settingsAutoHide;
 
   /// No description provided for @settingsAlwaysOnTop.
   ///

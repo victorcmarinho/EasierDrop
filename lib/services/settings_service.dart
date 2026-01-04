@@ -54,6 +54,24 @@ class SettingsService with ChangeNotifier {
           final map = jsonDecode(content) as Map<String, dynamic>;
           _settings = AppSettings.fromMap(map);
         }
+      } else {
+        // First run configuration
+        String defaultLocale = 'en';
+        try {
+          final sysLocale = Platform.localeName.toLowerCase();
+          if (sysLocale.startsWith('pt')) {
+            defaultLocale = 'pt_BR';
+          } else if (sysLocale.startsWith('es')) {
+            defaultLocale = 'es';
+          }
+        } catch (_) {}
+
+        _settings = _settings.copyWith(
+          isAlwaysOnTop: true,
+          localeCode: defaultLocale,
+        );
+        // Persist default settings
+        await persist();
       }
     } catch (e) {
       AnalyticsService.instance.warn('Falha ao carregar settings: $e');
