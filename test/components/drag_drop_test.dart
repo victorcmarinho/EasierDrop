@@ -343,4 +343,23 @@ void main() {
       ).called(1);
     },
   );
+
+  testWidgets('DragDrop initiates drag sequence on pan', (tester) async {
+    when(
+      mockFilesProvider.files,
+    ).thenReturn([const TestFileReference('/path/test.txt')]);
+    when(mockFilesProvider.hasFiles).thenReturn(true);
+
+    await tester.pumpWidget(
+      TestWrapper(
+        filesProvider: mockFilesProvider,
+        child: const Scaffold(body: DragDrop()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Perform a drag to trigger _isDragArea and callback
+    await tester.drag(find.byType(DragDrop), const Offset(0, 50));
+    await tester.pump();
+  });
 }
