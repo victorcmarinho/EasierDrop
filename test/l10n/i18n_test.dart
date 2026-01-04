@@ -14,6 +14,7 @@ void main() {
     );
     final ctx = tester.element(find.byType(SizedBox));
     expect(AppLocalizations.of(ctx)!.share, 'Share');
+    expect(AppLocalizations.of(ctx)!.settingsGeneral, 'General');
   });
 
   testWidgets('Loads Portuguese strings', (tester) async {
@@ -27,6 +28,7 @@ void main() {
     );
     final ctx = tester.element(find.byType(SizedBox));
     expect(AppLocalizations.of(ctx)!.share, 'Compartilhar');
+    expect(AppLocalizations.of(ctx)!.settingsGeneral, 'Geral');
   });
 
   testWidgets('Pluralization (English) works', (tester) async {
