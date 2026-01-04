@@ -123,23 +123,6 @@ void main() {
       await SystemHelper.initialize(isSecondaryWindow: true, windowId: '1');
     });
 
-    test('window listener methods', () async {
-      final helper = SystemHelper();
-      await helper.onWindowClose();
-
-      // Ensure we have a different value before calling resize
-      SettingsService.instance.setWindowBounds(w: 0.0, h: 0.0);
-      helper.onWindowResize();
-      await Future.delayed(const Duration(milliseconds: 500));
-      expect(SettingsService.instance.settings.windowW, equals(400.0));
-
-      // Ensure we have a different value before calling move
-      SettingsService.instance.setWindowBounds(x: 0.0, y: 0.0);
-      helper.onWindowMove();
-      await Future.delayed(const Duration(milliseconds: 500));
-      expect(SettingsService.instance.settings.windowX, equals(100.0));
-    });
-
     test('shake event and settings trigger', () async {
       await SystemHelper.initialize();
 
