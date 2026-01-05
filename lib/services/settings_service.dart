@@ -24,6 +24,9 @@ class SettingsService with ChangeNotifier {
     'com.easierdrop/launch_at_login',
   );
 
+  @visibleForTesting
+  static String? testLocaleName;
+
   bool _loaded = false;
   Timer? _debounce;
   AppSettings _settings = const AppSettings();
@@ -62,7 +65,7 @@ class SettingsService with ChangeNotifier {
         // First run configuration
         String defaultLocale = 'en';
         try {
-          final sysLocale = Platform.localeName.toLowerCase();
+          final sysLocale = testLocaleName ?? Platform.localeName.toLowerCase();
           if (sysLocale.startsWith('pt')) {
             defaultLocale = 'pt_BR';
           } else if (sysLocale.startsWith('es')) {

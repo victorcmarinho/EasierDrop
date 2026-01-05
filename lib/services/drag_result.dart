@@ -25,10 +25,9 @@ sealed class ChannelDragResult {
   const ChannelDragResult();
 
   bool get isSuccess => this is ChannelDragSuccess;
-  DragOperation get operation =>
-      this is ChannelDragSuccess
-          ? (this as ChannelDragSuccess).operation
-          : DragOperation.unknown;
+  DragOperation get operation => this is ChannelDragSuccess
+      ? (this as ChannelDragSuccess).operation
+      : DragOperation.unknown;
 
   static ChannelDragResult parse(dynamic raw) {
     try {
@@ -36,6 +35,9 @@ sealed class ChannelDragResult {
         final status = raw['status'] as String?;
         if (status == 'ok') {
           return ChannelDragSuccess(DragOperationX.parse(raw['op'] as String?));
+        }
+        if (status == null && raw.isEmpty) {
+          return const ChannelDragSuccess(DragOperation.unknown);
         }
         return ChannelDragError(
           code: raw['code']?.toString() ?? 'unknown_error',

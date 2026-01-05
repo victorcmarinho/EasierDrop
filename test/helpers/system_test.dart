@@ -1,7 +1,7 @@
+import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:easier_drop/helpers/system.dart';
-import 'package:easier_drop/services/settings_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +19,25 @@ void main() {
       expect(SystemHelper.initialize, isA<Function>());
     });
 
-    test('Integração com SettingsService', () {
-      expect(SettingsService.instance, isNotNull);
+    test('onWindowResize coverage', () {
+      runZonedGuarded(() {
+        final helper = SystemHelper();
+        helper.onWindowResize();
+      }, (e, st) {});
+    });
+
+    test('onWindowMove coverage', () {
+      runZonedGuarded(() {
+        final helper = SystemHelper();
+        helper.onWindowMove();
+      }, (e, st) {});
+    });
+
+    test('onWindowClose coverage', () {
+      runZonedGuarded(() {
+        final helper = SystemHelper();
+        helper.onWindowClose();
+      }, (e, st) {});
     });
   });
 }

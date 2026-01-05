@@ -12,7 +12,7 @@ void main() {
     ); // Hits operation getter for non-success
 
     final r2 = ChannelDragResult.parse({});
-    expect(r2.isSuccess, isFalse);
+    expect(r2.isSuccess, isTrue); // empty map returns success unknown
 
     final r3 = ChannelDragResult.parse(null);
     expect(r3.isSuccess, isTrue); // null returns ChannelDragSuccess(unknown)

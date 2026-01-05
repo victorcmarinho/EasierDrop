@@ -4,6 +4,7 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'dart:convert';
 
 class MockPathProviderPlatform extends Fake
     with MockPlatformInterfaceMixin
@@ -146,6 +147,48 @@ void main() {
     test('dispose should cancel timer and subscription', () {
       final s = SettingsService.forTesting();
       expect(() => s.dispose(), returnsNormally);
+    });
+
+    test('should reload settings when file changes', () async {
+      await settingsService.load();
+
+      // Manually modify the file to trigger a reload
+      final updatedSettings = {'maxFiles': 150, 'version': 1};
+      await testSettingsFile.writeAsString(jsonEncode(updatedSettings));
+
+      // Wait for the watcher to trigger and reload
+      // The debounce and file system events might take some time
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      expect(settingsService.maxFiles, 150);
+    });
+
+    test('should handle empty or invalid settings file', () async {
+      await testSettingsFile.writeAsString('');
+      await settingsService.load();
+      // Should fall back to default when file is empty
+      expect(settingsService.maxFiles, 100);
+
+      await testSettingsFile.writeAsString('{invalid_json}');
+      // Trigger reload
+      await Future.delayed(const Duration(milliseconds: 100));
+      // Should still be at previous state or handled gracefully
+      expect(settingsService.isLoaded, true);
+    });
+
+    test('should detect system locale during first run', () async {
+      SettingsService.testLocaleName = 'pt_BR';
+      await settingsService.load();
+      expect(settingsService.localeCode, 'pt_BR');
+
+      settingsService.resetForTesting();
+      if (await testSettingsFile.exists()) await testSettingsFile.delete();
+
+      SettingsService.testLocaleName = 'es_ES';
+      await settingsService.load();
+      expect(settingsService.localeCode, 'es');
+
+      SettingsService.testLocaleName = null;
     });
   });
 }
