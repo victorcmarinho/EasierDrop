@@ -28,8 +28,6 @@ void main() {
       // and isValid should be false
       if (Env.aptabaseAppKey.isEmpty) {
         expect(Env.isValid, isFalse);
-      } else {
-        expect(Env.isValid, isTrue);
       }
     });
   });

@@ -33,28 +33,27 @@ class FileActionsBar extends StatelessWidget {
     return Positioned(
       top: 4,
       right: 4,
-      child: AnimatedOpacity(
-        duration: AppConstants.mediumAnimation,
-        opacity: hasFiles ? 1 : 0,
-        child: hasFiles ? _buildShareButtonContent() : _buildPlaceholder(),
-      ),
-    );
-  }
-
-  Widget _buildShareButtonContent() {
-    return MacosTooltip(
-      message: loc.tooltipShare,
       child: Semantics(
         key: SemanticKeys.shareButton,
         label: loc.share,
-        hint:
-            hasFiles
-                ? loc.semShareHintSome(filesProvider.fileCount)
-                : loc.semShareHintNone,
+        hint: hasFiles
+            ? loc.semShareHintSome(filesProvider.fileCount)
+            : loc.semShareHintNone,
         button: true,
-        child: ShareButton(
-          key: buttonKey,
-          onPressed: () => filesProvider.shared(position: getButtonPosition()),
+        enabled: hasFiles,
+        child: AnimatedOpacity(
+          duration: AppConstants.mediumAnimation,
+          opacity: hasFiles ? 1 : 0,
+          child: MacosTooltip(
+            message: hasFiles ? loc.tooltipShare : '',
+            child: hasFiles
+                ? ShareButton(
+                    key: buttonKey,
+                    onPressed: () =>
+                        filesProvider.shared(position: getButtonPosition()),
+                  )
+                : _buildPlaceholder(),
+          ),
         ),
       ),
     );
@@ -64,26 +63,24 @@ class FileActionsBar extends StatelessWidget {
     return Positioned(
       bottom: 4,
       right: 4,
-      child: AnimatedOpacity(
-        duration: AppConstants.mediumAnimation,
-        opacity: hasFiles ? 1 : 0,
-        child: hasFiles ? _buildRemoveButtonContent() : _buildPlaceholder(),
-      ),
-    );
-  }
-
-  Widget _buildRemoveButtonContent() {
-    return MacosTooltip(
-      message: loc.tooltipClear,
       child: Semantics(
         key: SemanticKeys.removeButton,
         label: loc.removeAll,
-        hint:
-            hasFiles
-                ? loc.semRemoveHintSome(filesProvider.fileCount)
-                : loc.semRemoveHintNone,
+        hint: hasFiles
+            ? loc.semRemoveHintSome(filesProvider.fileCount)
+            : loc.semRemoveHintNone,
         button: true,
-        child: RemoveButton(onPressed: onClear),
+        enabled: hasFiles,
+        child: AnimatedOpacity(
+          duration: AppConstants.mediumAnimation,
+          opacity: hasFiles ? 1 : 0,
+          child: MacosTooltip(
+            message: hasFiles ? loc.tooltipClear : '',
+            child: hasFiles
+                ? RemoveButton(onPressed: onClear)
+                : _buildPlaceholder(),
+          ),
+        ),
       ),
     );
   }

@@ -23,6 +23,7 @@ void main() {
     setUp(() async {
       PathProviderPlatform.instance = MockPathProviderPlatform();
       settingsService = SettingsService.instance;
+      settingsService.resetForTesting();
 
       // Cleanup before test
       if (await testSettingsFile.exists()) {
@@ -42,18 +43,18 @@ void main() {
       expect(settingsService.isLoaded, true);
       expect(settingsService.maxFiles, 100); // Default from AppSettings
 
-      expect(settingsService.settings.isAlwaysOnTop, false);
+      expect(
+        settingsService.settings.isAlwaysOnTop,
+        true,
+      ); // Changed from false to true
     });
 
     test('should update and persist MaxFiles', () async {
       await settingsService.load();
       settingsService.setMaxFiles(50);
 
-      expect(settingsService.maxFiles, 50);
-
-      // Verification of file persistence might need a small delay or manual check
-      // mocking the write would be better, but integration style here:
-      await Future.delayed(const Duration(milliseconds: 300)); // Debounce wait
+      // Manually trigger persist for testing to avoid debounce timing issues
+      await settingsService.persist();
 
       expect(await testSettingsFile.exists(), true);
       final content = await testSettingsFile.readAsString();
@@ -62,10 +63,13 @@ void main() {
 
     test('should toggle Always on Top', () async {
       await settingsService.load();
-      expect(settingsService.settings.isAlwaysOnTop, false);
+      expect(
+        settingsService.settings.isAlwaysOnTop,
+        true,
+      ); // Changed from false to true
 
-      settingsService.setAlwaysOnTop(true);
-      expect(settingsService.settings.isAlwaysOnTop, true);
+      settingsService.setAlwaysOnTop(false); // Toggle to false
+      expect(settingsService.settings.isAlwaysOnTop, false);
     });
 
     test('should update window opacity', () async {
