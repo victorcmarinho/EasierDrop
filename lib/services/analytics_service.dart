@@ -13,6 +13,8 @@ enum LogLevel { trace, debug, info, warn, error }
 class AnalyticsService {
   AnalyticsService._();
   static final AnalyticsService instance = AnalyticsService._();
+  @visibleForTesting
+  static bool debugTestMode = kDebugMode;
 
   bool _initialized = false;
   static LogLevel minLevel = kDebugMode ? LogLevel.debug : LogLevel.info;
@@ -27,7 +29,7 @@ class AnalyticsService {
     }
 
     try {
-      if (!kDebugMode) {
+      if (!debugTestMode) {
         await Aptabase.init(key);
       }
       _initialized = true;
@@ -43,7 +45,7 @@ class AnalyticsService {
     // Privacy check
     if (!SettingsService.instance.telemetryEnabled) return;
 
-    if (kDebugMode) {
+    if (debugTestMode) {
       debug('Analytics Event: $name | Props: $props', tag: 'Analytics');
       return;
     }
@@ -100,7 +102,7 @@ class AnalyticsService {
     String tag = 'App',
   }) {
     // In production, we don't do local logs (as per user request)
-    if (!kDebugMode) return;
+    if (!debugTestMode) return;
 
     if (level.index < minLevel.index) return;
     final prefix = _prefix(level);

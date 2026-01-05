@@ -226,6 +226,9 @@ class SettingsService with ChangeNotifier {
     }
   }
 
+  @visibleForTesting
+  Future<File> getSettingsFileForTest() => _getSettingsFile();
+
   Future<File> _getSettingsFile() async {
     final dir = await getApplicationSupportDirectory();
     return File(p.join(dir.path, _fileName));

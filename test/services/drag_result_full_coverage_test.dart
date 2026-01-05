@@ -2,10 +2,14 @@ import 'package:easier_drop/services/drag_result.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('ChannelDragResult coverage boost for malformed maps', () {
+  test('ChannelDragResult coverage boost for malformed maps and getters', () {
     // Malformed maps
     final r1 = ChannelDragResult.parse({'status': 'invalid'});
     expect(r1.isSuccess, isFalse);
+    expect(
+      r1.operation,
+      DragOperation.unknown,
+    ); // Hits operation getter for non-success
 
     final r2 = ChannelDragResult.parse({});
     expect(r2.isSuccess, isFalse);
@@ -15,7 +19,10 @@ void main() {
 
     final r4 = ChannelDragResult.parse({'status': 'ok', 'op': 'copy'});
     expect(r4.isSuccess, isTrue);
-    expect(r4.operation, DragOperation.copy);
+    expect(
+      r4.operation,
+      DragOperation.copy,
+    ); // Hits operation getter for success
 
     final r5 = ChannelDragResult.parse({'status': 'ok', 'op': 'move'});
     expect(r5.operation, DragOperation.move);
@@ -33,6 +40,10 @@ void main() {
 
     final r9 = ChannelDragResult.parse({'status': 'ok'}); // Missing op
     expect(r9.operation, DragOperation.unknown);
+
+    // Explicitly hit the success class
+    const success = ChannelDragSuccess(DragOperation.copy);
+    expect(success.operation, DragOperation.copy);
   });
 
   test('DragOperationX coverage', () {
