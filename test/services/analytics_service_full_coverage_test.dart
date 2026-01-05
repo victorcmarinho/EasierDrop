@@ -2,30 +2,47 @@ import 'package:easier_drop/services/analytics_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   test(
     'AnalyticsService comprehensive coverage including release-mode branches',
     () async {
       final service = AnalyticsService.instance;
 
-      // Cover kDebugMode = true as usual
+      // Case 1: Debug Mode
       AnalyticsService.debugTestMode = true;
       service.info('test debug true');
       service.trackEvent('test_event_debug');
 
-      // Switch to simulated "Release Mode" for coverage
+      // Case 2: Simulation of Release Mode
+      AnalyticsService.debugTestMode = false;
+      AnalyticsService.testAppKey = 'test_key';
+
+      // Hook into trackEvent to avoid Aptabase platform call
+      String? trackedName;
+      AnalyticsService.testTrackEvent = (name, props) {
+        trackedName = name;
+      };
+
+      // Need to have initialized true for coverage
+      // Actually, trackEvent returns early if !_initialized, but if testTrackEvent is set, it returns before that.
+      // To cover line 53, we need _initialized = true.
+      // So let's initialize it in debug mode first.
+      AnalyticsService.debugTestMode = true;
+      await service.initialize();
       AnalyticsService.debugTestMode = false;
 
-      // Covers initialization branch
-      await service.initialize();
-
-      // Covers trackEvent branch for release
       service.trackEvent('test_event_release');
+      expect(trackedName, 'test_event_release');
+
+      // Case 3: Not initialized
+      // (Already initialized in singleton, so we can't easily reset it, but Step 1 covered it)
 
       // Covers local log branch for release (should do nothing)
       service.info('this should not be logged locally in release');
 
-      // Reset for other tests
-      AnalyticsService.debugTestMode = true;
+      // Reset hook
+      AnalyticsService.testTrackEvent = null;
     },
   );
 

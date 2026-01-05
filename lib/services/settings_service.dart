@@ -14,6 +14,9 @@ class SettingsService with ChangeNotifier {
   SettingsService._();
   static final SettingsService instance = SettingsService._();
 
+  @visibleForTesting
+  SettingsService.forTesting();
+
   static const String _fileName = 'settings.json';
   static const Duration _debounceDuration = Duration(milliseconds: 250);
   static const int _currentSchemaVersion = 1;
@@ -27,6 +30,7 @@ class SettingsService with ChangeNotifier {
 
   @override
   void dispose() {
+    if (this == instance) return;
     _subscription?.cancel();
     _debounce?.cancel();
     super.dispose();
@@ -95,15 +99,21 @@ class SettingsService with ChangeNotifier {
   StreamSubscription<FileSystemEvent>? _subscription;
 
   Future<void> _startWatching() async {
-    _subscription?.cancel();
-    final file = await _getSettingsFile();
-    _subscription = file.parent.watch(events: FileSystemEvent.modify).listen((
-      event,
-    ) async {
-      if (p.basename(event.path) == _fileName) {
-        await _reloadSettings();
-      }
-    });
+    try {
+      _subscription?.cancel();
+      final file = await _getSettingsFile();
+      _subscription = file.parent.watch(events: FileSystemEvent.modify).listen((
+        event,
+      ) async {
+        if (p.basename(event.path) == _fileName) {
+          await _reloadSettings();
+        }
+      });
+    } catch (e) {
+      AnalyticsService.instance.warn(
+        'Falha ao iniciar monitoramento de settings: $e',
+      );
+    }
   }
 
   Future<void> _reloadSettings() async {

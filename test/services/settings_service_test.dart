@@ -144,7 +144,7 @@ void main() {
     });
 
     test('dispose should cancel timer and subscription', () {
-      final s = SettingsService.instance;
+      final s = SettingsService.forTesting();
       expect(() => s.dispose(), returnsNormally);
     });
   });

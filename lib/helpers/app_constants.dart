@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:meta/meta.dart';
 import 'package:easier_drop/config/env_config.dart';
 
 /// Constantes globais da aplicação

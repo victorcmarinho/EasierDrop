@@ -15,14 +15,20 @@ class AnalyticsService {
   static final AnalyticsService instance = AnalyticsService._();
   @visibleForTesting
   static bool debugTestMode = kDebugMode;
+  @visibleForTesting
+  static String? testAppKey;
+  @visibleForTesting
+  static void Function(String, Map<String, dynamic>?)? testTrackEvent;
 
+  @visibleForTesting
+  bool get testInitialized => _initialized;
   bool _initialized = false;
   static LogLevel minLevel = kDebugMode ? LogLevel.debug : LogLevel.info;
 
   Future<void> initialize() async {
     if (_initialized) return;
 
-    final key = Env.aptabaseAppKey;
+    final key = testAppKey ?? Env.aptabaseAppKey;
     if (key.isEmpty) {
       warn('Aptabase App Key não configurada. Telemetria desativada.');
       return;
@@ -47,6 +53,11 @@ class AnalyticsService {
 
     if (debugTestMode) {
       debug('Analytics Event: $name | Props: $props', tag: 'Analytics');
+      return;
+    }
+
+    if (testTrackEvent != null) {
+      testTrackEvent!(name, props);
       return;
     }
 

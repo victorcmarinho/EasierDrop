@@ -31,6 +31,7 @@ dependencies:
   pasteboard: ^0.4.0
   marquee_text: ^2.5.0+1
   cupertino_native: ^0.1.1
+  meta: ^1.11.0
 
 dev_dependencies:
   flutter_test:

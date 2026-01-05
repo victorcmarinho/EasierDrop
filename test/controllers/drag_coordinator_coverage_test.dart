@@ -16,6 +16,7 @@ void main() {
           home: Builder(
             builder: (context) {
               final coordinator = DragCoordinator(context);
+              expect(coordinator, isNotNull);
               return GestureDetector(
                 onTap: () {
                   // Keep it alive
