@@ -265,6 +265,10 @@ echo -e "\n${BOLD}Generated Artifacts:${NC}"
 printf "%-15s %-40s\n" "SIZE" "FILENAME"
 echo "--------------------------------------------------------"
 
+echo -e "\n${BOLD}Generated Artifacts:${NC}"
+printf "%-15s %-40s\n" "SIZE" "FILENAME"
+echo "--------------------------------------------------------"
+
 # Function to get human readable size with decimals
 get_file_size() {
     local path="$1"
@@ -281,19 +285,52 @@ get_file_size() {
     fi
 }
 
-# 1. Debug App
-DEBUG_APP="$BUILD_OUTPUT_DIR/$DEBUG_APP_NAME"
-if [[ -d "$DEBUG_APP" ]]; then
-    size=$(get_file_size "$DEBUG_APP")
-    filename="$DEBUG_APP_NAME"
-    printf "%-15s %-40s\n" "$size" "$filename"
-fi
+# Helper to print a specific file/dir if it exists
+print_artifact() {
+    local path="$1"
+    local name="$2"
+    
+    if [[ -z "$path" ]]; then return; fi
+    
+    # Check if path exists (directory or file)
+    if [[ -e "$path" ]]; then
+        local size=$(get_file_size "$path")
+        
+        # If no custom name provided, use basename
+        if [[ -z "$name" ]]; then
+            name=$(basename "$path")
+        fi
+        
+        printf "%-15s %-40s\n" "$size" "$name"
+    fi
+}
 
-# 2. Release Artifacts
-find "$BUILD_OUTPUT_DIR" -name "*.dmg" -o -name "*.zip" | sort | while read -r file; do
-    size=$(get_file_size "$file")
-    filename=$(basename "$file")
-    printf "%-15s %-40s\n" "$size" "$filename"
-done
+# 1. Debug App
+print_artifact "$BUILD_OUTPUT_DIR/$DEBUG_APP_NAME"
+
+# 2. App Bundles (Raw)
+print_artifact "$BUILD_OUTPUT_DIR/arm64/Easier Drop.app" "Easier Drop (arm64).app"
+print_artifact "$BUILD_OUTPUT_DIR/x64/Easier Drop.app" "Easier Drop (x64).app"
+print_artifact "$BUILD_OUTPUT_DIR/universal/Easier Drop.app" "Easier Drop (Universal).app"
+
+# 3. DMGs
+# Find specific files to handle version changes gracefully
+ARM64_DMG=$(find "$BUILD_OUTPUT_DIR" -name "*arm64*.dmg" | head -n 1)
+X64_DMG=$(find "$BUILD_OUTPUT_DIR" -name "*x64*.dmg" | head -n 1)
+UNIV_DMG=$(find "$BUILD_OUTPUT_DIR" -name "*universal*.dmg" | head -n 1)
+
+print_artifact "$ARM64_DMG"
+print_artifact "$X64_DMG"
+print_artifact "$UNIV_DMG"
+
+# 4. ZIPs
+ARM64_ZIP=$(find "$BUILD_OUTPUT_DIR" -name "*arm64*.zip" | head -n 1)
+X64_ZIP=$(find "$BUILD_OUTPUT_DIR" -name "*x64*.zip" | head -n 1)
+UNIV_ZIP=$(find "$BUILD_OUTPUT_DIR" -name "*universal*.zip" | head -n 1)
+
+print_artifact "$ARM64_ZIP"
+print_artifact "$X64_ZIP"
+print_artifact "$UNIV_ZIP"
+
 echo "--------------------------------------------------------"
 
