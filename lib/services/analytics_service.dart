@@ -13,21 +13,29 @@ enum LogLevel { trace, debug, info, warn, error }
 class AnalyticsService {
   AnalyticsService._();
   static final AnalyticsService instance = AnalyticsService._();
+  @visibleForTesting
+  static bool debugTestMode = kDebugMode;
+  @visibleForTesting
+  static String? testAppKey;
+  @visibleForTesting
+  static void Function(String, Map<String, dynamic>?)? testTrackEvent;
 
+  @visibleForTesting
+  bool get testInitialized => _initialized;
   bool _initialized = false;
   static LogLevel minLevel = kDebugMode ? LogLevel.debug : LogLevel.info;
 
   Future<void> initialize() async {
     if (_initialized) return;
 
-    final key = Env.aptabaseAppKey;
+    final key = testAppKey ?? Env.aptabaseAppKey;
     if (key.isEmpty) {
       warn('Aptabase App Key não configurada. Telemetria desativada.');
       return;
     }
 
     try {
-      if (!kDebugMode) {
+      if (!debugTestMode) {
         await Aptabase.init(key);
       }
       _initialized = true;
@@ -43,8 +51,13 @@ class AnalyticsService {
     // Privacy check
     if (!SettingsService.instance.telemetryEnabled) return;
 
-    if (kDebugMode) {
+    if (debugTestMode) {
       debug('Analytics Event: $name | Props: $props', tag: 'Analytics');
+      return;
+    }
+
+    if (testTrackEvent != null) {
+      testTrackEvent!(name, props);
       return;
     }
 
@@ -100,7 +113,7 @@ class AnalyticsService {
     String tag = 'App',
   }) {
     // In production, we don't do local logs (as per user request)
-    if (!kDebugMode) return;
+    if (!debugTestMode) return;
 
     if (level.index < minLevel.index) return;
     final prefix = _prefix(level);

@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:easier_drop/components/share_button.dart';
+import 'package:easier_drop/components/remove_button.dart';
 
 Widget _wrap(FilesProvider provider, Widget child) =>
     ChangeNotifierProvider.value(
@@ -56,8 +58,8 @@ void main() {
     await pump();
     final loc = await AppLocalizations.delegate.load(const Locale('en'));
 
-    expect(find.bySemanticsLabel(loc.share), findsNothing);
-    expect(find.bySemanticsLabel(loc.removeAll), findsNothing);
+    expect(find.byType(ShareButton), findsNothing);
+    expect(find.byType(RemoveButton), findsNothing);
 
     provider.addFileForTest(const FileReference(pathname: '/tmp/one.txt'));
     await pump();
@@ -83,8 +85,8 @@ void main() {
     provider.clear();
     await pump();
     await tester.pump(const Duration(milliseconds: 400));
-    expect(find.byKey(const ValueKey('shareSem')), findsNothing);
-    expect(find.byKey(const ValueKey('removeSem')), findsNothing);
+    expect(find.byType(ShareButton), findsNothing);
+    expect(find.byType(RemoveButton), findsNothing);
 
     semanticsHandle.dispose();
   });

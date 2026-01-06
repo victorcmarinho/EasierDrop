@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:easier_drop/components/share_button.dart';
+import 'package:easier_drop/components/remove_button.dart';
 
 void main() {
   testWidgets('Share/Remove buttons fade in and out with files', (
@@ -45,8 +47,8 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byKey(const ValueKey('shareSem')), findsNothing);
-    expect(find.byKey(const ValueKey('removeSem')), findsNothing);
+    expect(find.byType(ShareButton), findsNothing);
+    expect(find.byType(RemoveButton), findsNothing);
 
     provider.addFileForTest(const FileReference(pathname: '/tmp/a.txt'));
     await tester.pump();
@@ -83,8 +85,8 @@ void main() {
       ),
     );
     await tester.pump(const Duration(milliseconds: 350));
-    expect(find.byKey(const ValueKey('shareSem')), findsOneWidget);
-    expect(find.byKey(const ValueKey('removeSem')), findsOneWidget);
+    expect(find.byType(ShareButton), findsOneWidget);
+    expect(find.byType(RemoveButton), findsOneWidget);
 
     provider.clear();
     await tester.pump();
@@ -120,7 +122,7 @@ void main() {
       ),
     );
     await tester.pump(const Duration(milliseconds: 350));
-    expect(find.byKey(const ValueKey('shareSem')), findsNothing);
-    expect(find.byKey(const ValueKey('removeSem')), findsNothing);
+    expect(find.byType(ShareButton), findsNothing);
+    expect(find.byType(RemoveButton), findsNothing);
   });
 }

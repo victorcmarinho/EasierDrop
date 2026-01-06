@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-01-06
+
+### Optimization
+- **Binary Splitting**: Implemented split builds for Apple Silicon (arm64) and Intel (x64), reducing the app size by ~45%.
+- **Size Reduction**: Enabled code obfuscation and debug symbol stripping for release builds.
+- **Asset Cleanup**: Removed unused assets from the production bundle (saving ~2.4MB).
+
 ## [1.1.0] - 2025-12-31
 
 ### Added

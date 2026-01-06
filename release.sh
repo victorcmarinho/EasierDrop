@@ -5,12 +5,18 @@
 
 set -e  # Stop on error
 
-# Output Colors
+# Output Colors and styles
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+BOLD='\033[1m'
 NC='\033[0m' # No Color
+
+# Helper for nice headers
+print_header() {
+    echo -e "\n${BOLD}${BLUE}=== $1 ===${NC}"
+}
 
 # Configuration
 APP_NAME="Easier Drop"
@@ -19,8 +25,8 @@ DEBUG_APP_NAME="Easier Drop (Debug).app" # Final Debug App Name
 BUILD_OUTPUT_DIR="$(pwd)/build/app"
 PROJECT_ROOT="$(pwd)"
 
-echo -e "${GREEN}🚀 Starting release process for ${APP_NAME}${NC}"
-echo -e "${YELLOW}📍 Project: $PROJECT_ROOT${NC}"
+echo -e "${GREEN}🚀 Starting release process for ${BOLD}${APP_NAME}${NC}"
+echo -e "${YELLOW}📍 Project Root: $PROJECT_ROOT${NC}"
 
 # Parse arguments
 DEPLOY=false
@@ -38,28 +44,29 @@ while [[ $# -gt 0 ]]; do
 done
 
 # 1. READ VERSION FROM pubspec.yaml
-echo -e "${BLUE}📖 1. Reading version from pubspec.yaml...${NC}"
+print_header "1. Configuration"
+echo -e "📖 Reading version from pubspec.yaml..."
 VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | sed 's/+.*//' | sed 's/^/v/')
 if [[ -z "$VERSION" ]]; then
   echo -e "${RED}❌ Error: version not found in pubspec.yaml${NC}"
   exit 1
 fi
 
-DMG_NAME="easier_drop-macos-${VERSION}.dmg"
-ZIP_NAME="easier_drop-macos-${VERSION}.zip"
-echo -e "${GREEN}✅ Detected version: ${VERSION}${NC}"
+echo -e "✅ Detected version: ${BOLD}${GREEN}${VERSION}${NC}"
 
 # 2. CLEAN & SETUP
-echo -e "${BLUE}🧹 2. Cleaning project...${NC}"
-flutter clean
-flutter pub get
+print_header "2. Environment Setup"
+echo -e "🧹 Cleaning project..."
+flutter clean > /dev/null
+echo -e "📦 Getting dependencies..."
+flutter pub get > /dev/null
 
 # Prepare output directory (FLAT STRUCTURE)
 rm -rf "$BUILD_OUTPUT_DIR"
 mkdir -p "$BUILD_OUTPUT_DIR"
 
 # 2.1 LOAD ENV VARS
-echo -e "${BLUE}🔑 2.1 Loading environment variables...${NC}"
+echo -e "🔑 Loading environment variables..."
 DART_DEFINES=""
 if [ -f .env ]; then
   while IFS='=' read -r key value; do
@@ -71,79 +78,111 @@ if [ -f .env ]; then
       DART_DEFINES="$DART_DEFINES --dart-define=$key=$value"
     fi
   done < .env
-  echo -e "${GREEN}✅ Environment variables loaded.${NC}"
+  echo -e "✅ Environment variables loaded."
 else
   echo -e "${YELLOW}⚠️  .env file not found. Building without secrets.${NC}"
 fi
 
 # 3. BUILD DEBUG
-echo -e "${BLUE}🐞 3. Building DEBUG version...${NC} "
+print_header "3. Building DEBUG Version"
+echo -e "⚙️ Compiling..."
 
-flutter build macos --debug $DART_DEFINES
+flutter build macos --debug $DART_DEFINES > /dev/null
 
 DEBUG_SRC="build/macos/Build/Products/Debug/easier_drop.app"
 if [[ -d "$DEBUG_SRC" ]]; then
   cp -R "$DEBUG_SRC" "$BUILD_OUTPUT_DIR/$DEBUG_APP_NAME"
-  echo -e "${GREEN}✅ Debug app built: $BUILD_OUTPUT_DIR/$DEBUG_APP_NAME${NC}"
+  echo -e "${GREEN}✅ Debug app built.${NC}"
 else
   echo -e "${RED}❌ Error: Debug build failed (app not found).${NC}"
   exit 1
 fi
 
-# 4. BUILD RELEASE
-echo -e "${BLUE}📦 4. Building RELEASE version...${NC}"
-flutter build macos --release $DART_DEFINES
+# 4. BUILD RELEASE (Obfuscated & Split Debug Info)
+print_header "4. Building RELEASE Version (Universal Build)"
+echo -e "📦 Compiling with obfuscation and split debug info..."
+echo -e "   This may take a minute..."
+# Obfuscation and split-debug-info help reduce size
+flutter build macos --release --obfuscate --split-debug-info=./build/debug-info $DART_DEFINES
 
 RELEASE_SRC="build/macos/Build/Products/Release/easier_drop.app"
-RELEASE_DEST="$BUILD_OUTPUT_DIR/$APP_BUNDLE_NAME"
 
-if [[ -d "$RELEASE_SRC" ]]; then
-  cp -R "$RELEASE_SRC" "$RELEASE_DEST"
-  echo -e "${GREEN}✅ Release app built: $RELEASE_DEST${NC}"
-else
-  echo -e "${RED}❌ Error: Release build failed (app not found).${NC}"
-  exit 1
+if [[ ! -d "$RELEASE_SRC" ]]; then
+   echo -e "${RED}❌ Error: Release build failed (app not found).${NC}"
+   exit 1
 fi
 
-# 5. CREATE ZIP (From Release App)
-echo -e "${BLUE}🤐 5. Creating ZIP archive...${NC}"
-# Use ditto for best macOS compatibility (preserves resources/permissions)
-# ditto -c -k --sequesterRsrc --keepParent "$RELEASE_DEST" "$BUILD_OUTPUT_DIR/$ZIP_NAME"
-# Or just zip for simplicity:
-(cd "$BUILD_OUTPUT_DIR" && zip -r -y "$ZIP_NAME" "$APP_BUNDLE_NAME" -x "*.DS_Store")
+# Helper function to package for an arch
+package_arch() {
+    local ARCH=$1
+    local SUFFIX=$2 # e.g., "arm64" or "x64" or "universal"
+    
+    echo -e "\n${BOLD}🔨 Processing ${ARCH} (${SUFFIX})...${NC}"
 
-echo -e "${GREEN}✅ ZIP Created: $BUILD_OUTPUT_DIR/$ZIP_NAME${NC}"
+    local APP_DEST="${BUILD_OUTPUT_DIR}/${SUFFIX}/Easier Drop.app"
+    local ZIP_NAME="easier_drop-macos-${SUFFIX}-${VERSION}.zip"
+    local DMG_NAME="easier_drop-macos-${SUFFIX}-${VERSION}.dmg"
+    local DMG_PATH="$BUILD_OUTPUT_DIR/$DMG_NAME"
+    
+    mkdir -p "${BUILD_OUTPUT_DIR}/${SUFFIX}"
+    cp -R "$RELEASE_SRC" "$APP_DEST"
 
-# 6. CREATE DMG (With /Applications Link)
-echo -e "${BLUE}💿 6. Creating DMG...${NC}"
-DMG_PATH="$BUILD_OUTPUT_DIR/$DMG_NAME"
-DMG_STAGING="$BUILD_OUTPUT_DIR/dmg_temp"
+    # If specific arch requested (not universal), thin the binary
+    if [[ "$ARCH" != "universal" ]]; then
+        local BINARY="$APP_DEST/Contents/MacOS/easier_drop"
+        echo "   🔪 Thinning binary to $ARCH..."
+        lipo -thin "$ARCH" "$BINARY" -output "$BINARY" || {
+             echo -e "${YELLOW}⚠️  Failed to thin binary for $ARCH. It might already be single-arch.${NC}"
+        }
+    fi
+    
+    # Create ZIP
+    echo "   🤐 Creating ZIP..."
+    (cd "${BUILD_OUTPUT_DIR}/${SUFFIX}" && zip -r -y "$BUILD_OUTPUT_DIR/$ZIP_NAME" "Easier Drop.app" -x "*.DS_Store") > /dev/null
+    
+    # Create DMG
+    echo "   💿 Creating DMG..."
+    local DMG_STAGING="${BUILD_OUTPUT_DIR}/${SUFFIX}/dmg_temp"
+    rm -rf "$DMG_STAGING"
+    mkdir -p "$DMG_STAGING"
+    cp -R "$APP_DEST" "$DMG_STAGING/"
+    ln -s /Applications "$DMG_STAGING/Applications"
+    
+    hdiutil create -volname "$APP_NAME" \
+      -srcfolder "$DMG_STAGING" \
+      -ov -format UDZO "$DMG_PATH" \
+      -quiet
+      
+    rm -rf "$DMG_STAGING"
+    
+    local SIZE=$(du -sh "$DMG_PATH" | awk '{print $1}')
+    echo -e "${GREEN}✅ Artifacts ready for ${SUFFIX}. DMG Size: ${SIZE}${NC}"
+}
 
-# Prepare staging area
-rm -rf "$DMG_STAGING"
-mkdir -p "$DMG_STAGING"
+# 5. SPLIT AND PACKAGE
+print_header "5. Packaging & Splitting"
+# Verify if it's a universal binary
+BINARY_PATH="$RELEASE_SRC/Contents/MacOS/easier_drop"
+ARCHS=$(lipo -info "$BINARY_PATH")
 
-# Copy App to staging
-cp -R "$RELEASE_DEST" "$DMG_STAGING/"
+echo -e "ℹ️  Source Architectures: ${ARCHS}"
 
-# Create /Applications symlink
-ln -s /Applications "$DMG_STAGING/Applications"
+# Always package Universal
+echo -e "${YELLOW}✨ Packaging Universal Binary...${NC}"
+package_arch "universal" "universal"
 
-echo "   Generating DMG image..."
-hdiutil create -volname "$APP_NAME" \
-  -srcfolder "$DMG_STAGING" \
-  -ov -format UDZO "$DMG_PATH" \
-  -quiet
+if [[ "$ARCHS" == *"x86_64"* && "$ARCHS" == *"arm64"* ]]; then
+    echo -e "${YELLOW}✨ Universal binary detected. Creating split packages...${NC}"
+    package_arch "arm64" "arm64"
+    package_arch "x86_64" "x64"
+else
+    echo -e "${YELLOW}⚠️  Not a universal binary. Skipping splitting.${NC}"
+fi
 
-# Cleanup staging
-rm -rf "$DMG_STAGING"
 
-echo -e "${GREEN}✅ DMG Created: $DMG_PATH${NC}"
-echo -e "   📊 Size: $(du -sh "$DMG_PATH" | awk '{print $1}')"
-
-# 7. DEPLOY (Optional)
+# 6. DEPLOY (Optional)
 if [[ "$DEPLOY" == true ]]; then
-  echo -e "${BLUE}📤 7. Deploying to GitHub...${NC}"
+  print_header "6. Deployment (GitHub Releases)"
   
   if ! command -v gh &> /dev/null; then
     echo -e "${RED}❌ GitHub CLI (gh) not found. Install with: brew install gh${NC}"
@@ -156,29 +195,43 @@ if [[ "$DEPLOY" == true ]]; then
       exit 1
   fi
 
-  echo "   Committing changes..."
+  echo -e "📤 Committing changes..."
   git add .
-  git commit -m "Release ${VERSION}" || echo "Nothing to commit"
+  git commit -m "Release ${VERSION}" || echo "   Nothing to commit"
   git push origin main
   
+  echo -e "🏷️  Checking Tags..."
   if git rev-parse "$VERSION" >/dev/null 2>&1; then
       echo "   ⚠️ Tag $VERSION already exists. Skipping tag creation."
   else
+      echo "   ✨ Creating tag ${VERSION}..."
       git tag "$VERSION"
       git push origin "$VERSION"
   fi
 
   # Extract Changelog for this version
   RAW_VERSION=${VERSION#v}
-  echo "   📄 Extracting changelog for version $RAW_VERSION..."
+  echo -e "📄 Extracting changelog notes for version ${BOLD}${RAW_VERSION}${NC}..."
   CHANGELOG_NOTES=$(awk "/^## \[${RAW_VERSION}\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md)
 
   if [[ -z "$CHANGELOG_NOTES" ]]; then
+    echo -e "${YELLOW}⚠️  No specific notes found in CHANGELOG.md for this version. Using default.${NC}"
     CHANGELOG_NOTES="Official macOS release."
+  else
+    echo -e "   ✅ Clean changelog extracted."
   fi
 
-  echo "   Creating GitHub Release..."
-  gh release create "$VERSION" "$DMG_PATH" "$BUILD_OUTPUT_DIR/$ZIP_NAME" \
+  echo -e "🚀 Creating GitHub Release..."
+  
+  # Collect all assets
+  ASSETS=()
+  for f in "$BUILD_OUTPUT_DIR"/*.zip "$BUILD_OUTPUT_DIR"/*.dmg; do
+      if [[ -f "$f" ]]; then
+          ASSETS+=("$f")
+      fi
+  done
+  
+  gh release create "$VERSION" "${ASSETS[@]}" \
     --title "${APP_NAME} ${VERSION}" \
     --generate-notes \
     --notes "
@@ -187,26 +240,97 @@ if [[ "$DEPLOY" == true ]]; then
 ${CHANGELOG_NOTES}
 
 ## 📦 Downloads
-- **DMG Installer**: Drag and drop installation.
-- **ZIP**: Portable application.
 
-### Installation
-1. Download **${DMG_NAME}**
-2. Open it and drag **${APP_NAME}** to the **Applications** folder 📂
-3. Enjoy!
+| Architecture | DMG Installer | ZIP Portable |
+|:---:|:---:|:---:|
+| **Universal (Standard)** | [Download](https://github.com/victorcmarinho/EasierDrop/releases/download/${VERSION}/easier_drop-macos-universal-${VERSION}.dmg) | [ZIP](https://github.com/victorcmarinho/EasierDrop/releases/download/${VERSION}/easier_drop-macos-universal-${VERSION}.zip) |
+| **Apple Silicon (M1/M2/M3)** | [Download (arm64)](https://github.com/victorcmarinho/EasierDrop/releases/download/${VERSION}/easier_drop-macos-arm64-${VERSION}.dmg) | [ZIP](https://github.com/victorcmarinho/EasierDrop/releases/download/${VERSION}/easier_drop-macos-arm64-${VERSION}.zip) |
+| **Intel** | [Download (x64)](https://github.com/victorcmarinho/EasierDrop/releases/download/${VERSION}/easier_drop-macos-x64-${VERSION}.dmg) | [ZIP](https://github.com/victorcmarinho/EasierDrop/releases/download/${VERSION}/easier_drop-macos-x64-${VERSION}.zip) |
 
 ---
 *Built with Flutter*
 "
 
-  echo -e "${GREEN}🎉 Release published: https://github.com/victorcmarinho/EasierDrop/releases/tag/${VERSION}${NC}"
+  echo -e "${GREEN}🎉 Release published successfully!${NC}"
+  echo -e "   🔗 URL: https://github.com/victorcmarinho/EasierDrop/releases/tag/${VERSION}"
 else
+  print_header "6. Deployment Skipped"
   echo -e "${YELLOW}ℹ️  To publish to GitHub, use: ./release.sh --deploy${NC}"
 fi
 
-echo -e "${GREEN}✨ Process finished!${NC}"
-echo -e "${YELLOW}📂 Output Directory: $BUILD_OUTPUT_DIR${NC}"
-echo -e "   🐞 Debug App:  $DEBUG_APP_NAME"
-echo -e "   � Release App: $APP_BUNDLE_NAME"
-echo -e "   🤐 ZIP File:    $ZIP_NAME"
-echo -e "   💿 DMG File:    $DMG_NAME"
+print_header "🏁 Build Summary"
+echo -e "${GREEN}✨ Process finished successfully!${NC}"
+
+echo -e "\n${BOLD}Generated Artifacts:${NC}"
+printf "%-15s %-40s\n" "SIZE" "FILENAME"
+echo "--------------------------------------------------------"
+
+echo -e "\n${BOLD}Generated Artifacts:${NC}"
+printf "%-15s %-40s\n" "SIZE" "FILENAME"
+echo "--------------------------------------------------------"
+
+# Function to get human readable size with decimals
+get_file_size() {
+    local path="$1"
+    if [[ -d "$path" ]]; then
+        # Directory: use du -sk (KB)
+        local kb=$(du -sk "$path" | awk '{print $1}')
+        echo "$kb" | awk '{ printf "%.2f MB", $1/1024 }'
+    elif [[ -f "$path" ]]; then
+        # File: use wc -c (Bytes)
+        local bytes=$(wc -c < "$path")
+        echo "$bytes" | awk '{ printf "%.2f MB", $1/1024/1024 }'
+    else
+        echo "N/A"
+    fi
+}
+
+# Helper to print a specific file/dir if it exists
+print_artifact() {
+    local path="$1"
+    local name="$2"
+    
+    if [[ -z "$path" ]]; then return; fi
+    
+    # Check if path exists (directory or file)
+    if [[ -e "$path" ]]; then
+        local size=$(get_file_size "$path")
+        
+        # If no custom name provided, use basename
+        if [[ -z "$name" ]]; then
+            name=$(basename "$path")
+        fi
+        
+        printf "%-15s %-40s\n" "$size" "$name"
+    fi
+}
+
+# 1. Debug App
+print_artifact "$BUILD_OUTPUT_DIR/$DEBUG_APP_NAME"
+
+# 2. App Bundles (Raw)
+print_artifact "$BUILD_OUTPUT_DIR/arm64/Easier Drop.app" "Easier Drop (arm64).app"
+print_artifact "$BUILD_OUTPUT_DIR/x64/Easier Drop.app" "Easier Drop (x64).app"
+print_artifact "$BUILD_OUTPUT_DIR/universal/Easier Drop.app" "Easier Drop (Universal).app"
+
+# 3. DMGs
+# Find specific files to handle version changes gracefully
+ARM64_DMG=$(find "$BUILD_OUTPUT_DIR" -name "*arm64*.dmg" | head -n 1)
+X64_DMG=$(find "$BUILD_OUTPUT_DIR" -name "*x64*.dmg" | head -n 1)
+UNIV_DMG=$(find "$BUILD_OUTPUT_DIR" -name "*universal*.dmg" | head -n 1)
+
+print_artifact "$ARM64_DMG"
+print_artifact "$X64_DMG"
+print_artifact "$UNIV_DMG"
+
+# 4. ZIPs
+ARM64_ZIP=$(find "$BUILD_OUTPUT_DIR" -name "*arm64*.zip" | head -n 1)
+X64_ZIP=$(find "$BUILD_OUTPUT_DIR" -name "*x64*.zip" | head -n 1)
+UNIV_ZIP=$(find "$BUILD_OUTPUT_DIR" -name "*universal*.zip" | head -n 1)
+
+print_artifact "$ARM64_ZIP"
+print_artifact "$X64_ZIP"
+print_artifact "$UNIV_ZIP"
+
+echo "--------------------------------------------------------"
+

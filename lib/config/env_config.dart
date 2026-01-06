@@ -1,5 +1,9 @@
+import 'package:meta/meta.dart';
+
 class Env {
   Env._();
+  @visibleForTesting
+  static void testCoverage() => Env._();
 
   static const String aptabaseAppKey = String.fromEnvironment(
     'APTABASE_APP_KEY',

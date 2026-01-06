@@ -1,3 +1,4 @@
+import 'package:easier_drop/l10n/app_localizations_en.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/services/file_repository.dart';
@@ -195,12 +196,35 @@ void main() {
       // Now set validation to fail for file2
       when(() => mockRepo.validateFileSync('/valid.txt')).thenReturn(true);
       when(() => mockRepo.validateFileSync('/invalid.txt')).thenReturn(false);
-
       provider.rescanNow();
       await Future.microtask(() {});
 
       expect(provider.files.length, 1);
       expect(provider.files.first.pathname, '/valid.txt');
+    });
+
+    test('resolveShareMessage returns correct localizations', () {
+      final loc = AppLocalizationsEn();
+
+      expect(
+        FilesProvider.resolveShareMessage('shareNone', loc),
+        loc.shareNone,
+      );
+      expect(
+        FilesProvider.resolveShareMessage('shareError', loc),
+        loc.shareError,
+      );
+      expect(FilesProvider.resolveShareMessage('custom', loc), 'custom');
+    });
+
+    test('dispose cancels timer', () {
+      final provider = FilesProvider(enableMonitoring: true);
+      expect(() => provider.dispose(), returnsNormally);
+    });
+
+    test('shared handles empty list', () async {
+      final result = await provider.shared();
+      expect(result.toString(), contains('shareNone'));
     });
   });
 }

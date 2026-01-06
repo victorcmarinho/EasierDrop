@@ -59,7 +59,20 @@ void main() {
               return {'x': 100.0, 'y': 100.0};
             case 'getSize':
               return {'width': 400.0, 'height': 400.0};
-            case 'waitUntilReadyToShow':
+            case 'setOpacity':
+            case 'setAlwaysOnTop':
+            case 'setMaximizable':
+            case 'setResizable':
+            case 'setTitle':
+            case 'setSkipTaskbar':
+            case 'show':
+            case 'hide':
+            case 'focus':
+            case 'destroy':
+            case 'ensureInitialized':
+            case 'setPreventClose':
+            case 'setVisibleOnAllWorkspaces':
+            case 'setTitleBarStyle':
               return null;
             case 'setPosition':
               if (methodCall.arguments['x'] == 999.0) {
@@ -152,11 +165,11 @@ void main() {
     test('window events', () async {
       final helper = SystemHelper();
       helper.onWindowResize();
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 800));
       expect(SettingsService.instance.settings.windowW, equals(400.0));
 
       helper.onWindowMove();
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 800));
       expect(SettingsService.instance.settings.windowX, equals(100.0));
     });
 

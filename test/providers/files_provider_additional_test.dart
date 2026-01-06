@@ -42,9 +42,6 @@ class _TestLocalizations extends AppLocalizations {
   String get dropHere => 'Drop here';
 
   @override
-  String get filesCountTooltip => 'Files count';
-
-  @override
   String get genericFileName => 'file';
 
   @override
@@ -105,13 +102,7 @@ class _TestLocalizations extends AppLocalizations {
   String get share => 'Share';
 
   @override
-  String trayFilesCount(int count) => 'Files: $count';
-
-  @override
   String get trayExit => 'Exit';
-
-  @override
-  String get trayFilesNone => 'No files';
 
   @override
   String get tooltipClear => 'Clear';
@@ -136,9 +127,6 @@ class _TestLocalizations extends AppLocalizations {
 
   @override
   String get settingsLaunchAtLogin => 'Launch at Login';
-
-  @override
-  String get settingsAutoHide => 'Auto-hide';
 
   @override
   String get settingsAlwaysOnTop => 'Always on Top';
