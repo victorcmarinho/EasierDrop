@@ -258,7 +258,7 @@ ${CHANGELOG_NOTES}
   print_header "6.1 Update Homebrew Cask"
   
   UNIV_DMG=$(find "$BUILD_OUTPUT_DIR" -name "*universal*.dmg" | head -n 1)
-  CASK_FILE="homebrew/Casks/easier-drop.rb"
+  CASK_FILE="Casks/easier-drop.rb"
 
   if [[ -f "$UNIV_DMG" && -f "$CASK_FILE" ]]; then
     echo -e "🍺 Updating Homebrew Cask..."
