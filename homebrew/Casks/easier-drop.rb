@@ -4,7 +4,7 @@ cask "easier-drop" do
 
   url "https://github.com/victorcmarinho/EasierDrop/releases/download/v#{version}/easier_drop-macos-universal-v#{version}.dmg"
   name "Easier Drop"
-  desc "Drag and drop shelf for macOS"
+  desc "Drag and drop shelf"
   homepage "https://github.com/victorcmarinho/EasierDrop"
 
   app "Easier Drop.app"
