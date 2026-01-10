@@ -62,6 +62,14 @@ Built with Flutter and native macOS hooks, Easier Drop is incredibly lightweight
 ### Download App
 [**Download Latest Release**](https://github.com/victorcmarinho/EasierDrop/releases)
 
+### Homebrew
+You can also install via Homebrew:
+
+```bash
+brew tap victorcmarinho/easierdrop
+brew install --cask easier-drop
+```
+
 ---
 
 ## ⌨️ Pro Shortcuts
