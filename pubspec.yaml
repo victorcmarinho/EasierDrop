@@ -51,6 +51,7 @@ flutter:
   assets:
 
     - assets/icon/icon.png
+    - assets/icon/icon.icns
 
 
 l10n:

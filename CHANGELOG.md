@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.1] - 2026-01-06
 
+### Added
+- **Homebrew Integration**: Users can now install Easier Drop via Homebrew (`brew install --cask easier-drop`).
+- **Release Automation**: The `release.sh` script now automatically updates the Homebrew Cask and website documentation versions.
+
 ### Optimization
 - **Binary Splitting**: Implemented split builds for Apple Silicon (arm64) and Intel (x64), reducing the app size by ~45%.
 - **Size Reduction**: Enabled code obfuscation and debug symbol stripping for release builds.

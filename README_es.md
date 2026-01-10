@@ -62,6 +62,14 @@ Creado con Flutter y ganchos nativos de macOS, Easier Drop es increíblemente li
 ### Descargar App
 [**Descargar Última Versión**](https://github.com/victorcmarinho/EasierDrop/releases)
 
+### Homebrew
+También puedes instalar a través de Homebrew:
+
+```bash
+brew tap victorcmarinho/easierdrop
+brew install --cask easier-drop
+```
+
 ---
 
 ## ⌨️ Atajos Pro

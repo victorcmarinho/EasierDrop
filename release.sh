@@ -253,6 +253,51 @@ ${CHANGELOG_NOTES}
 
   echo -e "${GREEN}🎉 Release published successfully!${NC}"
   echo -e "   🔗 URL: https://github.com/victorcmarinho/EasierDrop/releases/tag/${VERSION}"
+
+  # --- HOMEBREW CASK UPDATE ---
+  print_header "6.1 Update Homebrew Cask"
+  
+  UNIV_DMG=$(find "$BUILD_OUTPUT_DIR" -name "*universal*.dmg" | head -n 1)
+  CASK_FILE="homebrew/Casks/easier-drop.rb"
+
+  if [[ -f "$UNIV_DMG" && -f "$CASK_FILE" ]]; then
+    echo -e "🍺 Updating Homebrew Cask..."
+    
+    # Calculate SHA256
+    SHA256=$(shasum -a 256 "$UNIV_DMG" | awk '{print $1}')
+    echo -e "   🔑 SHA256: $SHA256"
+    
+    # Update Cask File
+    CLEAN_VERSION=${VERSION#v}
+    sed -i '' "s/version \".*\"/version \"$CLEAN_VERSION\"/" "$CASK_FILE"
+    sed -i '' "s/sha256 :no_check/sha256 \"$SHA256\"/" "$CASK_FILE" || true
+    sed -i '' "s/sha256 \".*\"/sha256 \"$SHA256\"/" "$CASK_FILE"
+    
+    echo -e "   ✅ Cask updated to version $CLEAN_VERSION with new SHA256."
+    
+    # Commit Cask change
+    git add "$CASK_FILE"
+    git commit -m "Update Homebrew Cask to $VERSION" || echo "   ⚠️  Nothing to commit for Cask."
+    git push origin main
+    echo -e "   📤 Cask changes pushed to repository."
+  else
+    echo -e "${YELLOW}⚠️  Could not update Cask. Missing DMG or Cask file.${NC}"
+  fi
+
+  # --- DOCS UPDATE ---
+  print_header "6.2 Update Website Docs"
+  DOCS_FILE="docs/index.html"
+  if [[ -f "$DOCS_FILE" ]]; then
+      echo -e "🌐 Updating Website Version..."
+      # Replace "Download vX.X.X" with new version
+      CLEAN_VERSION=${VERSION#v}
+      sed -i '' "s/Download v[0-9.]*/Download v$CLEAN_VERSION/" "$DOCS_FILE"
+      echo -e "   ✅ website updated to v$CLEAN_VERSION."
+      
+      git add "$DOCS_FILE"
+      git commit -m "Update docs version to $VERSION" || echo "   ⚠️  Nothing to commit for Docs."
+      git push origin main
+  fi
 else
   print_header "6. Deployment Skipped"
   echo -e "${YELLOW}ℹ️  To publish to GitHub, use: ./release.sh --deploy${NC}"
