@@ -258,3 +258,33 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* Installation Section */
+.installation {
+  padding: 80px 0;
+  text-align: center;
+}
+
+.install-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.install-code {
+  background: #2d2d2d;
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: left;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9rem;
+  margin-top: 30px;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.install-code code {
+  display: block;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
