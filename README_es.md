@@ -70,6 +70,11 @@ brew tap victorcmarinho/easier-drop https://github.com/victorcmarinho/EasierDrop
 brew install --cask easier-drop
 ```
 
+> **Nota:** Si la aplicación no se abre con un error de "dañado" (común en instalaciones vía Homebrew de apps no notariadas), ejecuta este comando en la terminal:
+> ```bash
+> xattr -d com.apple.quarantine "/Applications/Easier Drop.app"
+> ```
+
 ---
 
 ## ⌨️ Atajos Pro
