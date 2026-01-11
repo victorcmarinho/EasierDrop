@@ -47,5 +47,11 @@
   "settingsLaunchAtLogin": "Iniciar al iniciar sesión",
 
   "settingsAlwaysOnTop": "Siempre visible",
-  "settingsOpacity": "Opacidad de la ventana"
+  "settingsOpacity": "Opacidad de la ventana",
+  "checkForUpdates": "Buscar actualizaciones",
+  "noUpdatesAvailable": "No hay actualizaciones disponibles",
+  "checkingForUpdates": "Buscando actualizaciones",
+  "updateAvailableMessage": "Una nueva versión está disponible.",
+  "download": "Descargar",
+  "later": "Más tarde"
 }

@@ -336,6 +336,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Window Opacity'**
   String get settingsOpacity;
+
+  /// No description provided for @checkForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for updates'**
+  String get checkForUpdates;
+
+  /// No description provided for @noUpdatesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No updates available'**
+  String get noUpdatesAvailable;
+
+  /// No description provided for @checkingForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for updates'**
+  String get checkingForUpdates;
+
+  /// No description provided for @updateAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version is available.'**
+  String get updateAvailableMessage;
+
+  /// No description provided for @download.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get download;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

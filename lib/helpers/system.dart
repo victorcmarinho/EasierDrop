@@ -65,6 +65,22 @@ class SystemHelper with WindowListener {
     AnalyticsService.instance.settingsOpened();
   }
 
+  static Future<void> openUpdateWindow() async {
+    final window = await WindowController.create(
+      WindowConfiguration(
+        arguments: jsonEncode(
+          _createWindowArgs(
+            args: AppConstants.routeUpdate,
+            title: 'Software Update',
+            width: 400.0,
+            height: 300.0,
+          ),
+        ),
+      ),
+    );
+    await window.show();
+  }
+
   static Future<void> open() async {
     await Future.wait([
       windowManager.show(),

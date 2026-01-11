@@ -51,6 +51,7 @@ class AppConstants {
   static const String routeHome = '/';
   static const String routeSettings = '/settings';
   static const String routeShare = '/share';
+  static const String routeUpdate = '/update';
 }
 
 /// Chaves semânticas para testes e acessibilidade

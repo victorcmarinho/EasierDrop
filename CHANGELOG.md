@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-01-10
+
+### Added
+- **Check for Updates**: Added a "Check for Updates..." menu item to the macOS menu bar for easy access to software updates.
+- **Dedicated Update Window**: Updates are now managed in a standalone, always-on-top window that ensures users don't miss important releases.
+
+### Improved
+- **User Experience**: The update window features a strict, focused design with no navigation distractions and explicit action buttons.
+- **Testing**: Implemented a comprehensive suite of widget tests for the update screen, ensuring reliability across all states (loading, available, error).
+
 ## [1.1.1] - 2026-01-06
 
 ### Added

@@ -47,5 +47,13 @@
   "settingsLaunchAtLogin": "Iniciar no Login",
 
   "settingsAlwaysOnTop": "Sempre no Topo",
-  "settingsOpacity": "Opacidade da Janela"
+  "settingsAlwaysOnTop": "Sempre no Topo",
+  "settingsOpacity": "Opacidade da Janela",
+
+  "checkForUpdates": "Verificar atualizações",
+  "noUpdatesAvailable": "Nenhuma atualização disponível",
+  "checkingForUpdates": "Verificando atualizações",
+  "updateAvailableMessage": "Uma nova versão está disponível.",
+  "download": "Baixar",
+  "later": "Depois"
 }

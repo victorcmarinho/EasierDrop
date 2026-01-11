@@ -46,5 +46,12 @@
   "settingsLaunchAtLogin": "Launch at Login",
 
   "settingsAlwaysOnTop": "Always on Top",
-  "settingsOpacity": "Window Opacity"
+  "settingsOpacity": "Window Opacity",
+
+  "checkForUpdates": "Check for updates",
+  "noUpdatesAvailable": "No updates available",
+  "checkingForUpdates": "Checking for updates",
+  "updateAvailableMessage": "A new version is available.",
+  "download": "Download",
+  "later": "Later"
 }

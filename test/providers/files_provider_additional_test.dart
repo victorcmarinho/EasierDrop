@@ -133,6 +133,24 @@ class _TestLocalizations extends AppLocalizations {
 
   @override
   String get settingsOpacity => 'Opacity';
+  @override
+  String get checkForUpdates => 'Check for Updates';
+
+  @override
+  String get checkingForUpdates => 'Checking for updates...';
+
+  @override
+  String get download => 'Download';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get noUpdatesAvailable => 'No updates available';
+
+  @override
+  String get updateAvailableMessage =>
+      'A new version of Easier Drop is available.';
 }
 
 void main() {

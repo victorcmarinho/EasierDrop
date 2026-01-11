@@ -157,4 +157,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsOpacity => 'Opacidad de la ventana';
+
+  @override
+  String get checkForUpdates => 'Buscar actualizaciones';
+
+  @override
+  String get noUpdatesAvailable => 'No hay actualizaciones disponibles';
+
+  @override
+  String get checkingForUpdates => 'Buscando actualizaciones';
+
+  @override
+  String get updateAvailableMessage => 'Una nueva versión está disponible.';
+
+  @override
+  String get download => 'Descargar';
+
+  @override
+  String get later => 'Más tarde';
 }

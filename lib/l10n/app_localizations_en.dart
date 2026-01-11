@@ -157,4 +157,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsOpacity => 'Window Opacity';
+
+  @override
+  String get checkForUpdates => 'Check for updates';
+
+  @override
+  String get noUpdatesAvailable => 'No updates available';
+
+  @override
+  String get checkingForUpdates => 'Checking for updates';
+
+  @override
+  String get updateAvailableMessage => 'A new version is available.';
+
+  @override
+  String get download => 'Download';
+
+  @override
+  String get later => 'Later';
 }

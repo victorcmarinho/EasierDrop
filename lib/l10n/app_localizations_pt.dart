@@ -157,4 +157,22 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsOpacity => 'Opacidade da Janela';
+
+  @override
+  String get checkForUpdates => 'Verificar atualizações';
+
+  @override
+  String get noUpdatesAvailable => 'Nenhuma atualização disponível';
+
+  @override
+  String get checkingForUpdates => 'Verificando atualizações';
+
+  @override
+  String get updateAvailableMessage => 'Uma nova versão está disponível.';
+
+  @override
+  String get download => 'Baixar';
+
+  @override
+  String get later => 'Depois';
 }
