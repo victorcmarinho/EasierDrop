@@ -1,5 +1,6 @@
 import Cocoa
 import FlutterMacOS
+import ApplicationServices
 
 class MacOSShakeMonitor: NSObject {
     static let shared = MacOSShakeMonitor()
@@ -26,8 +27,21 @@ class MacOSShakeMonitor: NSObject {
     func setup(binaryMessenger: FlutterBinaryMessenger) {
         if isSetup { return }
         methodChannel = FlutterMethodChannel(name: "com.easier_drop/shake", binaryMessenger: binaryMessenger)
+        methodChannel?.setMethodCallHandler { [weak self] call, result in
+             self?.handleMethodCall(call: call, result: result)
+        }
         startMonitoring()
         isSetup = true
+    }
+
+    private func handleMethodCall(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if call.method == "checkPermission" {
+            let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: false]
+            let isTrusted = AXIsProcessTrustedWithOptions(options as CFDictionary)
+            result(isTrusted)
+        } else {
+            result(FlutterMethodNotImplemented)
+        }
     }
     
     func startMonitoring() {

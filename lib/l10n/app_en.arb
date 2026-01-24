@@ -53,5 +53,10 @@
   "checkingForUpdates": "Checking for updates",
   "updateAvailableMessage": "A new version is available.",
   "download": "Download",
-  "later": "Later"
+  "later": "Later",
+  "settingsShakeGesture": "Shake Gesture",
+  "settingsShakePermissionActive": "Active",
+  "settingsShakePermissionInactive": "Inactive",
+  "settingsShakePermissionDescription": "Shake your mouse cursor to quickly open the drop window.",
+  "settingsShakePermissionInstruction": "To enable this feature, allow accessibility permission in System Settings."
 }

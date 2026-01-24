@@ -175,4 +175,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get later => 'Más tarde';
+
+  @override
+  String get settingsShakeGesture => 'Gesto de Agitar';
+
+  @override
+  String get settingsShakePermissionActive => 'Activo';
+
+  @override
+  String get settingsShakePermissionInactive => 'Inactivo';
+
+  @override
+  String get settingsShakePermissionDescription => 'Agita el cursor del mouse para abrir rápidamente la ventana de archivos.';
+
+  @override
+  String get settingsShakePermissionInstruction => 'Para habilitar esta función, permite el acceso en Configuración del Sistema.';
 }

@@ -8,6 +8,7 @@ import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:easier_drop/services/tray_service.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SystemHelper with WindowListener {
   static final SystemHelper _instance = SystemHelper();
@@ -15,6 +16,35 @@ class SystemHelper with WindowListener {
   static const MethodChannel _shakeChannel = MethodChannel(
     AppConstants.shakeChannelName,
   );
+
+  static Future<bool> checkShakePermission() async {
+    try {
+      final bool? result = await _shakeChannel.invokeMethod<bool>(
+        'checkPermission',
+      );
+      return result ?? false;
+    } catch (e) {
+      AnalyticsService.instance.warn('Failed to check shake permission: $e');
+      return false;
+    }
+  }
+
+  static Future<void> openAccessibilitySettings() async {
+    final Uri url = Uri.parse(
+      'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility',
+    );
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      // Fallback for older macOS or if the specific URI scheme fails
+      final Uri fallbackUrl = Uri.parse(
+        'x-apple.systempreferences:com.apple.preference.security',
+      );
+      if (await canLaunchUrl(fallbackUrl)) {
+        await launchUrl(fallbackUrl);
+      }
+    }
+  }
 
   static Future<void> hide() async {
     await Future.wait([

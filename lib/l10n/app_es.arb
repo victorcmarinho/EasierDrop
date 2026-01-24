@@ -53,5 +53,10 @@
   "checkingForUpdates": "Buscando actualizaciones",
   "updateAvailableMessage": "Una nueva versión está disponible.",
   "download": "Descargar",
-  "later": "Más tarde"
+  "later": "Más tarde",
+  "settingsShakeGesture": "Gesto de Agitar",
+  "settingsShakePermissionActive": "Activo",
+  "settingsShakePermissionInactive": "Inactivo",
+  "settingsShakePermissionDescription": "Agita el cursor del mouse para abrir rápidamente la ventana de archivos.",
+  "settingsShakePermissionInstruction": "Para habilitar esta función, permite el acceso en Configuración del Sistema."
 }

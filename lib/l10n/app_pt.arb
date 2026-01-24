@@ -55,5 +55,10 @@
   "checkingForUpdates": "Verificando atualizações",
   "updateAvailableMessage": "Uma nova versão está disponível.",
   "download": "Baixar",
-  "later": "Depois"
+  "later": "Depois",
+  "settingsShakeGesture": "Gesto de Agitar",
+  "settingsShakePermissionActive": "Ativo",
+  "settingsShakePermissionInactive": "Inativo",
+  "settingsShakePermissionDescription": "Agite o cursor do mouse para abrir rapidamente a janela de arquivos.",
+  "settingsShakePermissionInstruction": "Para ativar este recurso, permita a acessibilidade nas Preferências do Sistema."
 }

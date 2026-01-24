@@ -372,6 +372,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Later'**
   String get later;
+
+  /// No description provided for @settingsShakeGesture.
+  ///
+  /// In en, this message translates to:
+  /// **'Shake Gesture'**
+  String get settingsShakeGesture;
+
+  /// No description provided for @settingsShakePermissionActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get settingsShakePermissionActive;
+
+  /// No description provided for @settingsShakePermissionInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get settingsShakePermissionInactive;
+
+  /// No description provided for @settingsShakePermissionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Shake your mouse cursor to quickly open the drop window.'**
+  String get settingsShakePermissionDescription;
+
+  /// No description provided for @settingsShakePermissionInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'To enable this feature, allow accessibility permission in System Settings.'**
+  String get settingsShakePermissionInstruction;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

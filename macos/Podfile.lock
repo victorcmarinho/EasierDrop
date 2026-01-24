@@ -1,8 +1,6 @@
 PODS:
   - appkit_ui_element_colors (1.0.0):
     - FlutterMacOS
-  - cupertino_native (0.0.1):
-    - FlutterMacOS
   - desktop_multi_window (0.0.1):
     - FlutterMacOS
   - device_info_plus (0.0.1):
@@ -29,7 +27,6 @@ PODS:
 
 DEPENDENCIES:
   - appkit_ui_element_colors (from `Flutter/ephemeral/.symlinks/plugins/appkit_ui_element_colors/macos`)
-  - cupertino_native (from `Flutter/ephemeral/.symlinks/plugins/cupertino_native/macos`)
   - desktop_multi_window (from `Flutter/ephemeral/.symlinks/plugins/desktop_multi_window/macos`)
   - device_info_plus (from `Flutter/ephemeral/.symlinks/plugins/device_info_plus/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
@@ -46,8 +43,6 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   appkit_ui_element_colors:
     :path: Flutter/ephemeral/.symlinks/plugins/appkit_ui_element_colors/macos
-  cupertino_native:
-    :path: Flutter/ephemeral/.symlinks/plugins/cupertino_native/macos
   desktop_multi_window:
     :path: Flutter/ephemeral/.symlinks/plugins/desktop_multi_window/macos
   device_info_plus:
@@ -75,7 +70,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   appkit_ui_element_colors: c8e13c23cbd781e0f5d9b75cad686e6a4bb958da
-  cupertino_native: 69ee8a8bac1c467f04256be9d78899a180287d9a
   desktop_multi_window: 93667594ccc4b88d91a97972fd3b1b89667fa80a
   device_info_plus: a56e6e74dbbd2bb92f2da12c64ddd4f67a749041
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
