@@ -1,13 +1,13 @@
 import 'dart:io' as io;
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:easier_drop/services/analytics_service.dart';
+import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:desktop_multi_window/desktop_multi_window.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:easier_drop/services/tray_service.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
-import 'package:flutter/services.dart';
-import 'package:desktop_multi_window/desktop_multi_window.dart';
-import 'dart:convert';
 
 class SystemHelper with WindowListener {
   static final SystemHelper _instance = SystemHelper();
@@ -190,6 +190,16 @@ class SystemHelper with WindowListener {
   }
 
   static Future<void> _createNewWindow(double x, double y) async {
+    final windowIds = await WindowController.getAll();
+    if (windowIds.length >= AppConstants.maxWindows) {
+      AnalyticsService.instance.debug(
+        'Max windows reached (${windowIds.length}), ignoring shake',
+        tag: 'SystemHelper',
+      );
+      AnalyticsService.instance.shakeLimitReached();
+      return;
+    }
+
     AnalyticsService.instance.debug(
       'Creating shake window at $x, $y',
       tag: 'SystemHelper',

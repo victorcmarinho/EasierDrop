@@ -43,6 +43,7 @@ class AppConstants {
 
   // System Dimensions
   static const double defaultWindowSize = 250.0;
+  static const int maxWindows = 3;
 
   // Platform Channels
   static const String shakeChannelName = 'com.easier_drop/shake';
