@@ -17,8 +17,8 @@ class MacOSShakeMonitor: NSObject {
     
     // Configurable parameters
     private let shakeThreshold: CGFloat = 10.0
-    private let reversalTimeout: TimeInterval = 0.8
-    private let requiredReversals = 4
+    private let reversalTimeout: TimeInterval = 0.9
+    private let requiredReversals = 3
     
     private var lastDirectionX: Int = 0 // -1 left, 1 right, 0 none
     private var lastDirectionY: Int = 0 // -1 up, 1 down, 0 none
