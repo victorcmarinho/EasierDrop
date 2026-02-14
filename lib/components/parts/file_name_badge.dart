@@ -31,9 +31,10 @@ class FileNameBadge extends StatelessWidget {
           child: MarqueeText(
             text: TextSpan(
               text: label,
-              style: MacosTheme.of(
-                context,
-              ).typography.caption1.copyWith(fontWeight: FontWeight.w600),
+              style: MacosTheme.of(context).typography.caption1.copyWith(
+                fontWeight: FontWeight.w600,
+                color: MacosTheme.of(context).typography.body.color,
+              ),
             ),
             speed: 20,
           ),
