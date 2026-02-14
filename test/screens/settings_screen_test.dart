@@ -8,7 +8,6 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
-import 'package:mocktail/mocktail.dart';
 
 class MockPathProviderPlatform extends PathProviderPlatform {
   @override

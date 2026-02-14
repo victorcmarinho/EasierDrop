@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,8 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen>
+    with WidgetsBindingObserver {
   bool _hasLaunchAtLoginPermission = false;
   bool _isCheckingPermission = true;
   bool _hasShakePermission = false;
@@ -22,7 +24,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkPermission();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkPermission();
+    }
   }
 
   Future<void> _checkPermission() async {
@@ -39,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       setState(() {
         _hasLaunchAtLoginPermission = launchPerm;
         _isCheckingPermission = false;
-        _hasShakePermission = shakePerm;
+        _hasShakePermission = kDebugMode || shakePerm;
         _checkingShake = false;
       });
     }
@@ -47,9 +63,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final macosTheme = MacosTheme.of(context);
-    // final brightness = macosTheme.brightness;
-
     return CupertinoTheme(
       data: AppTheme.getCupertinoTheme(context),
       child: Material(color: Colors.transparent, child: _buildBody(context)),
