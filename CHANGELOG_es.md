@@ -43,7 +43,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 - **Gestión de Bandeja (Tray)**: Introducido `TrayService` para interacciones más fiables con el icono del sistema.
 - **Interfaz Multiventana Minimalista**: Las ventanas secundarias ahora tienen una interfaz más limpia, sin barras de título.
 - **Integración con el Portapapeles**: Soporte para pegar archivos directamente usando `Cmd + V`.
-- **Ventana de Configuración**: Ventana de preferencias dedicada con diseño "Liquid Glass".
+- **Ventana de Configuración**: Ventana de preferencias dedicada para personalizar la opacidad, el modo "Siempre al Frente" y las opciones de inicio de sesión.
 - **Gestión de Ventanas**:
     - **Control de Opacidad**: Ajuste la opacidad de la ventana en tiempo real.
     - **Siempre al Frente**: Opción para mantener la zona de drop por encima de otras ventanas.

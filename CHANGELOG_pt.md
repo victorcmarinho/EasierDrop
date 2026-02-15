@@ -45,7 +45,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.
 - **UI Minimalista Multi-Janela**: Janelas secundárias agora possuem uma interface mais limpa, sem barras de título.
 - **Integração com Área de Transferência**: Suporte para colar arquivos diretamente usando `Cmd + V`.
 - **Vídeo de Demonstração**: Adicionado vídeo demonstrativo na documentação e homepage.
-- **Janela de Configurações**: Janela de preferências dedicada com design "Liquid Glass" (Blur + Translucidez).
+- **Janela de Configurações**: Janela de preferências dedicada para personalizar a opacidade, o modo "Sempre no Topo" e as opções de "Abrir no Login".
 - **Gerenciamento de Janelas**:
     - **Controle de Opacidade**: Ajuste a opacidade da janela em tempo real.
     - **Sempre no Topo**: Opção para manter a zona de drop acima de outras janelas.

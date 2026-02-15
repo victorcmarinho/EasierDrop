@@ -25,7 +25,7 @@ Easier Drop is your native macOS productivity companion that ends the window-shu
 
 ---
 
-## ✨ Power Features (v1.1.0)
+## ✨ Power Features (v1.1.2)
 
 ### 📦 Collect Anywhere, Instantly
 Drag from Finder, Safari, Photos, or even your code editor. Your files stay put until you're ready to move them.
@@ -47,10 +47,10 @@ Already copied something? Just `Cmd + V` over the drop zone to add it to your sh
 > ![Clipboard Integration](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/clipboard_paste.gif)
 > *Paste files directly into your workflow without redundant dragging.*
 
-### 💎 "Liquid Glass" Settings
-A beautiful, translucent preferences window that respects your macOS theme with elegant blurs and fluid controls.
+### 💎 Customizable Settings
+A powerful preferences window to tailor Easier Drop to your workflow. Fine-tune the shake gesture sensitivity, adjust window opacity, and toggle features like "Always on Top" or "Launch at Login."
 > ![Settings UI](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/settings_ui.png)
-> *Personalize your experience with a premium, native-feeling interface.*
+> *Personalize every detail of your drop zones for maximum productivity.*
 
 ### ⚡️ Always on Top & Native Speed
 Built with Flutter and native macOS hooks, Easier Drop is incredibly lightweight and stays visible above your work so it's always there when you need it.

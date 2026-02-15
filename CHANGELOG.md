@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Minimalist Multi-Window UI**: Secondary windows now feature a cleaner, borderless interface without title bars or system buttons.
 - **Clipboard Integration**: Now supports pasting files directly into the drop zone using `Cmd + V`. Copy files in Finder and paste them seamlessly!
 - **Video Demo**: Added a video demonstration to the documentation and homepage for better onboarding.
-- **Settings Window**: Dedicated preferences window with "Liquid Glass" UI design (Blur + Translucency).
+- **Settings Window**: Dedicated preferences window to customize opacity, "Always on Top" mode, and "Launch at Login" options.
 - **Window Management**:
     - **Opacity Control**: Adjust window opacity in real-time.
     - **Always on Top**: Toggle to keep the drop zone above other windows.

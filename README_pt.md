@@ -25,7 +25,7 @@ O Easier Drop é o seu companheiro nativo de produtividade para macOS que acaba 
 
 ---
 
-## ✨ Funcionalidades Incríveis (v1.1.0)
+## ✨ Funcionalidades Incríveis (v1.1.2)
 
 ### 📦 Colete de Qualquer Lugar, Instanteamente
 Arraste do Finder, Safari, Fotos ou até mesmo do seu editor de código. Seus arquivos ficam guardados até que você esteja pronto para movê-los.
@@ -47,10 +47,10 @@ Já copiou algo? Basta usar `Cmd + V` sobre a zona de drop para adicioná-lo à 
 > ![Integração com Área de Transferência](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/clipboard_paste.gif)
 > *Cole arquivos diretamente no seu fluxo de trabalho sem precisar arrastar novamente.*
 
-### 💎 Configurações "Liquid Glass"
-Uma linda janela de preferências translúcida que respeita o tema do seu macOS com desfoques elegantes e controles fluidos.
+### 💎 Configurações Personalizáveis
+Uma janela de preferências completa para ajustar o Easier Drop ao seu fluxo de trabalho. Ajuste a sensibilidade do gesto de balançar, controle a opacidade da janela e gerencie opções como "Sempre no Topo" ou "Iniciar com o Sistema".
 > ![Interface de Configurações](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/settings_ui.png)
-> *Personalize sua experiência com uma interface premium e nativa.*
+> *Personalize cada detalhe de suas zonas de drop para máxima produtividade.*
 
 ### ⚡️ Sempre no Topo & Velocidade Nativa
 Desenvolvido com Flutter e ganchos nativos do macOS, o Easier Drop é incrivelmente leve e permanece visível acima do seu trabalho para estar sempre lá quando você precisar.
