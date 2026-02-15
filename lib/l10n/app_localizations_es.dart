@@ -190,4 +190,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsShakePermissionInstruction => 'Para habilitar esta función, permite el acceso en Configuración del Sistema.';
+
+  @override
+  String settingsShakeRestartHint(String link) {
+    return 'Si ya has habilitado el permiso, haz clic $link para reiniciar la aplicación.';
+  }
+
+  @override
+  String get settingsShakeRestartLink => 'aquí';
 }

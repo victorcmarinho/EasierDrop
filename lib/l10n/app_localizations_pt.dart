@@ -190,4 +190,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsShakePermissionInstruction => 'Para ativar este recurso, permita a acessibilidade nas Preferências do Sistema.';
+
+  @override
+  String settingsShakeRestartHint(String link) {
+    return 'Caso já esteja com a permissão ativada clique $link para reiniciar o app.';
+  }
+
+  @override
+  String get settingsShakeRestartLink => 'aqui';
 }

@@ -58,5 +58,8 @@
   "settingsShakePermissionActive": "Active",
   "settingsShakePermissionInactive": "Inactive",
   "settingsShakePermissionDescription": "Shake your mouse cursor to quickly open the drop window.",
-  "settingsShakePermissionInstruction": "To enable this feature, allow accessibility permission in System Settings."
+  "settingsShakePermissionInstruction": "To enable this feature, allow accessibility permission in System Settings.",
+  "settingsShakeRestartHint": "If you have already enabled the permission, click {link} to restart the app.",
+  "@settingsShakeRestartHint": {"placeholders": {"link": {"type": "String"}}},
+  "settingsShakeRestartLink": "here"
 }

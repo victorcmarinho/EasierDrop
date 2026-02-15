@@ -13,43 +13,75 @@
   "semAreaLabel": "Área de colecionar arquivos",
   "semAreaHintEmpty": "Vazio. Arraste arquivos aqui.",
   "semAreaHintHas": "Contém {count, plural, one{{count} arquivo} other{{count} arquivos}}. Arraste para fora para mover ou compartilhar.",
-  "@semAreaHintHas": {"placeholders": {"count": {"type": "int"}}},
+  "@semAreaHintHas": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "semShareHintNone": "Nenhum arquivo para compartilhar",
   "semShareHintSome": "Compartilhar {count, plural, one{{count} arquivo} other{{count} arquivos}}",
-  "@semShareHintSome": {"placeholders": {"count": {"type": "int"}}},
+  "@semShareHintSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "semRemoveHintNone": "Nenhum arquivo para remover",
   "semRemoveHintSome": "Remover {count, plural, one{{count} arquivo} other{{count} arquivos}}",
-  "@semRemoveHintSome": {"placeholders": {"count": {"type": "int"}}},
-
+  "@semRemoveHintSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "trayExit": "Fechar o aplicativo",
   "openTray": "Abrir bandeja",
-
   "languageLabel": "Idioma:",
   "languageEnglish": "Inglês",
   "languagePortuguese": "Português",
   "languageSpanish": "Espanhol",
   "limitReached": "Limite de {max} arquivos atingido",
-  "@limitReached": {"placeholders": {"max": {"type": "int"}}},
+  "@limitReached": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "shareNone": "Sem arquivos para compartilhar",
-  "shareError": "Erro ao compartilhar arquivos"
-  ,"fileLabelSingle": "{name}",
+  "shareError": "Erro ao compartilhar arquivos",
+  "fileLabelSingle": "{name}",
   "fileLabelMultiple": "{count} arquivos",
-  "genericFileName": "arquivo"
-  ,"@fileLabelSingle": {"placeholders": {"name": {"type": "String"}}}
-  ,"@fileLabelMultiple": {"placeholders": {"count": {"type": "int"}}}
-  ,"semHandleLabel": "Barra de arraste"
-  ,"semHandleHint": "Arraste para mover a janela",
+  "genericFileName": "arquivo",
+  "@fileLabelSingle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@fileLabelMultiple": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "semHandleLabel": "Barra de arraste",
+  "semHandleHint": "Arraste para mover a janela",
   "welcomeTo": "Olá, bem-vindo ao",
   "updateAvailable": "Atualização Disponível",
   "preferences": "Preferências",
   "settingsGeneral": "Geral",
   "settingsAppearance": "Aparência",
   "settingsLaunchAtLogin": "Iniciar no Login",
-
   "settingsAlwaysOnTop": "Sempre no Topo",
   "settingsAlwaysOnTop": "Sempre no Topo",
   "settingsOpacity": "Opacidade da Janela",
-
   "checkForUpdates": "Verificar atualizações",
   "noUpdatesAvailable": "Nenhuma atualização disponível",
   "checkingForUpdates": "Verificando atualizações",
@@ -60,5 +92,14 @@
   "settingsShakePermissionActive": "Ativo",
   "settingsShakePermissionInactive": "Inativo",
   "settingsShakePermissionDescription": "Agite o cursor do mouse para abrir rapidamente a janela de arquivos.",
-  "settingsShakePermissionInstruction": "Para ativar este recurso, permita a acessibilidade nas Preferências do Sistema."
+  "settingsShakePermissionInstruction": "Para ativar este recurso, permita a acessibilidade nas Preferências do Sistema.",
+  "settingsShakeRestartHint": "Caso já esteja com a permissão ativada clique {link} para reiniciar o app.",
+  "@settingsShakeRestartHint": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsShakeRestartLink": "aqui"
 }

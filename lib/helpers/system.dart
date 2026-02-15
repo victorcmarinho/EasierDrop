@@ -120,6 +120,18 @@ class SystemHelper with WindowListener {
     AnalyticsService.instance.trackEvent('window_shown');
   }
 
+  static Future<void> restartApp() async {
+    if (io.Platform.isMacOS) {
+      final String executable = io.Platform.resolvedExecutable;
+      final String appBundlePath = io.File(
+        executable,
+      ).parent.parent.parent.path;
+
+      await io.Process.start('open', ['-n', appBundlePath]);
+      await exit();
+    }
+  }
+
   static Future<void> exit() async {
     await Future.wait([
       TrayService.instance.destroy(),

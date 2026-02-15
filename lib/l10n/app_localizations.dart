@@ -402,6 +402,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'To enable this feature, allow accessibility permission in System Settings.'**
   String get settingsShakePermissionInstruction;
+
+  /// No description provided for @settingsShakeRestartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'If you have already enabled the permission, click {link} to restart the app.'**
+  String settingsShakeRestartHint(String link);
+
+  /// No description provided for @settingsShakeRestartLink.
+  ///
+  /// In en, this message translates to:
+  /// **'here'**
+  String get settingsShakeRestartLink;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -127,15 +127,31 @@ class _SettingsScreenState extends State<SettingsScreen>
                 style: MacosTheme.of(context).typography.title3,
               ),
               backgroundColor: Colors.transparent,
-              footer: _hasShakePermission
-                  ? Text(loc.settingsShakePermissionDescription)
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(loc.settingsShakePermissionInstruction),
-                        const SizedBox(height: 8),
-                      ],
+              footer: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_hasShakePermission)
+                    Text(loc.settingsShakePermissionDescription)
+                  else ...[
+                    Text(loc.settingsShakePermissionInstruction),
+                    const SizedBox(height: 8),
+                    RichText(
+                      text: TextSpan(
+                        style: MacosTheme.of(context).typography.footnote
+                            .copyWith(
+                              color:
+                                  MacosTheme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? const Color(0xFFCCCCCC)
+                                  : const Color(0xFF666666),
+                            ),
+                        children: [..._buildRestartHintSpans(context, loc)],
+                      ),
                     ),
+                  ],
+                  const SizedBox(height: 8),
+                ],
+              ),
               children: [
                 CupertinoListTile(
                   leading: const Icon(CupertinoIcons.shuffle),
@@ -219,5 +235,44 @@ class _SettingsScreenState extends State<SettingsScreen>
         );
       },
     );
+  }
+
+  List<InlineSpan> _buildRestartHintSpans(
+    BuildContext context,
+    AppLocalizations loc,
+  ) {
+    final String linkText = loc.settingsShakeRestartLink;
+
+    const token = '@@LINK@@';
+    final String textWithToken = loc.settingsShakeRestartHint(token);
+    final List<String> parts = textWithToken.split(token);
+
+    final List<InlineSpan> spans = [];
+
+    if (parts.isNotEmpty) {
+      spans.add(TextSpan(text: parts[0]));
+    }
+
+    if (parts.length > 1) {
+      spans.add(
+        WidgetSpan(
+          alignment: PlaceholderAlignment.baseline,
+          baseline: TextBaseline.alphabetic,
+          child: GestureDetector(
+            onTap: () => SystemHelper.restartApp(),
+            child: Text(
+              linkText,
+              style: TextStyle(
+                color: CupertinoColors.activeBlue,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      );
+      spans.add(TextSpan(text: parts[1]));
+    }
+
+    return spans;
   }
 }

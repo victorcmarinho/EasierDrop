@@ -190,4 +190,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsShakePermissionInstruction => 'To enable this feature, allow accessibility permission in System Settings.';
+
+  @override
+  String settingsShakeRestartHint(String link) {
+    return 'If you have already enabled the permission, click $link to restart the app.';
+  }
+
+  @override
+  String get settingsShakeRestartLink => 'here';
 }
