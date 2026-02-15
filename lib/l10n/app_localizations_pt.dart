@@ -157,4 +157,45 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsOpacity => 'Opacidade da Janela';
+
+  @override
+  String get checkForUpdates => 'Verificar atualizações';
+
+  @override
+  String get noUpdatesAvailable => 'Nenhuma atualização disponível';
+
+  @override
+  String get checkingForUpdates => 'Verificando atualizações';
+
+  @override
+  String get updateAvailableMessage => 'Uma nova versão está disponível.';
+
+  @override
+  String get download => 'Baixar';
+
+  @override
+  String get later => 'Depois';
+
+  @override
+  String get settingsShakeGesture => 'Gesto de Agitar';
+
+  @override
+  String get settingsShakePermissionActive => 'Ativo';
+
+  @override
+  String get settingsShakePermissionInactive => 'Inativo';
+
+  @override
+  String get settingsShakePermissionDescription => 'Agite o cursor do mouse para abrir rapidamente a janela de arquivos.';
+
+  @override
+  String get settingsShakePermissionInstruction => 'Para ativar este recurso, permita a acessibilidade nas Preferências do Sistema.';
+
+  @override
+  String settingsShakeRestartHint(String link) {
+    return 'Caso já esteja com a permissão ativada clique $link para reiniciar o app.';
+  }
+
+  @override
+  String get settingsShakeRestartLink => 'aqui';
 }

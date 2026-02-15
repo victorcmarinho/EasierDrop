@@ -157,4 +157,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsOpacity => 'Window Opacity';
+
+  @override
+  String get checkForUpdates => 'Check for updates';
+
+  @override
+  String get noUpdatesAvailable => 'No updates available';
+
+  @override
+  String get checkingForUpdates => 'Checking for updates';
+
+  @override
+  String get updateAvailableMessage => 'A new version is available.';
+
+  @override
+  String get download => 'Download';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get settingsShakeGesture => 'Shake Gesture';
+
+  @override
+  String get settingsShakePermissionActive => 'Active';
+
+  @override
+  String get settingsShakePermissionInactive => 'Inactive';
+
+  @override
+  String get settingsShakePermissionDescription => 'Shake your mouse cursor to quickly open the drop window.';
+
+  @override
+  String get settingsShakePermissionInstruction => 'To enable this feature, allow accessibility permission in System Settings.';
+
+  @override
+  String settingsShakeRestartHint(String link) {
+    return 'If you have already enabled the permission, click $link to restart the app.';
+  }
+
+  @override
+  String get settingsShakeRestartLink => 'here';
 }

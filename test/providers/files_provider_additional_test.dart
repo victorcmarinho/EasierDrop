@@ -133,6 +133,39 @@ class _TestLocalizations extends AppLocalizations {
 
   @override
   String get settingsOpacity => 'Opacity';
+  @override
+  String get checkForUpdates => 'Check for Updates';
+
+  @override
+  String get checkingForUpdates => 'Checking for updates...';
+
+  @override
+  String get download => 'Download';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get noUpdatesAvailable => 'No updates available';
+
+  @override
+  String get updateAvailableMessage =>
+      'A new version of Easier Drop is available.';
+
+  @override
+  String get settingsShakeGesture => 'Shake Gesture';
+
+  @override
+  String get settingsShakePermissionActive => 'Active';
+
+  @override
+  String get settingsShakePermissionDescription => 'Shake description';
+
+  @override
+  String get settingsShakePermissionInactive => 'Inactive';
+
+  @override
+  String get settingsShakePermissionInstruction => 'Shake instruction';
 }
 
 void main() {

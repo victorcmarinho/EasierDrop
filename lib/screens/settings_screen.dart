@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
+import 'package:easier_drop/helpers/system.dart';
+import 'package:easier_drop/theme/app_theme.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -11,30 +14,59 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen>
+    with WidgetsBindingObserver {
   bool _hasLaunchAtLoginPermission = false;
   bool _isCheckingPermission = true;
+  bool _hasShakePermission = false;
+  bool _checkingShake = true;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkPermission();
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkPermission();
+    }
+  }
+
   Future<void> _checkPermission() async {
-    final hasPermission =
-        await SettingsService.instance.checkLaunchAtLoginPermission();
+    setState(() {
+      _isCheckingPermission = true;
+      _checkingShake = true;
+    });
+
+    final launchPerm = await SettingsService.instance
+        .checkLaunchAtLoginPermission();
+    final shakePerm = await SystemHelper.checkShakePermission();
+
     if (mounted) {
       setState(() {
-        _hasLaunchAtLoginPermission = hasPermission;
+        _hasLaunchAtLoginPermission = launchPerm;
         _isCheckingPermission = false;
+        _hasShakePermission = shakePerm;
+        _checkingShake = false;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return _buildBody(context);
+    return CupertinoTheme(
+      data: AppTheme.getCupertinoTheme(context),
+      child: Material(color: Colors.transparent, child: _buildBody(context)),
+    );
   }
 
   Widget _buildBody(BuildContext context) {
@@ -45,10 +77,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         final loc = AppLocalizations.of(context)!;
 
         return ListView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.only(top: 20, bottom: 20),
           children: [
             Padding(
-              padding: const EdgeInsets.only(bottom: 24.0),
+              padding: const EdgeInsets.only(bottom: 16.0),
               child: Center(
                 child: Text(
                   loc.preferences,
@@ -56,156 +88,191 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-            _buildSectionHeader(context, loc.settingsGeneral),
-            const SizedBox(height: 12),
-            _buildSettingsGroup([
-              _buildSettingsItem(
-                context: context,
-                icon: CupertinoIcons.rocket_fill,
-                label: loc.settingsLaunchAtLogin,
-                child: MacosSwitch(
-                  value: settings.settings.launchAtLogin,
-                  onChanged:
-                      _isCheckingPermission || !_hasLaunchAtLoginPermission
-                          ? null
-                          : (v) async {
+            CupertinoListSection.insetGrouped(
+              header: Text(
+                loc.settingsGeneral.toUpperCase(),
+                style: MacosTheme.of(context).typography.title3,
+              ),
+              backgroundColor: Colors.transparent,
+              children: [
+                CupertinoListTile(
+                  leading: const Icon(CupertinoIcons.rocket_fill),
+                  title: Text(loc.settingsLaunchAtLogin),
+                  trailing: MacosSwitch(
+                    value: settings.settings.launchAtLogin,
+                    onChanged:
+                        _isCheckingPermission || !_hasLaunchAtLoginPermission
+                        ? null
+                        : (v) async {
                             await settings.setLaunchAtLogin(v);
                             if (v) {
                               await _checkPermission();
                             }
                           },
-                ),
-              ),
-
-              _buildDivider(),
-              _buildSettingsItem(
-                context: context,
-                icon: CupertinoIcons.pin_fill,
-                label: loc.settingsAlwaysOnTop,
-                child: MacosSwitch(
-                  value: settings.settings.isAlwaysOnTop,
-                  onChanged: (v) => settings.setAlwaysOnTop(v),
-                ),
-              ),
-            ]),
-            const SizedBox(height: 24),
-            _buildSectionHeader(context, loc.languageLabel),
-            const SizedBox(height: 12),
-            _buildSettingsGroup([
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 16,
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: CupertinoSlidingSegmentedControl<String>(
-                    children: {
-                      'en': Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4,
-                        ),
-                        child: Text(
-                          loc.languageEnglish,
-                          style: MacosTheme.of(context).typography.body,
-                        ),
-                      ),
-                      'pt_BR': Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4,
-                        ),
-                        child: Text(
-                          loc.languagePortuguese,
-                          style: MacosTheme.of(context).typography.body,
-                        ),
-                      ),
-                      'es': Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4,
-                        ),
-                        child: Text(
-                          loc.languageSpanish,
-                          style: MacosTheme.of(context).typography.body,
-                        ),
-                      ),
-                    },
-                    groupValue: settings.localeCode ?? 'en',
-                    onValueChanged: (v) {
-                      if (v != null) settings.setLocale(v);
-                    },
                   ),
                 ),
+                CupertinoListTile(
+                  leading: const Icon(CupertinoIcons.pin_fill),
+                  title: Text(loc.settingsAlwaysOnTop),
+                  trailing: MacosSwitch(
+                    value: settings.settings.isAlwaysOnTop,
+                    onChanged: (v) => settings.setAlwaysOnTop(v),
+                  ),
+                ),
+              ],
+            ),
+            CupertinoListSection.insetGrouped(
+              header: Text(
+                loc.settingsShakeGesture.toUpperCase(),
+                style: MacosTheme.of(context).typography.title3,
               ),
-            ]),
+              backgroundColor: Colors.transparent,
+              footer: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_hasShakePermission)
+                    Text(loc.settingsShakePermissionDescription)
+                  else ...[
+                    Text(loc.settingsShakePermissionInstruction),
+                    const SizedBox(height: 8),
+                    RichText(
+                      text: TextSpan(
+                        style: MacosTheme.of(context).typography.footnote
+                            .copyWith(
+                              color:
+                                  MacosTheme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? const Color(0xFFCCCCCC)
+                                  : const Color(0xFF666666),
+                            ),
+                        children: [..._buildRestartHintSpans(context, loc)],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 8),
+                ],
+              ),
+              children: [
+                CupertinoListTile(
+                  leading: const Icon(CupertinoIcons.shuffle),
+                  title: Text(loc.settingsShakeGesture),
+                  additionalInfo: _checkingShake
+                      ? const CupertinoActivityIndicator()
+                      : Text(
+                          _hasShakePermission
+                              ? loc.settingsShakePermissionActive
+                              : loc.settingsShakePermissionInactive,
+                          style: TextStyle(
+                            color: _hasShakePermission
+                                ? CupertinoColors.activeGreen
+                                : CupertinoColors.destructiveRed,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                  onTap: !_hasShakePermission
+                      ? () => SystemHelper.openAccessibilitySettings()
+                      : null,
+                ),
+              ],
+            ),
+            CupertinoListSection.insetGrouped(
+              header: Text(
+                loc.languageLabel.toUpperCase(),
+                style: MacosTheme.of(context).typography.title3,
+              ),
+              backgroundColor: Colors.transparent,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: CupertinoSlidingSegmentedControl<String>(
+                      children: {
+                        'en': Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
+                          child: Text(
+                            loc.languageEnglish,
+                            style: MacosTheme.of(context).typography.body,
+                          ),
+                        ),
+                        'pt_BR': Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
+                          child: Text(
+                            loc.languagePortuguese,
+                            style: MacosTheme.of(context).typography.body,
+                          ),
+                        ),
+                        'es': Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
+                          child: Text(
+                            loc.languageSpanish,
+                            style: MacosTheme.of(context).typography.body,
+                          ),
+                        ),
+                      },
+                      groupValue: settings.localeCode ?? 'en',
+                      onValueChanged: (v) {
+                        if (v != null) settings.setLocale(v);
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         );
       },
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, bottom: 4),
-      child: Text(
-        title.toUpperCase(),
-        style: MacosTheme.of(context).typography.caption1.copyWith(
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.5,
-        ),
-      ),
-    );
-  }
+  List<InlineSpan> _buildRestartHintSpans(
+    BuildContext context,
+    AppLocalizations loc,
+  ) {
+    final String linkText = loc.settingsShakeRestartLink;
 
-  Widget _buildSettingsGroup(List<Widget> children) {
-    return Container(
-      decoration: BoxDecoration(
-        color: MacosColors.controlBackgroundColor.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: MacosColors.separatorColor.withValues(alpha: 0.2),
-          width: 0.5,
-        ),
-      ),
-      child: Column(children: children),
-    );
-  }
+    const token = '@@LINK@@';
+    final String textWithToken = loc.settingsShakeRestartHint(token);
+    final List<String> parts = textWithToken.split(token);
 
-  Widget _buildSettingsItem({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required Widget child,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: MacosColors.controlColor.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(6),
+    final List<InlineSpan> spans = [];
+
+    if (parts.isNotEmpty) {
+      spans.add(TextSpan(text: parts[0]));
+    }
+
+    if (parts.length > 1) {
+      spans.add(
+        WidgetSpan(
+          alignment: PlaceholderAlignment.baseline,
+          baseline: TextBaseline.alphabetic,
+          child: GestureDetector(
+            onTap: () => SystemHelper.restartApp(),
+            child: Text(
+              linkText,
+              style: TextStyle(
+                color: CupertinoColors.activeBlue,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            child: Icon(icon, size: 16, color: MacosColors.labelColor),
           ),
-          const SizedBox(width: 12),
-          Text(label, style: MacosTheme.of(context).typography.body),
-          const Spacer(),
-          child,
-        ],
-      ),
-    );
-  }
+        ),
+      );
+      spans.add(TextSpan(text: parts[1]));
+    }
 
-  Widget _buildDivider() {
-    return const Divider(
-      height: 1,
-      thickness: 0.5,
-      color: MacosColors.separatorColor,
-      indent: 50,
-    );
+    return spans;
   }
 }

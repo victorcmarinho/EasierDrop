@@ -1,5 +1,6 @@
 import Cocoa
 import FlutterMacOS
+import ApplicationServices
 
 class MacOSShakeMonitor: NSObject {
     static let shared = MacOSShakeMonitor()
@@ -7,8 +8,8 @@ class MacOSShakeMonitor: NSObject {
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
     
-    private var methodChannel: FlutterMethodChannel?
-    private var isSetup = false
+    private var mainChannel: FlutterMethodChannel?
+    private var monitoringStarted = false
     
     // Shake detection variables
     private var lastLocation: CGPoint = .zero
@@ -17,17 +18,45 @@ class MacOSShakeMonitor: NSObject {
     
     // Configurable parameters
     private let shakeThreshold: CGFloat = 10.0
-    private let reversalTimeout: TimeInterval = 0.8
-    private let requiredReversals = 4
+    private let reversalTimeout: TimeInterval = 0.9
+    private let requiredReversals = 3
     
     private var lastDirectionX: Int = 0 // -1 left, 1 right, 0 none
     private var lastDirectionY: Int = 0 // -1 up, 1 down, 0 none
     
     func setup(binaryMessenger: FlutterBinaryMessenger) {
-        if isSetup { return }
-        methodChannel = FlutterMethodChannel(name: "com.easier_drop/shake", binaryMessenger: binaryMessenger)
-        startMonitoring()
-        isSetup = true
+        let channel = FlutterMethodChannel(name: "com.easier_drop/shake", binaryMessenger: binaryMessenger)
+        channel.setMethodCallHandler { [weak self] call, result in
+             self?.handleMethodCall(call: call, result: result)
+        }
+        
+        if mainChannel == nil {
+            mainChannel = channel
+        }
+        
+        if !monitoringStarted {
+            startMonitoring()
+            monitoringStarted = true
+        }
+    }
+
+    private func handleMethodCall(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if call.method == "checkPermission" {
+            let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: false]
+            var isTrusted = AXIsProcessTrustedWithOptions(options as CFDictionary)
+            
+            if eventTap == nil {
+                startMonitoring()
+            }
+            
+            if eventTap != nil {
+                isTrusted = true
+            }
+            
+            result(isTrusted)
+        } else {
+            result(FlutterMethodNotImplemented)
+        }
     }
     
     func startMonitoring() {
@@ -150,7 +179,7 @@ class MacOSShakeMonitor: NSObject {
         ]
         
         DispatchQueue.main.async { [weak self] in
-            self?.methodChannel?.invokeMethod("shake_detected", arguments: args)
+            self?.mainChannel?.invokeMethod("shake_detected", arguments: args)
         }
     }
 }

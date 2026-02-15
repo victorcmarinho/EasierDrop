@@ -336,6 +336,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Window Opacity'**
   String get settingsOpacity;
+
+  /// No description provided for @checkForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for updates'**
+  String get checkForUpdates;
+
+  /// No description provided for @noUpdatesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No updates available'**
+  String get noUpdatesAvailable;
+
+  /// No description provided for @checkingForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for updates'**
+  String get checkingForUpdates;
+
+  /// No description provided for @updateAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version is available.'**
+  String get updateAvailableMessage;
+
+  /// No description provided for @download.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get download;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @settingsShakeGesture.
+  ///
+  /// In en, this message translates to:
+  /// **'Shake Gesture'**
+  String get settingsShakeGesture;
+
+  /// No description provided for @settingsShakePermissionActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get settingsShakePermissionActive;
+
+  /// No description provided for @settingsShakePermissionInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get settingsShakePermissionInactive;
+
+  /// No description provided for @settingsShakePermissionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Shake your mouse cursor to quickly open the drop window.'**
+  String get settingsShakePermissionDescription;
+
+  /// No description provided for @settingsShakePermissionInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'To enable this feature, allow accessibility permission in System Settings.'**
+  String get settingsShakePermissionInstruction;
+
+  /// No description provided for @settingsShakeRestartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'If you have already enabled the permission, click {link} to restart the app.'**
+  String settingsShakeRestartHint(String link);
+
+  /// No description provided for @settingsShakeRestartLink.
+  ///
+  /// In en, this message translates to:
+  /// **'here'**
+  String get settingsShakeRestartLink;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

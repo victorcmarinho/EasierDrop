@@ -93,6 +93,8 @@ class AnalyticsService {
   void shakeDetected(double x, double y) =>
       trackEvent('shake_detected', {'x': x, 'y': y});
 
+  void shakeLimitReached() => trackEvent('shake_limit_reached');
+
   void fileLimitReached() => trackEvent('file_limit_reached');
 
   void updateCheckStarted() => trackEvent('update_check_started');

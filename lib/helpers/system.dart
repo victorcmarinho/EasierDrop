@@ -1,13 +1,14 @@
 import 'dart:io' as io;
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:easier_drop/services/analytics_service.dart';
+import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:desktop_multi_window/desktop_multi_window.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:easier_drop/services/tray_service.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
-import 'package:flutter/services.dart';
-import 'package:desktop_multi_window/desktop_multi_window.dart';
-import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
 
 class SystemHelper with WindowListener {
   static final SystemHelper _instance = SystemHelper();
@@ -15,6 +16,35 @@ class SystemHelper with WindowListener {
   static const MethodChannel _shakeChannel = MethodChannel(
     AppConstants.shakeChannelName,
   );
+
+  static Future<bool> checkShakePermission() async {
+    try {
+      final bool? result = await _shakeChannel.invokeMethod<bool>(
+        'checkPermission',
+      );
+      return result ?? false;
+    } catch (e) {
+      AnalyticsService.instance.warn('Failed to check shake permission: $e');
+      return false;
+    }
+  }
+
+  static Future<void> openAccessibilitySettings() async {
+    final Uri url = Uri.parse(
+      'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility',
+    );
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      // Fallback for older macOS or if the specific URI scheme fails
+      final Uri fallbackUrl = Uri.parse(
+        'x-apple.systempreferences:com.apple.preference.security',
+      );
+      if (await canLaunchUrl(fallbackUrl)) {
+        await launchUrl(fallbackUrl);
+      }
+    }
+  }
 
   static Future<void> hide() async {
     await Future.wait([
@@ -37,14 +67,14 @@ class SystemHelper with WindowListener {
   }) {
     return {
       'args': args,
-      if (title != null) 'title': title,
+      'title': ?title,
       'width': width,
       'height': height,
       'center': center,
       'resizable': resizable,
       'maximizable': maximizable,
-      if (x != null) 'x': x,
-      if (y != null) 'y': y,
+      'x': ?x,
+      'y': ?y,
     };
   }
 
@@ -65,6 +95,22 @@ class SystemHelper with WindowListener {
     AnalyticsService.instance.settingsOpened();
   }
 
+  static Future<void> openUpdateWindow() async {
+    final window = await WindowController.create(
+      WindowConfiguration(
+        arguments: jsonEncode(
+          _createWindowArgs(
+            args: AppConstants.routeUpdate,
+            title: 'Software Update',
+            width: 400.0,
+            height: 300.0,
+          ),
+        ),
+      ),
+    );
+    await window.show();
+  }
+
   static Future<void> open() async {
     await Future.wait([
       windowManager.show(),
@@ -72,6 +118,18 @@ class SystemHelper with WindowListener {
       windowManager.setSkipTaskbar(false),
     ]);
     AnalyticsService.instance.trackEvent('window_shown');
+  }
+
+  static Future<void> restartApp() async {
+    if (io.Platform.isMacOS) {
+      final String executable = io.Platform.resolvedExecutable;
+      final String appBundlePath = io.File(
+        executable,
+      ).parent.parent.parent.path;
+
+      await io.Process.start('open', ['-n', appBundlePath]);
+      await exit();
+    }
   }
 
   static Future<void> exit() async {
@@ -132,6 +190,9 @@ class SystemHelper with WindowListener {
     );
     await windowManager.setResizable(false);
     await windowManager.setMaximizable(false);
+    await windowManager.setAlwaysOnTop(
+      SettingsService.instance.settings.isAlwaysOnTop,
+    );
 
     try {
       final controller = await WindowController.fromCurrentEngine();
@@ -174,6 +235,16 @@ class SystemHelper with WindowListener {
   }
 
   static Future<void> _createNewWindow(double x, double y) async {
+    final windowIds = await WindowController.getAll();
+    if (windowIds.length >= AppConstants.maxWindows) {
+      AnalyticsService.instance.debug(
+        'Max windows reached (${windowIds.length}), ignoring shake',
+        tag: 'SystemHelper',
+      );
+      AnalyticsService.instance.shakeLimitReached();
+      return;
+    }
+
     AnalyticsService.instance.debug(
       'Creating shake window at $x, $y',
       tag: 'SystemHelper',

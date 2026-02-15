@@ -46,5 +46,20 @@
   "settingsLaunchAtLogin": "Launch at Login",
 
   "settingsAlwaysOnTop": "Always on Top",
-  "settingsOpacity": "Window Opacity"
+  "settingsOpacity": "Window Opacity",
+
+  "checkForUpdates": "Check for updates",
+  "noUpdatesAvailable": "No updates available",
+  "checkingForUpdates": "Checking for updates",
+  "updateAvailableMessage": "A new version is available.",
+  "download": "Download",
+  "later": "Later",
+  "settingsShakeGesture": "Shake Gesture",
+  "settingsShakePermissionActive": "Active",
+  "settingsShakePermissionInactive": "Inactive",
+  "settingsShakePermissionDescription": "Shake your mouse cursor to quickly open the drop window.",
+  "settingsShakePermissionInstruction": "To enable this feature, allow accessibility permission in System Settings.",
+  "settingsShakeRestartHint": "If you have already enabled the permission, click {link} to restart the app.",
+  "@settingsShakeRestartHint": {"placeholders": {"link": {"type": "String"}}},
+  "settingsShakeRestartLink": "here"
 }

@@ -43,6 +43,7 @@ class AppConstants {
 
   // System Dimensions
   static const double defaultWindowSize = 250.0;
+  static const int maxWindows = 3;
 
   // Platform Channels
   static const String shakeChannelName = 'com.easier_drop/shake';
@@ -51,6 +52,7 @@ class AppConstants {
   static const String routeHome = '/';
   static const String routeSettings = '/settings';
   static const String routeShare = '/share';
+  static const String routeUpdate = '/update';
 }
 
 /// Chaves semânticas para testes e acessibilidade
