@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

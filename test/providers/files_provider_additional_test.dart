@@ -166,6 +166,12 @@ class _TestLocalizations extends AppLocalizations {
 
   @override
   String get settingsShakePermissionInstruction => 'Shake instruction';
+
+  @override
+  String settingsShakeRestartHint(String token) => 'Restart hint $token';
+
+  @override
+  String get settingsShakeRestartLink => 'Restart app';
 }
 
 void main() {
