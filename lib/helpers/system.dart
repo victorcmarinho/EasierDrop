@@ -190,6 +190,9 @@ class SystemHelper with WindowListener {
     );
     await windowManager.setResizable(false);
     await windowManager.setMaximizable(false);
+    await windowManager.setAlwaysOnTop(
+      SettingsService.instance.settings.isAlwaysOnTop,
+    );
 
     try {
       final controller = await WindowController.fromCurrentEngine();
