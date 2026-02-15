@@ -67,14 +67,14 @@ class SystemHelper with WindowListener {
   }) {
     return {
       'args': args,
-      if (title != null) 'title': title,
+      'title': ?title,
       'width': width,
       'height': height,
       'center': center,
       'resizable': resizable,
       'maximizable': maximizable,
-      if (x != null) 'x': x,
-      if (y != null) 'y': y,
+      'x': ?x,
+      'y': ?y,
     };
   }
 
