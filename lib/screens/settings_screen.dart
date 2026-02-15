@@ -55,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen>
       setState(() {
         _hasLaunchAtLoginPermission = launchPerm;
         _isCheckingPermission = false;
-        _hasShakePermission = kDebugMode || shakePerm;
+        _hasShakePermission = shakePerm;
         _checkingShake = false;
       });
     }
