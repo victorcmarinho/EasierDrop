@@ -81,87 +81,115 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildHeader(AppLocalizations loc, ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-      color: theme.colorScheme.surface.withValues(alpha: 0.8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Image.asset('assets/icon/icon.png', width: 40, height: 40),
-              const SizedBox(width: 12),
-              Text(
-                'Easier Drop',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-            ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isMobile = constraints.maxWidth < 700;
+
+        return Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 20 : 40,
+            vertical: 20,
           ),
-          Row(
-            children: [
-              DropdownButton<String>(
-                value: loc.localeName,
-                underline: const SizedBox.shrink(),
-                icon: Icon(
-                  Icons.language,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                items: [
-                  DropdownMenuItem(
-                    value: 'en',
-                    child: Text(
-                      'English',
-                      style: TextStyle(color: theme.colorScheme.onSurface),
+          color: theme.colorScheme.surface.withValues(alpha: 0.8),
+          child: isMobile
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeaderLogo(theme),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildHeaderLanguage(loc, theme),
+                        _buildHeaderDownloadButton(loc, theme),
+                      ],
                     ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'es',
-                    child: Text(
-                      'Español',
-                      style: TextStyle(color: theme.colorScheme.onSurface),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildHeaderLogo(theme),
+                    Row(
+                      children: [
+                        _buildHeaderLanguage(loc, theme),
+                        const SizedBox(width: 24),
+                        _buildHeaderDownloadButton(loc, theme),
+                      ],
                     ),
-                  ),
-                  DropdownMenuItem(
-                    value: 'pt',
-                    child: Text(
-                      'Português',
-                      style: TextStyle(color: theme.colorScheme.onSurface),
-                    ),
-                  ),
-                ],
-                dropdownColor: theme.colorScheme.surfaceContainer,
-                onChanged: (val) {
-                  if (val != null) {
-                    WebsiteApp.setLocale(context, Locale(val));
-                  }
-                },
-              ),
-              const SizedBox(width: 24),
-              ElevatedButton(
-                onPressed: () => _launchUrl(
-                  'https://github.com/victorcmarinho/EasierDrop/releases',
+                  ],
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text(loc.webDownloadMac),
-              ),
-            ],
+        );
+      },
+    );
+  }
+
+  Widget _buildHeaderLogo(ThemeData theme) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset('assets/icon/icon.png', width: 40, height: 40),
+        const SizedBox(width: 12),
+        Text(
+          'Easier Drop',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onSurface,
           ),
-        ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderLanguage(AppLocalizations loc, ThemeData theme) {
+    return DropdownButton<String>(
+      value: loc.localeName,
+      underline: const SizedBox.shrink(),
+      icon: Icon(Icons.language, color: theme.colorScheme.onSurfaceVariant),
+      items: [
+        DropdownMenuItem(
+          value: 'en',
+          child: Text(
+            'English',
+            style: TextStyle(color: theme.colorScheme.onSurface),
+          ),
+        ),
+        DropdownMenuItem(
+          value: 'es',
+          child: Text(
+            'Español',
+            style: TextStyle(color: theme.colorScheme.onSurface),
+          ),
+        ),
+        DropdownMenuItem(
+          value: 'pt',
+          child: Text(
+            'Português',
+            style: TextStyle(color: theme.colorScheme.onSurface),
+          ),
+        ),
+      ],
+      dropdownColor: theme.colorScheme.surfaceContainer,
+      onChanged: (val) {
+        if (val != null) {
+          WebsiteApp.setLocale(context, Locale(val));
+        }
+      },
+    );
+  }
+
+  Widget _buildHeaderDownloadButton(AppLocalizations loc, ThemeData theme) {
+    return ElevatedButton(
+      onPressed: () =>
+          _launchUrl('https://github.com/victorcmarinho/EasierDrop/releases'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
+      child: Text(loc.webDownloadMac),
     );
   }
 
