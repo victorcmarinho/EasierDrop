@@ -61,7 +61,7 @@ flutter:
     - path: assets/promo/demo.webp
       platforms:
         - web
-    - path: assets/web/rich_link_banner.png
+    - path: assets/promo/multi_window.png
       platforms:
         - web
     - path: CHANGELOG.md

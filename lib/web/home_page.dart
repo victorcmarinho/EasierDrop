@@ -492,7 +492,7 @@ class _HomePageState extends State<HomePage> {
           subtitle:
               'A prateleira flutuante para arquivos que falta no seu macOS. Organize seu fluxo de trabalho de forma nativa e rápida.',
           url: 'https://easierdrop.victorcmarinho.app/',
-          imagePath: 'assets/web/rich_link_banner.png',
+          imagePath: 'assets/promo/multi_window.png',
         ),
       ),
     );
