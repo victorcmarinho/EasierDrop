@@ -69,7 +69,7 @@ void main() {
 
     test('getIcon calls FileIconHelper', () async {
       final result = await repository.getIcon(tempFile.path);
-      // FileIconHelper.getFileIcon might return null on some platforms/environments
+
       expect(result, anyOf(isNull, isA<Uint8List>()));
     });
 
@@ -99,17 +99,15 @@ void main() {
     });
 
     test('_testReadability handles FileSystemException', () async {
-      // On macOS we can use chmod to test permission denied
       final nonReadable = File('non_readable.txt');
       await nonReadable.writeAsString('secret');
-      // Remove all permissions
+
       await Process.run('chmod', ['000', nonReadable.path]);
 
       try {
         final result = await repository.validateFile(nonReadable.path);
         expect(result, isFalse);
       } finally {
-        // Restore permissions so we can delete it
         await Process.run('chmod', ['644', nonReadable.path]);
         if (await nonReadable.exists()) {
           await nonReadable.delete();
@@ -118,7 +116,6 @@ void main() {
     });
 
     test('_testReadability handles generic exception', () async {
-      // Use IOOverrides for generic exception as it's hard to trigger naturally
       await IOOverrides.runZoned(
         () async {
           final result = await repository.validateFile('generic_exception.txt');
@@ -131,7 +128,7 @@ void main() {
             when(
               () => mockFile.stat(),
             ).thenAnswer((_) async => _MockFileStat(FileSystemEntityType.file));
-            // Throw a generic Exception that is NOT a FileSystemException
+
             when(
               () => mockFile.open(mode: any(named: 'mode')),
             ).thenAnswer((_) async => throw Exception('Generic error'));

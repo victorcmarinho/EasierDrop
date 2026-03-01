@@ -62,18 +62,15 @@ void main() {
       await tester.pump();
       expect(provider.files.length, 1);
 
-      // Test with error status
       coordinator.handleOutboundTest({'status': 'error', 'op': 'move'});
-      expect(provider.files.length, 1); // Should not clear on error
+      expect(provider.files.length, 1);
 
-      // Test with missing status
       coordinator.handleOutboundTest({'op': 'move'});
-      expect(provider.files.length, 1); // Should not clear without status
+      expect(provider.files.length, 1);
 
-      // Test with ok status and move
       coordinator.handleOutboundTest({'status': 'ok', 'op': 'move'});
       await tester.pump();
-      expect(provider.files.length, 0); // Should clear on ok move
+      expect(provider.files.length, 0);
     });
 
     testWidgets('handles empty and null responses', (tester) async {
@@ -86,11 +83,9 @@ void main() {
       await tester.pump();
       expect(provider.files.length, 1);
 
-      // Test with empty map
       coordinator.handleOutboundTest({});
       expect(provider.files.length, 1);
 
-      // Test with null values
       coordinator.handleOutboundTest({'status': null, 'op': null});
       expect(provider.files.length, 1);
     });
@@ -101,17 +96,14 @@ void main() {
       context = tester.element(find.byType(SizedBox));
       coordinator = DragCoordinator(context);
 
-      // Test basic functionality
       expect(coordinator, isA<DragCoordinator>());
 
-      // Test multiple files
       provider.addFileForTest(const FileReference(pathname: '/tmp/file1'));
       provider.addFileForTest(const FileReference(pathname: '/tmp/file2'));
       provider.addFileForTest(const FileReference(pathname: '/tmp/file3'));
       await tester.pump();
       expect(provider.files.length, 3);
 
-      // Test move operation clears all files
       coordinator.handleOutboundTest({'status': 'ok', 'op': 'move'});
       await tester.pump();
       expect(provider.files.length, 0);
@@ -123,7 +115,6 @@ void main() {
       context = tester.element(find.byType(SizedBox));
       coordinator = DragCoordinator(context);
 
-      // Test with different operation types
       final operations = ['copy', 'link', 'generic', 'unknown', ''];
 
       for (final op in operations) {
@@ -147,7 +138,6 @@ void main() {
       context = tester.element(find.byType(SizedBox));
       coordinator = DragCoordinator(context);
 
-      // Mock channels
       const dropChannel = MethodChannel('file_drop_channel');
       const dragOutChannel = MethodChannel('file_drag_out_channel');
 
@@ -157,7 +147,7 @@ void main() {
           .setMockMethodCallHandler(dragOutChannel, (call) async => null);
 
       await coordinator.init();
-      // Calling init again moves early return
+
       await coordinator.init();
 
       coordinator.setHover(true);
@@ -180,16 +170,13 @@ void main() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(dragOutChannel, (call) async => null);
 
-      // No files case
       await coordinator.beginExternalDrag();
       expect(coordinator.draggingOut.value, isFalse);
 
-      // With files
       provider.addFileForTest(const FileReference(pathname: '/tmp/test'));
       await coordinator.beginExternalDrag();
       expect(coordinator.draggingOut.value, isTrue);
 
-      // Wait for timers to complete
       await tester.pump(const Duration(milliseconds: 500));
 
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger

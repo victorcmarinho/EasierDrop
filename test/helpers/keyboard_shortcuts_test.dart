@@ -161,7 +161,6 @@ void main() {
       const channel = MethodChannel('pasteboard');
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-            // Some packages use 'getFiles', others 'files'. We'll handle both.
             if (methodCall.method == 'getFiles' ||
                 methodCall.method == 'files') {
               return ['/test/file1.txt'];
@@ -199,14 +198,11 @@ void main() {
         ),
       );
 
-      // Invoke the action directly to ensure coverage of the logic
-      // and avoid flaky keyboard simulation for this specific test
       await tester.runAsync(() async {
         final action = Actions.maybeFind<PasteFilesIntent>(actionContext);
         expect(action, isNotNull);
         Actions.invoke(actionContext, const PasteFilesIntent());
 
-        // Give it some time to complete
         await Future.delayed(const Duration(milliseconds: 50));
       });
 

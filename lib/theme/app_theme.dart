@@ -71,7 +71,6 @@ class AppTheme {
   }
 
   static MacosTypography get _darkTypography {
-    // Create a dark version by applying white color
     const color = MacosColors.white;
     return MacosTypography(
       color: color,
@@ -140,7 +139,6 @@ class AppTheme {
   static MacosThemeData get dark =>
       MacosThemeData.dark().copyWith(typography: _darkTypography);
 
-  /// Returns a CupertinoThemeData adapted for macOS desktop sizing (13pt body).
   static CupertinoThemeData getCupertinoTheme(BuildContext context) {
     final macos = MacosTheme.of(context);
     final isDark = macos.brightness == Brightness.dark;

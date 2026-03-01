@@ -58,7 +58,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
       toolBar: const ToolBar(
         title: Text('Software Update'),
         titleWidth: 150.0,
-        automaticallyImplyLeading: false, // Disable back button
+        automaticallyImplyLeading: false,
       ),
       children: [
         ContentArea(

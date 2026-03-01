@@ -8,7 +8,7 @@ void main() {
   testWidgets('AnimatedFileIcon builds preview when available', (tester) async {
     final file = FileReference(
       pathname: '/test.png',
-      // Minimal 1x1 transparent PNG
+
       previewData: Uint8List.fromList([
         0x89,
         0x50,
@@ -103,7 +103,7 @@ void main() {
   ) async {
     final file = FileReference(
       pathname: '/test.png',
-      // Minimal 1x1 transparent PNG
+
       iconData: Uint8List.fromList([
         0x89,
         0x50,

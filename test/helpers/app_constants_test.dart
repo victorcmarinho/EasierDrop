@@ -103,7 +103,6 @@ void main() {
         SemanticKeys.dropArea,
       ];
 
-      // Convert to set to check uniqueness
       final uniqueKeys = keys.toSet();
       expect(uniqueKeys.length, equals(keys.length));
     });
@@ -132,12 +131,10 @@ void main() {
     });
 
     test('opacity values are ordered logically', () {
-      // subtle should be the lowest
       expect(AppOpacity.subtle, lessThan(AppOpacity.disabled));
       expect(AppOpacity.subtle, lessThan(AppOpacity.border));
       expect(AppOpacity.subtle, lessThan(AppOpacity.overlay));
 
-      // disabled should be less than overlay
       expect(AppOpacity.disabled, lessThan(AppOpacity.overlay));
     });
   });

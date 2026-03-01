@@ -64,13 +64,11 @@ class _AsyncFileWrapperState extends State<AsyncFileWrapper>
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // O ícone real ou shimmer
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: widget.isProcessing ? _buildShimmer() : widget.child,
               ),
 
-              // Feedback de conclusão (Glow)
               if (!widget.isProcessing) _buildSuccessGlow(),
             ],
           ),

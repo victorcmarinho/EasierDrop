@@ -48,10 +48,8 @@ void main() {
 
       final addFuture = provider.addFile(file);
 
-      // Need to wait for microtask because _scheduleNotify uses scheduleMicrotask
       await Future.microtask(() {});
 
-      // Before adding finishes, it should be in the list and processing
       expect(provider.files.length, 1);
       expect(provider.files.first.pathname, file.pathname);
       expect(provider.files.first.isProcessing, true);
@@ -59,7 +57,6 @@ void main() {
       await addFuture;
       await Future.microtask(() {});
 
-      // After adding finishes, it should not be processing
       expect(provider.files.first.isProcessing, false);
       verify(() => mockRepo.validateFile('/path/to/file1.txt')).called(1);
     });
@@ -194,7 +191,6 @@ void main() {
       await Future.microtask(() {});
       expect(provider.files.length, 2);
 
-      // Now set validation to fail for file2
       when(() => mockRepo.validateFileSync('/valid.txt')).thenReturn(true);
       when(() => mockRepo.validateFileSync('/invalid.txt')).thenReturn(false);
       provider.rescanNow();

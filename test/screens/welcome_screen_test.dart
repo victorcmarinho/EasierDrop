@@ -36,18 +36,14 @@ void main() {
       ),
     );
 
-    // Verify initial state
     expect(find.text('Easier Drop'), findsOneWidget);
     expect(find.byIcon(CupertinoIcons.cloud_download), findsOneWidget);
 
-    // Wait for animations and navigation delay
     await tester.pump(AppConstants.welcomeAnimationDuration);
     await tester.pump(AppConstants.welcomeNavigationDelay);
 
-    // Pump for the transition duration
     await tester.pumpAndSettle();
 
-    // Verify navigation happened
     expect(find.byType(FileTransferScreen), findsOneWidget);
   });
 }

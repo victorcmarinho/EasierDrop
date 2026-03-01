@@ -37,7 +37,6 @@ class FilesProvider with ChangeNotifier {
     }
   }
 
-  // Getters públicos
   int get _maxFiles => _maxFilesOverride ?? SettingsService.instance.maxFiles;
   DateTime? get lastLimitHit => _lastLimitHit;
   bool get isEmpty => _files.isEmpty;

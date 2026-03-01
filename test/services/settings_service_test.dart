@@ -26,7 +26,6 @@ void main() {
       settingsService = SettingsService.instance;
       settingsService.resetForTesting();
 
-      // Cleanup before test
       if (await testSettingsFile.exists()) {
         await testSettingsFile.delete();
       }
@@ -42,19 +41,15 @@ void main() {
       await settingsService.load();
 
       expect(settingsService.isLoaded, true);
-      expect(settingsService.maxFiles, 100); // Default from AppSettings
+      expect(settingsService.maxFiles, 100);
 
-      expect(
-        settingsService.settings.isAlwaysOnTop,
-        true,
-      ); // Changed from false to true
+      expect(settingsService.settings.isAlwaysOnTop, true);
     });
 
     test('should update and persist MaxFiles', () async {
       await settingsService.load();
       settingsService.setMaxFiles(50);
 
-      // Manually trigger persist for testing to avoid debounce timing issues
       await settingsService.persist();
 
       expect(await testSettingsFile.exists(), true);
@@ -64,12 +59,9 @@ void main() {
 
     test('should toggle Always on Top', () async {
       await settingsService.load();
-      expect(
-        settingsService.settings.isAlwaysOnTop,
-        true,
-      ); // Changed from false to true
+      expect(settingsService.settings.isAlwaysOnTop, true);
 
-      settingsService.setAlwaysOnTop(false); // Toggle to false
+      settingsService.setAlwaysOnTop(false);
       expect(settingsService.settings.isAlwaysOnTop, false);
     });
 
@@ -134,8 +126,6 @@ void main() {
 
       await settingsService.load();
       await settingsService.setLaunchAtLogin(true);
-      // Value should not update if native call fails (actually it depends on implementation,
-      // here it catches error but doesn't set value if it fails before setSettings)
 
       final hasPerm = await settingsService.checkLaunchAtLoginPermission();
       expect(hasPerm, false);
@@ -152,12 +142,9 @@ void main() {
     test('should reload settings when file changes', () async {
       await settingsService.load();
 
-      // Manually modify the file to trigger a reload
       final updatedSettings = {'maxFiles': 150, 'version': 1};
       await testSettingsFile.writeAsString(jsonEncode(updatedSettings));
 
-      // Wait for the watcher to trigger and reload
-      // The debounce and file system events might take some time
       await Future.delayed(const Duration(milliseconds: 500));
 
       expect(settingsService.maxFiles, 150);
@@ -166,13 +153,13 @@ void main() {
     test('should handle empty or invalid settings file', () async {
       await testSettingsFile.writeAsString('');
       await settingsService.load();
-      // Should fall back to default when file is empty
+
       expect(settingsService.maxFiles, 100);
 
       await testSettingsFile.writeAsString('{invalid_json}');
-      // Trigger reload
+
       await Future.delayed(const Duration(milliseconds: 100));
-      // Should still be at previous state or handled gracefully
+
       expect(settingsService.isLoaded, true);
     });
 

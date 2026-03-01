@@ -122,7 +122,7 @@ void main() {
 
     test('UpdateService default constructor uses GitHubUpdateClient', () {
       final service = UpdateService();
-      // Since _client is private, we can't check it directly, but we can verify it doesn't throw
+
       expect(service, isNotNull);
     });
   });

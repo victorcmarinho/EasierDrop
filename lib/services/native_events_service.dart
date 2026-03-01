@@ -53,7 +53,6 @@ class NativeEventsService {
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
-      // Fallback for older macOS or if the specific URI scheme fails
       final Uri fallbackUrl = Uri.parse(
         'x-apple.systempreferences:com.apple.preference.security',
       );

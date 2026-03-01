@@ -167,7 +167,6 @@ void main() {
   testWidgets('DragDrop responde corretamente a mudanças no provider', (
     tester,
   ) async {
-    // Começar com arquivos vazios
     when(mockFilesProvider.files).thenReturn([]);
 
     await tester.pumpWidget(
@@ -180,14 +179,12 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(DragDrop), findsOneWidget);
 
-    // Simular mudança para ter arquivos
     final files = [
       const TestFileReference('/path/to/file1.txt'),
       const TestFileReference('/path/to/file2.txt'),
     ];
     when(mockFilesProvider.files).thenReturn(files);
 
-    // Simular notificação de mudança
     await tester.pump();
     await tester.pumpAndSettle();
 
@@ -197,17 +194,14 @@ void main() {
   testWidgets('DragDrop funciona com diferentes estados do provider', (
     tester,
   ) async {
-    // Suprimir erros de overflow do flutter durante os testes
     FlutterError.onError = (FlutterErrorDetails details) {
       if (details.exception is FlutterError &&
           details.exception.toString().contains('RenderFlex overflowed')) {
-        // Ignora os erros de overflow do RenderFlex
         return;
       }
       FlutterError.presentError(details);
     };
 
-    // Teste com um arquivo
     when(
       mockFilesProvider.files,
     ).thenReturn([const TestFileReference('/path/to/single_file.txt')]);
@@ -222,17 +216,15 @@ void main() {
     await tester.pump();
     expect(find.byType(DragDrop), findsOneWidget);
 
-    // Teste com muitos arquivos
     final manyFiles = List.generate(
-      3, // Reduzir para evitar overflow
-      (index) => TestFileReference('/file$index.txt'), // Nomes mais curtos
+      3,
+      (index) => TestFileReference('/file$index.txt'),
     );
     when(mockFilesProvider.files).thenReturn(manyFiles);
 
     await tester.pump();
     expect(find.byType(DragDrop), findsOneWidget);
 
-    // Restaurar o handler de erro original
     FlutterError.onError = FlutterError.presentError;
   });
 
@@ -247,7 +239,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(DragDrop), findsOneWidget);
 
-    // Testar reconstrução
     await tester.pumpWidget(
       TestWrapper(
         filesProvider: mockFilesProvider,
@@ -258,7 +249,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(DragDrop), findsOneWidget);
 
-    // Testar remoção
     await tester.pumpWidget(
       TestWrapper(
         filesProvider: mockFilesProvider,
@@ -358,7 +348,6 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Perform a drag to trigger _isDragArea and callback
     await tester.drag(find.byType(DragDrop), const Offset(0, 50));
     await tester.pump();
   });

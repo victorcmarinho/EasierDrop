@@ -105,7 +105,6 @@ void main() {
         ),
       );
 
-      // Need to pump and settle because of AnimatedSwitcher and AsyncFileWrapper animations
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pumpAndSettle();
@@ -126,8 +125,6 @@ void main() {
 
         await tester.pump();
         expect(find.byType(Image), findsNothing);
-        // We can't easily find Shimmer widget if it's not exported or if it's internal,
-        // but we can check for its presence via type if we import it or just check for absence of Image.
       });
     });
   });

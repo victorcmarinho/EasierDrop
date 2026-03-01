@@ -32,7 +32,6 @@ class KeyboardShortcuts {
     LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.comma):
         const PreferencesIntent(),
 
-    // Compartilhar: Cmd+Shift+C ou Cmd+Enter
     LogicalKeySet(
       LogicalKeyboardKey.meta,
       LogicalKeyboardKey.shift,

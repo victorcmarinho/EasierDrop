@@ -112,10 +112,8 @@ void main() {
     test('initialization: main and secondary', () async {
       await SystemHelper.initialize(isSecondaryWindow: false);
 
-      // Secondary window (should now work with valid JSON return above)
       await SystemHelper.initialize(isSecondaryWindow: true, windowId: '0');
 
-      // Toggle secondary with invalid JSON to hit catch block
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(multiWindowChannel, (call) async {
             if (call.method == 'getWindowArguments') return 'invalid';
@@ -127,10 +125,9 @@ void main() {
     test('window listener methods', () async {
       WindowManagerService.instance.onWindowClose();
 
-      // Ensure we have a different value before calling resize
       SettingsService.instance.setWindowBounds(w: 0.0, h: 0.0);
       WindowManagerService.instance.onWindowResize();
-      // Use a robust wait for the async void method to finish
+
       for (
         int i = 0;
         i < 10 && SettingsService.instance.settings.windowW != 400.0;
@@ -140,7 +137,6 @@ void main() {
       }
       expect(SettingsService.instance.settings.windowW, equals(400.0));
 
-      // Ensure we have a different value before calling move
       SettingsService.instance.setWindowBounds(x: 0.0, y: 0.0);
       WindowManagerService.instance.onWindowMove();
       for (
@@ -156,7 +152,6 @@ void main() {
     test('shake event and settings trigger', () async {
       await SystemHelper.initialize();
 
-      // Shake
       await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .handlePlatformMessage(
             AppConstants.shakeChannelName,
@@ -166,16 +161,14 @@ void main() {
             (_) {},
           );
 
-      // Settings change
       SettingsService.instance.setWindowOpacity(0.5);
       await Future.delayed(const Duration(milliseconds: 100));
     });
 
     test('openSettings and restore position error', () async {
-      // Mock for openSettings
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(multiWindowChannel, (call) async {
-            if (call.method == 'createWindow') return 1; // Try int
+            if (call.method == 'createWindow') return 1;
             if (call.method == 'getWindowArguments') {
               return jsonEncode({'args': 'test'});
             }
@@ -185,7 +178,6 @@ void main() {
       try {
         await WindowManagerService.instance.openSettings();
       } catch (_) {
-        // If int fails, try String
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
             .setMockMethodCallHandler(multiWindowChannel, (call) async {
               if (call.method == 'createWindow') return '1';
@@ -197,7 +189,6 @@ void main() {
         await WindowManagerService.instance.openSettings();
       }
 
-      // Force error in setPosition
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(windowChannel, (call) async {
             if (call.method == 'setPosition') throw Exception();

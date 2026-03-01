@@ -86,17 +86,15 @@ class FilesSurface extends StatelessWidget {
     return BoxDecoration(
       color: theme.canvasColor.withValues(alpha: 0.03),
       border: Border.all(
-        color:
-            hovering
-                ? theme.primaryColor.withValues(alpha: 0.7)
-                : MacosColors.transparent,
+        color: hovering
+            ? theme.primaryColor.withValues(alpha: 0.7)
+            : MacosColors.transparent,
         width: FilesSurfaceStyles.borderWidth,
       ),
       borderRadius: BorderRadius.circular(FilesSurfaceStyles.borderRadius),
     );
   }
 
-  /// Constrói o conteúdo principal com arquivos
   Widget _buildFileContent() {
     return Selector<FilesProvider, List<FileReference>>(
       selector: (_, provider) => provider.files,
@@ -122,18 +120,17 @@ class FilesSurface extends StatelessWidget {
     );
   }
 
-  /// Constrói a exibição dos arquivos ou área de drop
   Widget _buildFilesDisplay(BuildContext context, List<FileReference> files) {
     return SizedBox(
       height:
           MediaQuery.of(context).size.height *
           FilesSurfaceStyles.contentHeightFactor,
-      child:
-          files.isNotEmpty ? FilesStack(droppedFiles: files) : const DropHit(),
+      child: files.isNotEmpty
+          ? FilesStack(droppedFiles: files)
+          : const DropHit(),
     );
   }
 
-  /// Constrói o label do arquivo
   Widget _buildFileLabel(String label) {
     return Padding(
       padding: const EdgeInsets.only(top: FilesSurfaceStyles.badgeTopPadding),
