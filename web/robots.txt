@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://victorcmarinho.github.io/EasierDrop/sitemap.xml
+Sitemap: https://easierdrop.victorcmarinho.app/sitemap.xml
