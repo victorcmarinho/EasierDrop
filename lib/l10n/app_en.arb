@@ -1,4 +1,5 @@
 {
+  "@@locale": "en",
   "appTitle": "Easier Drop",
   "dropHere": "Drop files here",
   "clearFilesTitle": "Clear files?",
@@ -13,41 +14,75 @@
   "semAreaLabel": "File collection area",
   "semAreaHintEmpty": "Empty. Drag files here.",
   "semAreaHintHas": "Contains {count, plural, one{{count} file} other{{count} files}}. Drag out to move or share.",
-  "@semAreaHintHas": {"placeholders": {"count": {"type": "int", "description": "Current number of files"}}},
+  "@semAreaHintHas": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Current number of files"
+      }
+    }
+  },
   "semShareHintNone": "No files to share",
   "semShareHintSome": "Share {count, plural, one{{count} file} other{{count} files}}",
-  "@semShareHintSome": {"placeholders": {"count": {"type": "int"}}},
+  "@semShareHintSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "semRemoveHintNone": "No files to remove",
   "semRemoveHintSome": "Remove {count, plural, one{{count} file} other{{count} files}}",
-  "@semRemoveHintSome": {"placeholders": {"count": {"type": "int"}}},
+  "@semRemoveHintSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "trayExit": "Quit application",
   "openTray": "Open tray",
-
   "languageLabel": "Language:",
   "languageEnglish": "English",
   "languagePortuguese": "Portuguese",
   "languageSpanish": "Spanish",
   "limitReached": "File limit ({max}) reached",
-  "@limitReached": {"placeholders": {"max": {"type": "int"}}},
+  "@limitReached": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "shareNone": "No files to share",
-  "shareError": "Error sharing files"
-  ,"fileLabelSingle": "{name}",
-  "fileLabelMultiple": "{count} files"
-  ,"genericFileName": "file"
-  ,"@fileLabelSingle": {"placeholders": {"name": {"type": "String"}}}
-  ,"@fileLabelMultiple": {"placeholders": {"count": {"type": "int"}}}
-  ,"semHandleLabel": "Window handle"
-  ,"semHandleHint": "Drag to move the window",
+  "shareError": "Error sharing files",
+  "fileLabelSingle": "{name}",
+  "fileLabelMultiple": "{count} files",
+  "genericFileName": "file",
+  "@fileLabelSingle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@fileLabelMultiple": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "semHandleLabel": "Window handle",
+  "semHandleHint": "Drag to move the window",
   "welcomeTo": "Hello, welcome to",
   "updateAvailable": "Update Available",
   "preferences": "Preferences",
   "settingsGeneral": "General",
   "settingsAppearance": "Appearance",
   "settingsLaunchAtLogin": "Launch at Login",
-
   "settingsAlwaysOnTop": "Always on Top",
   "settingsOpacity": "Window Opacity",
-
   "checkForUpdates": "Check for updates",
   "noUpdatesAvailable": "No updates available",
   "checkingForUpdates": "Checking for updates",
@@ -60,6 +95,25 @@
   "settingsShakePermissionDescription": "Shake your mouse cursor to quickly open the drop window.",
   "settingsShakePermissionInstruction": "To enable this feature, allow accessibility permission in System Settings.",
   "settingsShakeRestartHint": "If you have already enabled the permission, click {link} to restart the app.",
-  "@settingsShakeRestartHint": {"placeholders": {"link": {"type": "String"}}},
-  "settingsShakeRestartLink": "here"
+  "@settingsShakeRestartHint": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsShakeRestartLink": "here",
+  "webHeroTitle": "Drag, Drop, Done.",
+  "webHeroSubtitle": "The easiest way to collect and move files on your Mac.",
+  "webDownloadMac": "Download for macOS",
+  "webInstallBrew": "Install via Homebrew",
+  "webFeaturesTitle": "Features",
+  "webChangelogTitle": "Changelog",
+  "webFooterText": "Open Source on GitHub.",
+  "webFeature1Title": "Temporary Stash",
+  "webFeature1Desc": "Drag files into Easier Drop and they stay there until you need them.",
+  "webFeature2Title": "Batch Operations",
+  "webFeature2Desc": "Select multiple files from anywhere and drag them out together.",
+  "webFeature3Title": "Shake to Open",
+  "webFeature3Desc": "Just shake your mouse to quickly reveal the drop window."
 }

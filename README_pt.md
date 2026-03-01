@@ -44,7 +44,7 @@ Sentindo o "sacolejo"? Basta agitar o mouse enquanto arrasta um arquivo para cri
 
 ### 📋 Integração com Área de Transferência
 Já copiou algo? Basta usar `Cmd + V` sobre a zona de drop para adicioná-lo à sua estante. Integração perfeita com o Finder e a área de transferência do sistema.
-> ![Integração com Área de Transferência](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/clipboard_paste.gif)
+> ![Integração com Área de Transferência](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/demo.webp)
 > *Cole arquivos diretamente no seu fluxo de trabalho sem precisar arrastar novamente.*
 
 ### 💎 Configurações Personalizáveis

@@ -198,4 +198,43 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsShakeRestartLink => 'aquí';
+
+  @override
+  String get webHeroTitle => 'Arrastra, Suelta, Listo.';
+
+  @override
+  String get webHeroSubtitle => 'La forma más fácil de recolectar y mover archivos en tu Mac.';
+
+  @override
+  String get webDownloadMac => 'Descargar para macOS';
+
+  @override
+  String get webInstallBrew => 'Instalar vía Homebrew';
+
+  @override
+  String get webFeaturesTitle => 'Características';
+
+  @override
+  String get webChangelogTitle => 'Novedades';
+
+  @override
+  String get webFooterText => 'Código Abierto en GitHub.';
+
+  @override
+  String get webFeature1Title => 'Almacenamiento Temporal';
+
+  @override
+  String get webFeature1Desc => 'Arrastra archivos a Easier Drop y se quedan ahí hasta que los necesites.';
+
+  @override
+  String get webFeature2Title => 'Operaciones por Lote';
+
+  @override
+  String get webFeature2Desc => 'Selecciona múltiples archivos y arrástralos juntos.';
+
+  @override
+  String get webFeature3Title => 'Agitar para Abrir';
+
+  @override
+  String get webFeature3Desc => 'Simplemente agita tu ratón para revelar la ventana rápidamente.';
 }

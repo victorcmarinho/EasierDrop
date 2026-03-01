@@ -44,7 +44,7 @@ Feeling the "shake"? Just shake your mouse while dragging a file to instantly sp
 
 ### 📋 Clipboard Integration
 Already copied something? Just `Cmd + V` over the drop zone to add it to your shelf. Seamless integration with Finder and system clipboards.
-> ![Clipboard Integration](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/clipboard_paste.gif)
+> ![Clipboard Integration](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/demo.webp)
 > *Paste files directly into your workflow without redundant dragging.*
 
 ### 💎 Customizable Settings

@@ -414,6 +414,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'here'**
   String get settingsShakeRestartLink;
+
+  /// No description provided for @webHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag, Drop, Done.'**
+  String get webHeroTitle;
+
+  /// No description provided for @webHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The easiest way to collect and move files on your Mac.'**
+  String get webHeroSubtitle;
+
+  /// No description provided for @webDownloadMac.
+  ///
+  /// In en, this message translates to:
+  /// **'Download for macOS'**
+  String get webDownloadMac;
+
+  /// No description provided for @webInstallBrew.
+  ///
+  /// In en, this message translates to:
+  /// **'Install via Homebrew'**
+  String get webInstallBrew;
+
+  /// No description provided for @webFeaturesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Features'**
+  String get webFeaturesTitle;
+
+  /// No description provided for @webChangelogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Changelog'**
+  String get webChangelogTitle;
+
+  /// No description provided for @webFooterText.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Source on GitHub.'**
+  String get webFooterText;
+
+  /// No description provided for @webFeature1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary Stash'**
+  String get webFeature1Title;
+
+  /// No description provided for @webFeature1Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag files into Easier Drop and they stay there until you need them.'**
+  String get webFeature1Desc;
+
+  /// No description provided for @webFeature2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Batch Operations'**
+  String get webFeature2Title;
+
+  /// No description provided for @webFeature2Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Select multiple files from anywhere and drag them out together.'**
+  String get webFeature2Desc;
+
+  /// No description provided for @webFeature3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Shake to Open'**
+  String get webFeature3Title;
+
+  /// No description provided for @webFeature3Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Just shake your mouse to quickly reveal the drop window.'**
+  String get webFeature3Desc;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

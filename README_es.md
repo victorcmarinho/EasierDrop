@@ -44,7 +44,7 @@ Arrastra desde Finder, Safari, Fotos o incluso tu editor de código. Tus archivo
 
 ### 📋 Integración con el Portapapeles
 ¿Ya has copiado algo? Solo presiona `Cmd + V` sobre la zona de drop para añadirlo a tu estante. Integración perfecta con Finder y los portapapeles del sistema.
-> ![Integración con el Portapapeles](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/clipboard_paste.gif)
+> ![Integración con el Portapapeles](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/demo.webp)
 > *Pega archivos directamente en tu flujo de trabajo sin necesidad de arrastrar de nuevo.*
 
 ### 💎 Configuración Personalizable

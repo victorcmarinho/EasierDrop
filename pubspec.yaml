@@ -31,6 +31,7 @@ dependencies:
   pasteboard: ^0.4.0
   marquee_text: ^2.5.0+1
   meta: ^1.11.0
+  flutter_markdown: ^0.7.7+1
 
 dev_dependencies:
   flutter_test:
@@ -49,9 +50,25 @@ flutter:
   uses-material-design: true
 
   assets:
-
-    - assets/icon/icon.png
-    - assets/icon/icon.icns
+  
+    - path: assets/icon/icon.png
+      platforms:
+        - macos
+    - path: assets/icon/icon.icns
+      platforms:
+        - macos
+    - path: assets/promo/
+      platforms:
+        - web
+    - path: CHANGELOG.md
+      platforms:
+        - web
+    - path: CHANGELOG_pt.md
+      platforms:
+        - web    
+    - path: CHANGELOG_es.md
+      platforms:
+        - web
 
 
 l10n:

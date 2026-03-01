@@ -198,4 +198,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsShakeRestartLink => 'here';
+
+  @override
+  String get webHeroTitle => 'Drag, Drop, Done.';
+
+  @override
+  String get webHeroSubtitle => 'The easiest way to collect and move files on your Mac.';
+
+  @override
+  String get webDownloadMac => 'Download for macOS';
+
+  @override
+  String get webInstallBrew => 'Install via Homebrew';
+
+  @override
+  String get webFeaturesTitle => 'Features';
+
+  @override
+  String get webChangelogTitle => 'Changelog';
+
+  @override
+  String get webFooterText => 'Open Source on GitHub.';
+
+  @override
+  String get webFeature1Title => 'Temporary Stash';
+
+  @override
+  String get webFeature1Desc => 'Drag files into Easier Drop and they stay there until you need them.';
+
+  @override
+  String get webFeature2Title => 'Batch Operations';
+
+  @override
+  String get webFeature2Desc => 'Select multiple files from anywhere and drag them out together.';
+
+  @override
+  String get webFeature3Title => 'Shake to Open';
+
+  @override
+  String get webFeature3Desc => 'Just shake your mouse to quickly reveal the drop window.';
 }
