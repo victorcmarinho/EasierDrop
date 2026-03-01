@@ -8,10 +8,8 @@ import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
 
-// Mock para o FilesProvider
 class MockFilesProvider extends Mock implements FilesProvider {}
 
-// Estendemos o TrayManager para acessar o estado interno
 class MockTrayListener extends Mock implements TrayListener {}
 
 void main() {
@@ -40,15 +38,12 @@ void main() {
     await tester.pumpWidget(buildWidget());
     await tester.pumpAndSettle();
 
-    // Verifica se o componente foi criado
     expect(find.byType(Tray), findsOneWidget);
   });
 
   test('TrayListener implementa os métodos corretamente', () {
-    // Utilizamos mocks para simular o TrayListener
     final mockListener = MockTrayListener();
 
-    // Simulamos o recebimento dos eventos
     final menuItem = MenuItem(key: 'test_key', label: 'Test Label');
 
     expect(() => mockListener.onTrayIconMouseDown(), returnsNormally);
@@ -56,7 +51,6 @@ void main() {
     expect(() => mockListener.onTrayIconRightMouseUp(), returnsNormally);
     expect(() => mockListener.onTrayMenuItemClick(menuItem), returnsNormally);
 
-    // Testamos que podemos registrar o listener (sem erros)
     expect(() {
       trayManager.addListener(mockListener);
       trayManager.removeListener(mockListener);
@@ -67,18 +61,14 @@ void main() {
     await tester.pumpWidget(buildWidget());
     await tester.pumpAndSettle();
 
-    // Verifica se o Container está presente (método build)
     expect(find.byType(SizedBox), findsOneWidget);
   });
 
   test('Tray widget pode ser criado', () {
-    // Criamos uma instância do widget Tray para testar
     final tray = const Tray();
 
-    // Verificamos se o widget foi criado
     expect(tray, isA<Tray>());
 
-    // Verificamos se pode criar o state
     expect(tray.createState(), isA<State<Tray>>());
   });
 
@@ -86,7 +76,6 @@ void main() {
     await tester.pumpWidget(buildWidget());
     await tester.pumpAndSettle();
 
-    // Verificar se o widget foi criado corretamente
     expect(find.byType(Tray), findsOneWidget);
   });
 
@@ -94,11 +83,9 @@ void main() {
     await tester.pumpWidget(buildWidget());
     await tester.pumpAndSettle();
 
-    // Remove o widget para testar dispose
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
 
-    // Deve executar sem erros
     expect(true, isTrue);
   });
 
@@ -108,10 +95,8 @@ void main() {
 
     final dynamic state = tester.state(find.byType(Tray));
 
-    // Testa onTrayIconMouseDown
     expect(() => state.onTrayIconMouseDown(), returnsNormally);
 
-    // Testa onTrayMenuItemClick
     final menuItem = MenuItem(key: 'test', label: 'Test');
     expect(() => state.onTrayMenuItemClick(menuItem), returnsNormally);
   });

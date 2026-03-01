@@ -26,7 +26,6 @@ class FileReference {
     return base.substring(dotIndex + 1).toLowerCase();
   }
 
-  /// Cria uma nova instância com ícone atualizado
   FileReference withIcon(Uint8List? icon) => FileReference(
     pathname: pathname,
     iconData: icon,
@@ -34,7 +33,6 @@ class FileReference {
     isProcessing: isProcessing,
   );
 
-  /// Cria uma nova instância com preview atualizado
   FileReference withPreview(Uint8List? preview) => FileReference(
     pathname: pathname,
     iconData: iconData,

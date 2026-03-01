@@ -88,7 +88,6 @@ void main() {
         ),
       );
 
-      // Verify that the icon path contains the expected asset
       final setIconCall = trayLog.firstWhere(
         (call) => call.method == 'setIcon',
       );
@@ -136,7 +135,6 @@ void main() {
     });
 
     test('checkForUpdates updates updateUrl when changed', () async {
-      // Mock update service channel
       const updateChannel = MethodChannel('package_info_plus');
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(updateChannel, (
@@ -153,7 +151,6 @@ void main() {
             return null;
           });
 
-      // Mock http requests
       const httpChannel = MethodChannel('plugins.flutter.io/http');
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(httpChannel, (MethodCall methodCall) async {
@@ -162,7 +159,7 @@ void main() {
 
       try {
         await TrayService.instance.checkForUpdates();
-        // The updateUrl might be null or set depending on the mock
+
         expect(TrayService.instance.updateUrl, isA<String?>());
       } finally {
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -175,7 +172,6 @@ void main() {
     test('handleMenuItemClick handles all item keys', () async {
       final service = TrayService.instance;
 
-      // Mock desktop_multi_window
       const multiWindowChannel = MethodChannel('desktop_multi_window');
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(multiWindowChannel, (
@@ -184,18 +180,14 @@ void main() {
             return 0;
           });
 
-      // preferences
       await service.handleMenuItemClick(
         MenuItem(key: 'preferences', label: 'Prefs'),
       );
 
-      // show_window
       await service.handleMenuItemClick(
         MenuItem(key: 'show_window', label: 'Open'),
       );
 
-      // update_available
-      // First set the update URL
       const updateChannel = MethodChannel('package_info_plus');
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
@@ -213,7 +205,6 @@ void main() {
         MenuItem(key: 'update_available', label: 'Update'),
       );
 
-      // Test error in handleMenuItemClick by making url_launcher throw
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(urlLauncherChannel, (call) async {
             throw Exception('Launcher Error');
@@ -223,7 +214,6 @@ void main() {
         MenuItem(key: 'update_available', label: 'Update'),
       );
 
-      // Test exit_app case using IOOverrides to prevent VM exit
       await IOOverrides.runZoned(
         () async {
           await service.handleMenuItemClick(
@@ -239,7 +229,6 @@ void main() {
           .setMockMethodCallHandler(multiWindowChannel, null);
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(updateChannel, null);
-      // Reset url launcher mock to default in next tests if needed, but setUp will do it.
     });
 
     testWidgets('rebuildMenu with update URL', (tester) async {
@@ -267,7 +256,7 @@ void main() {
         await TrayService.instance.rebuildMenu(loc: loc, currentLocale: 'en');
 
         expect(trayLog.any((m) => m.method == 'setContextMenu'), isTrue);
-        // Verify that the menu now contains the update item
+
         final setMenuCall = trayLog.lastWhere(
           (m) => m.method == 'setContextMenu',
         );
@@ -285,7 +274,7 @@ void main() {
           });
 
       await TrayService.instance.configure();
-      expect(true, isTrue); // Should not throw
+      expect(true, isTrue);
     });
   });
 
@@ -295,13 +284,10 @@ void main() {
     });
 
     test('listener can be added and removed', () async {
-      void listener() {
-        // Listener callback
-      }
+      void listener() {}
 
       TrayService.instance.addListener(listener);
 
-      // Mock the update service to return a URL
       const updateChannel = MethodChannel('package_info_plus');
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(updateChannel, (
@@ -311,7 +297,7 @@ void main() {
               return {
                 'appName': 'easier_drop',
                 'packageName': 'com.example.easier_drop',
-                'version': '0.0.1', // Lower version to trigger update
+                'version': '0.0.1',
                 'buildNumber': '1',
               };
             }
@@ -320,9 +306,9 @@ void main() {
 
       try {
         await TrayService.instance.checkForUpdates();
-        // Verify that we can add and remove listeners without errors
+
         TrayService.instance.removeListener(listener);
-        expect(true, isTrue); // Test passes if no errors occur
+        expect(true, isTrue);
       } finally {
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
             .setMockMethodCallHandler(updateChannel, null);

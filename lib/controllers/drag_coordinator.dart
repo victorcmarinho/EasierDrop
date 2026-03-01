@@ -10,13 +10,6 @@ import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'drag_coordinator_types.dart';
 
-/// Coordenador responsável por gerenciar operações de drag & drop
-///
-/// Funcionalidades:
-/// - Coordena drag in (receber arquivos)
-/// - Coordena drag out (arrastar arquivos para fora)
-/// - Gerencia estados visuais de hover e dragging
-/// - Processa resultados de operações de drag
 class DragCoordinator {
   DragCoordinator(this.context);
 
@@ -27,7 +20,6 @@ class DragCoordinator {
   StreamSubscription? _dropSubscription;
   bool _initialized = false;
 
-  /// Inicializa o coordenador
   Future<void> init() async {
     if (_initialized) return;
     _initialized = true;
@@ -41,7 +33,6 @@ class DragCoordinator {
     );
   }
 
-  /// Limpa recursos e encerra serviços
   void dispose() {
     FileDropService.instance.setMethodCallHandler(null);
     DragOutService.instance.setHandler(null);
@@ -51,7 +42,6 @@ class DragCoordinator {
     hovering.dispose();
   }
 
-  /// Configura o tratamento de arquivos sendo arrastados para dentro
   void _setupInboundDrag() {
     FileDropService.instance.setMethodCallHandler((call) async {
       if (call.method == PlatformChannels.fileDroppedCallback) {
@@ -65,7 +55,6 @@ class DragCoordinator {
     });
   }
 
-  /// Configura o tratamento de arquivos sendo arrastados para fora
   void _setupOutboundDrag() {
     DragOutService.instance.setHandler((call) async {
       if (call.method == PlatformChannels.fileDroppedCallback) {
@@ -75,7 +64,6 @@ class DragCoordinator {
     });
   }
 
-  /// Processa o resultado de uma operação de drag para fora
   void _handleOutboundResult(dynamic raw) {
     final result = ChannelDragResult.parse(raw);
 
@@ -102,7 +90,6 @@ class DragCoordinator {
     }
   }
 
-  /// Mapeia DragOperation para DragOperationType
   DragOperationType _mapDragOperation(DragOperation operation) {
     switch (operation) {
       case DragOperation.copy:
@@ -114,7 +101,6 @@ class DragCoordinator {
     }
   }
 
-  /// Inicia uma operação de drag para fora
   Future<void> beginExternalDrag() async {
     final filesProvider = context.read<FilesProvider>();
     final filePaths = filesProvider.files.map((f) => f.pathname).toList();
@@ -136,17 +122,14 @@ class DragCoordinator {
         tag: DragCoordinatorConfig.logTag,
       );
     } finally {
-      // Reset do estado após delay
       Future.delayed(DragCoordinatorConfig.dragEndDelay, () {
         draggingOut.value = false;
       });
     }
   }
 
-  /// Define o estado de hover
   void setHover(bool value) => hovering.value = value;
 
-  /// Processa arquivos que foram dropados
   Future<void> _onFilesDropped(List<String> paths) async {
     final provider = context.read<FilesProvider>();
     final fileRefs = paths.map((path) => FileReference(pathname: path));

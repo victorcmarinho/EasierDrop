@@ -33,7 +33,6 @@ void main() {
     mockUrlLauncher = MockUrlLauncher();
     UrlLauncherPlatform.instance = mockUrlLauncher;
 
-    // Mock WindowManager channel
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(const MethodChannel('window_manager'), (
           MethodCall methodCall,
@@ -52,7 +51,6 @@ void main() {
   });
 
   tearDown(() {
-    // Remove mock handler
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(const MethodChannel('window_manager'), null);
   });
@@ -77,11 +75,10 @@ void main() {
       ).thenAnswer((_) => completer.future);
 
       await pumpUpdateScreen(tester);
-      await tester.pump(); // Start InitState
+      await tester.pump();
 
       expect(find.byType(ProgressCircle), findsOneWidget);
 
-      // Complete to finish test cleanly
       completer.complete(null);
       await tester.pumpAndSettle();
     });
@@ -100,7 +97,6 @@ void main() {
       completer.complete(null);
       await tester.pumpAndSettle();
 
-      // expect(find.byIcon(CupertinoIcons.checkmark_circle), findsOneWidget);
       expect(find.text('OK'), findsOneWidget);
     });
 
@@ -119,7 +115,6 @@ void main() {
       completer.complete(updateUrl);
       await tester.pumpAndSettle();
 
-      // expect(find.byIcon(CupertinoIcons.arrow_down_circle), findsOneWidget);
       expect(find.text('Download'), findsOneWidget);
       expect(find.text('Later'), findsOneWidget);
     });
@@ -128,16 +123,14 @@ void main() {
       final completer = Completer<String?>();
       when(
         () => mockUpdateService.checkForUpdates(),
-      ).thenAnswer((_) => completer.future); // Setup future first
+      ).thenAnswer((_) => completer.future);
 
       await pumpUpdateScreen(tester);
       await tester.pump();
 
-      // Simulate error
       completer.completeError('Network Error');
       await tester.pumpAndSettle();
 
-      // expect(find.byIcon(CupertinoIcons.exclamationmark_triangle), findsOneWidget);
       expect(find.text('Network Error'), findsOneWidget);
       expect(find.text('Close'), findsOneWidget);
     });

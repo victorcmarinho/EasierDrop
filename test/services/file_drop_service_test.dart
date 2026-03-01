@@ -21,23 +21,18 @@ void main() {
     });
 
     test('pushTestEvent envia eventos para o stream', () async {
-      // Criar um listener para o stream
       final receivedPaths = <List<String>>[];
       final subscription = service.filesStream.listen((paths) {
         receivedPaths.add(paths);
       });
 
-      // Enviar um evento de teste
       final testPaths = ['path/to/file1.txt', 'path/to/file2.txt'];
       service.pushTestEvent(testPaths);
 
-      // Aguardar o processamento assíncrono
       await Future.delayed(Duration.zero);
 
-      // Verificar que o evento foi recebido
       expect(receivedPaths, contains(testPaths));
 
-      // Limpar
       await subscription.cancel();
     });
 
@@ -58,20 +53,15 @@ void main() {
             return null;
           });
 
-      // We can't easily mock the stream portion of EventChannel without more setup,
-      // but we can at least invoke the methods and check monitoring state.
-
       await service.start();
       expect(service.isMonitoring, isTrue);
 
-      // Test double start
       await service.start();
       expect(service.isMonitoring, isTrue);
 
       await service.stop();
       expect(service.isMonitoring, isFalse);
 
-      // Test double stop
       await service.stop();
       expect(service.isMonitoring, isFalse);
 

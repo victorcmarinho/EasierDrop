@@ -4,14 +4,15 @@ import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/services/file_repository.dart';
-import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/widgets.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:easier_drop/services/file_thumbnail_service.dart';
 
 class FilesProvider with ChangeNotifier {
   final int? _maxFilesOverride;
   final FileRepository _repository;
+  final FileThumbnailService _thumbnailService;
   final Map<String, FileReference> _files = {};
 
   List<FileReference>? _cachedFilesList;
@@ -22,9 +23,11 @@ class FilesProvider with ChangeNotifier {
 
   FilesProvider({
     FileRepository repository = const FileRepository(),
+    FileThumbnailService? thumbnailService,
     bool enableMonitoring = true,
     int? maxFiles,
   }) : _repository = repository,
+       _thumbnailService = thumbnailService ?? FileThumbnailService(repository),
        _maxFilesOverride = maxFiles {
     if (enableMonitoring) {
       _monitorTimer = Timer.periodic(
@@ -34,7 +37,6 @@ class FilesProvider with ChangeNotifier {
     }
   }
 
-  // Getters públicos
   int get _maxFiles => _maxFilesOverride ?? SettingsService.instance.maxFiles;
   DateTime? get lastLimitHit => _lastLimitHit;
   bool get isEmpty => _files.isEmpty;
@@ -58,11 +60,10 @@ class FilesProvider with ChangeNotifier {
   List<XFile> get validXFiles {
     if (_cachedXFiles != null) return _cachedXFiles!;
 
-    _cachedXFiles =
-        _files.values
-            .where((file) => _repository.validateFileSync(file.pathname))
-            .map((file) => XFile(file.pathname))
-            .toList();
+    _cachedXFiles = _files.values
+        .where((file) => _repository.validateFileSync(file.pathname))
+        .map((file) => XFile(file.pathname))
+        .toList();
     return _cachedXFiles!;
   }
 
@@ -80,45 +81,8 @@ class FilesProvider with ChangeNotifier {
     _cachedXFiles = null;
   }
 
-  /// Adiciona um arquivo ao provider
   Future<void> addFile(FileReference file) async {
     await addFiles([file]);
-  }
-
-  Future<void> _loadFileThumbnails(String pathname) async {
-    try {
-      await Future.wait([_loadFileIcon(pathname), _loadFilePreview(pathname)]);
-    } finally {
-      if (_files.containsKey(pathname)) {
-        _files[pathname] = _files[pathname]!.withProcessing(false);
-        _invalidateCache();
-        _scheduleNotify();
-      }
-    }
-  }
-
-  Future<void> _loadFileIcon(String pathname) async {
-    final iconData = await _repository.getIcon(pathname);
-    if (iconData != null && _files.containsKey(pathname)) {
-      final current = _files[pathname]!;
-      if (current.iconData == null) {
-        _files[pathname] = current.withIcon(iconData);
-        _invalidateCache();
-        _scheduleNotify();
-      }
-    }
-  }
-
-  Future<void> _loadFilePreview(String pathname) async {
-    final previewData = await _repository.getPreview(pathname);
-    if (previewData != null && _files.containsKey(pathname)) {
-      final current = _files[pathname]!;
-      if (current.previewData == null) {
-        _files[pathname] = current.withPreview(previewData);
-        _invalidateCache();
-        _scheduleNotify();
-      }
-    }
   }
 
   Future<void> addFiles(Iterable<FileReference> files) async {
@@ -146,7 +110,17 @@ class FilesProvider with ChangeNotifier {
 
       for (final file in filesToAdd) {
         _files[file.pathname] = file.withProcessing(true);
-        _loadFileThumbnails(file.pathname);
+        _thumbnailService.loadThumbnails(
+          pathname: file.pathname,
+          getCurrentFile: () => _files[file.pathname],
+          onUpdate: (updated) {
+            if (_files.containsKey(updated.pathname)) {
+              _files[updated.pathname] = updated;
+              _invalidateCache();
+              _scheduleNotify();
+            }
+          },
+        );
         AnalyticsService.instance.fileAdded(
           extension: file.fileName.split('.').lastOrNull,
         );
@@ -229,15 +203,14 @@ class FilesProvider with ChangeNotifier {
 
       final params = ShareParams(
         files: validFilesList,
-        sharePositionOrigin:
-            position != null
-                ? Rect.fromLTWH(
-                  position.dx,
-                  position.dy,
-                  AppConstants.shareOriginSize,
-                  AppConstants.shareOriginSize,
-                )
-                : null,
+        sharePositionOrigin: position != null
+            ? Rect.fromLTWH(
+                position.dx,
+                position.dy,
+                AppConstants.shareOriginSize,
+                AppConstants.shareOriginSize,
+              )
+            : null,
       );
 
       final result = await SharePlus.instance.share(params);
@@ -255,13 +228,10 @@ class FilesProvider with ChangeNotifier {
   void _rescanInternal() {
     if (_files.isEmpty) return;
 
-    final toRemove =
-        _files.entries
-            .where(
-              (entry) => !_repository.validateFileSync(entry.value.pathname),
-            )
-            .map((entry) => entry.key)
-            .toList();
+    final toRemove = _files.entries
+        .where((entry) => !_repository.validateFileSync(entry.value.pathname))
+        .map((entry) => entry.key)
+        .toList();
 
     if (toRemove.isEmpty) return;
 
@@ -275,17 +245,6 @@ class FilesProvider with ChangeNotifier {
       '${toRemove.length} invalid file(s) removed after rescan',
       tag: 'FilesProvider',
     );
-  }
-
-  static String resolveShareMessage(String rawMessage, AppLocalizations loc) {
-    switch (rawMessage) {
-      case 'shareNone':
-        return loc.shareNone;
-      case 'shareError':
-        return loc.shareError;
-      default:
-        return rawMessage;
-    }
   }
 
   void rescanNow() => _rescanInternal();

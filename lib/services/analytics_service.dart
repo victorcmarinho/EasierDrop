@@ -6,10 +6,6 @@ import 'package:flutter/foundation.dart';
 
 enum LogLevel { trace, debug, info, warn, error }
 
-/// Unified service for logging and analytics.
-///
-/// In [kDebugMode]: local logs are shown, Aptabase events are NOT sent (only logged).
-/// In [kReleaseMode]: local logs are hidden, Aptabase events ARE sent.
 class AnalyticsService {
   AnalyticsService._();
   static final AnalyticsService instance = AnalyticsService._();
@@ -45,10 +41,7 @@ class AnalyticsService {
     }
   }
 
-  // --- Analytics Methods ---
-
   void trackEvent(String name, [Map<String, dynamic>? props]) {
-    // Privacy check
     if (!SettingsService.instance.telemetryEnabled) return;
 
     if (debugTestMode) {
@@ -70,7 +63,6 @@ class AnalyticsService {
     }
   }
 
-  // Specific Events
   void appStarted() => trackEvent('app_started');
 
   void fileAdded({String? extension}) => trackEvent(
@@ -107,14 +99,11 @@ class AnalyticsService {
   void settingsChanged(String key, dynamic value) =>
       trackEvent('settings_changed', {'key': key, 'value': value});
 
-  // --- Logging Methods ---
-
   static void _log(
     String message, {
     LogLevel level = LogLevel.info,
     String tag = 'App',
   }) {
-    // In production, we don't do local logs (as per user request)
     if (!debugTestMode) return;
 
     if (level.index < minLevel.index) return;
@@ -154,7 +143,6 @@ class AnalyticsService {
   void error(String m, {String tag = 'App'}) =>
       _log(m, level: LogLevel.error, tag: tag);
 
-  // Static aliases for convenience during migration
   static void sTrace(String m, {String tag = 'App'}) =>
       instance.trace(m, tag: tag);
   static void sDebug(String m, {String tag = 'App'}) =>

@@ -3,10 +3,6 @@ import 'package:easier_drop/components/tray.dart';
 import 'package:easier_drop/helpers/keyboard_shortcuts.dart';
 import 'package:flutter/widgets.dart';
 
-/// Tela principal de transferência de arquivos
-///
-/// Combina os componentes de drag & drop e tray do sistema,
-/// com suporte a atalhos de teclado e modo de teste.
 class FileTransferScreen extends StatelessWidget {
   final bool testMode;
   final Widget? testDragDrop;
@@ -27,13 +23,11 @@ class FileTransferScreen extends StatelessWidget {
           autofocus: true,
           child: Stack(
             children: [
-              // Componente principal de drag & drop
               if (testMode && testDragDrop != null)
                 testDragDrop!
               else
                 const DragDrop(),
 
-              // Tray do sistema (apenas em modo normal)
               if (!testMode) const Tray(),
             ],
           ),

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary Brand Color
   static const Color primary = Color(0xFF6750A4);
   static const Color secondary = Color(0xFF625B71);
 
-  // Transparency Scale (Primary with opacities)
   static final Map<int, Color> primaryOpacity = {
     100: primary,
     80: primary.withAlpha((255 * 0.8).round()),
@@ -15,7 +13,6 @@ class AppColors {
     10: primary.withAlpha((255 * 0.1).round()),
   };
 
-  // Grayscale Scale
   static const Map<int, Color> greyScale = {
     900: Color(0xFF1C1B1F),
     800: Color(0xFF313033),
@@ -29,7 +26,6 @@ class AppColors {
     50: Color(0xFFFEF7FF),
   };
 
-  // Status Colors
   static const Color error = Color(0xFFB3261E);
   static const Color success = Color(0xFF4CAF50);
   static const Color warning = Color(0xFFFFC107);

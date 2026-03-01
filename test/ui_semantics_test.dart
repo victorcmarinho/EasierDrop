@@ -2,6 +2,7 @@ import 'package:easier_drop/components/parts/files_surface.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
+import 'package:easier_drop/helpers/share_message_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -89,7 +90,7 @@ void main() {
     await tester.pump();
     await provider.shared();
 
-    final msg = FilesProvider.resolveShareMessage('shareNone', loc!);
+    final msg = ShareMessageHelper.resolveShareMessage('shareNone', loc!);
     expect(msg, equals(loc!.shareNone));
   });
 }

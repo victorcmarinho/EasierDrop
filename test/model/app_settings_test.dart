@@ -68,7 +68,7 @@ void main() {
       expect(map['locale'], 'pt');
       expect(map['telemetryEnabled'], false);
       expect(map['schemaVersion'], 1);
-      expect(map['windowY'], isNull); // Should not be in map if null
+      expect(map['windowY'], isNull);
     });
 
     test('copyWith should update specified values', () {

@@ -1,61 +1,49 @@
 import 'package:flutter/widgets.dart';
 import 'package:easier_drop/config/env_config.dart';
 
-/// Constantes globais da aplicação
 class AppConstants {
   const AppConstants._();
   @visibleForTesting
   static void testCoverage() => const AppConstants._();
 
-  // Configurações de UI
   static const double windowHandleHeight = 28.0;
   static const double actionButtonSize = 40.0;
   static const double borderRadius = 8.0;
   static const double borderWidth = 4.0;
 
-  // Durações de animação
   static const Duration fastAnimation = Duration(milliseconds: 160);
   static const Duration mediumAnimation = Duration(milliseconds: 300);
   static const double shareOriginSize = 40.0;
   static const Duration slowAnimation = Duration(milliseconds: 500);
 
-  // UI Stack
   static const int stackMaxVisible = 6;
   static const double stackRotationBase = 3.0;
   static const double stackSpreadBase = 14.0;
   static const double stackSizeMultiplier = 0.78;
 
-  // Configurações de arquivo
   static const int defaultMaxFiles = 100;
   static const Duration fileValidationTimeout = Duration(seconds: 5);
 
-  // Configurações de notificação
   static const Duration limitNotificationDuration = Duration(seconds: 2);
   static const Duration debounceDelay = Duration(milliseconds: 250);
   static const Duration monitorInterval = Duration(seconds: 5);
 
-  // Welcome Screen
   static const Duration welcomeAnimationDuration = Duration(milliseconds: 1500);
   static const Duration welcomeNavigationDelay = Duration(seconds: 3);
 
-  // Update Service
   static String get githubLatestReleaseUrl => Env.githubLatestReleaseUrl;
 
-  // System Dimensions
   static const double defaultWindowSize = 250.0;
   static const int maxWindows = 3;
 
-  // Platform Channels
   static const String shakeChannelName = 'com.easier_drop/shake';
 
-  // Routes
   static const String routeHome = '/';
   static const String routeSettings = '/settings';
   static const String routeShare = '/share';
   static const String routeUpdate = '/update';
 }
 
-/// Chaves semânticas para testes e acessibilidade
 class SemanticKeys {
   const SemanticKeys._();
   @visibleForTesting
@@ -66,7 +54,6 @@ class SemanticKeys {
   static const Key dropArea = ValueKey('dropAreaSem');
 }
 
-/// Valores de transparência comuns
 class AppOpacity {
   const AppOpacity._();
   @visibleForTesting

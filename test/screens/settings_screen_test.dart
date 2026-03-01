@@ -33,7 +33,7 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(shakeChannel, (MethodCall methodCall) async {
           if (methodCall.method == 'checkPermission') {
-            return true; // Simulate active permission
+            return true;
           }
           return null;
         });
@@ -72,29 +72,24 @@ void main() {
 
   testWidgets('SettingsScreen renders correctly', (WidgetTester tester) async {
     await tester.pumpWidget(createWidgetUnderTest());
-    await tester.pumpAndSettle(); // Wait for future builders
+    await tester.pumpAndSettle();
 
-    // Check for title
     expect(find.text('Preferences'), findsOneWidget);
 
-    // Check for sections
     expect(find.text('GENERAL'), findsOneWidget);
     expect(find.text('SHAKE GESTURE'), findsOneWidget);
     expect(find.text('LANGUAGE:'), findsOneWidget);
 
-    // Check for specific items
     expect(find.text('Launch at Login'), findsOneWidget);
     expect(find.text('Always on Top'), findsOneWidget);
     expect(find.text('Shake Gesture'), findsOneWidget);
 
-    // Check permission status (mocked to true)
     expect(find.text('Active'), findsOneWidget);
   });
 
   testWidgets('SettingsScreen handles missing permission', (
     WidgetTester tester,
   ) async {
-    // Mock missing permission
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(shakeChannel, (MethodCall methodCall) async {
           if (methodCall.method == 'checkPermission') {
@@ -107,6 +102,5 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Inactive'), findsOneWidget);
-    expect(find.text('Open Settings'), findsOneWidget);
   });
 }

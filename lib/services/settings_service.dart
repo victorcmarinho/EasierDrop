@@ -62,7 +62,6 @@ class SettingsService with ChangeNotifier {
           _settings = AppSettings.fromMap(map);
         }
       } else {
-        // First run configuration
         String defaultLocale = 'en';
         try {
           final sysLocale = testLocaleName ?? Platform.localeName.toLowerCase();
@@ -77,7 +76,7 @@ class SettingsService with ChangeNotifier {
           isAlwaysOnTop: true,
           localeCode: defaultLocale,
         );
-        // Persist default settings
+
         await persist();
       }
     } catch (e) {
