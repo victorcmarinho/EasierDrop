@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "autoClearInbound": false,
+  "maxFiles": 100,
+  "locale": "en",
+  "telemetryEnabled": true,
+  "isAlwaysOnTop": true,
+  "launchAtLogin": false,
+  "windowOpacity": 1.0
+}
