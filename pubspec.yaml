@@ -54,6 +54,7 @@ flutter:
     - path: assets/icon/icon.png
       platforms:
         - macos
+        - web
     - path: assets/icon/icon.icns
       platforms:
         - macos

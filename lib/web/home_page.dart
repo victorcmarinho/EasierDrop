@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easier_drop/web/website_app.dart';
 
@@ -238,19 +238,66 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 20),
           Container(
-            padding: const EdgeInsets.all(16),
+            constraints: const BoxConstraints(maxWidth: 700),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: SelectableText(
-              '> brew tap victorcmarinho/easier-drop https://github.com/victorcmarinho/EasierDrop\n> brew install --cask easier-drop',
-              style: TextStyle(
-                fontFamily: 'monospace',
-                color: theme.colorScheme.onSurfaceVariant,
-                fontSize: 16,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
               ),
-              textAlign: TextAlign.center,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildCodeLine(
+                        'brew tap victorcmarinho/easier-drop https://github.com/victorcmarinho/EasierDrop',
+                        theme,
+                      ),
+                      const SizedBox(height: 8),
+                      _buildCodeLine('brew install --cask easier-drop', theme),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  width: 1,
+                  height: 32,
+                  color: theme.colorScheme.outlineVariant,
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  tooltip: 'Copy to clipboard',
+                  onPressed: () {
+                    Clipboard.setData(
+                      const ClipboardData(
+                        text:
+                            'brew tap victorcmarinho/easier-drop https://github.com/victorcmarinho/EasierDrop\nbrew install --cask easier-drop',
+                      ),
+                    );
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Commands copied!'),
+                          behavior: SnackBarBehavior.floating,
+                          width: 200,
+                          duration: const Duration(seconds: 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  icon: Icon(
+                    Icons.copy_all_rounded,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 60),
@@ -431,6 +478,32 @@ class _HomePageState extends State<HomePage> {
         loc.webFooterText,
         style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
       ),
+    );
+  }
+
+  Widget _buildCodeLine(String text, ThemeData theme) {
+    return Row(
+      children: [
+        Text(
+          '> ',
+          style: TextStyle(
+            color: theme.colorScheme.primary.withValues(alpha: 0.6),
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
+        ),
+        Expanded(
+          child: SelectableText(
+            text,
+            style: TextStyle(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontFamily: 'monospace',
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
