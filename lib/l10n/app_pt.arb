@@ -1,4 +1,5 @@
 {
+  "@@locale": "pt",
   "appTitle": "Easier Drop",
   "dropHere": "Jogue os arquivos aqui",
   "clearFilesTitle": "Limpar arquivos?",
@@ -80,7 +81,6 @@
   "settingsAppearance": "Aparência",
   "settingsLaunchAtLogin": "Iniciar no Login",
   "settingsAlwaysOnTop": "Sempre no Topo",
-  "settingsAlwaysOnTop": "Sempre no Topo",
   "settingsOpacity": "Opacidade da Janela",
   "checkForUpdates": "Verificar atualizações",
   "noUpdatesAvailable": "Nenhuma atualização disponível",
@@ -101,5 +101,18 @@
       }
     }
   },
-  "settingsShakeRestartLink": "aqui"
+  "settingsShakeRestartLink": "aqui",
+  "webHeroTitle": "Arraste, Solte, Pronto.",
+  "webHeroSubtitle": "A maneira mais fácil de coletar e mover arquivos no seu Mac.",
+  "webDownloadMac": "Baixar para macOS",
+  "webInstallBrew": "Instalar via Homebrew",
+  "webFeaturesTitle": "Recursos",
+  "webChangelogTitle": "Novidades",
+  "webFooterText": "Código Aberto no GitHub.",
+  "webFeature1Title": "Armazenamento Temporário",
+  "webFeature1Desc": "Arraste arquivos para o Easier Drop e eles ficam lá até você precisar.",
+  "webFeature2Title": "Operações em Lote",
+  "webFeature2Desc": "Selecione vários arquivos e arraste-os juntos para outro lugar.",
+  "webFeature3Title": "Agite para Abrir",
+  "webFeature3Desc": "Basta agitar o mouse para revelar rapidamente a janela."
 }
