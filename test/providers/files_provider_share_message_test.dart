@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
+import 'package:easier_drop/helpers/share_message_helper.dart';
 
 class _StubLoc implements AppLocalizations {
   @override
@@ -18,11 +18,17 @@ class _StubLoc implements AppLocalizations {
 void main() {
   test('resolveShareMessage maps internal keys', () {
     const loc = _StubLoc();
-    expect(FilesProvider.resolveShareMessage('shareNone', loc), loc.shareNone);
     expect(
-      FilesProvider.resolveShareMessage('shareError', loc),
+      ShareMessageHelper.resolveShareMessage('shareNone', loc),
+      loc.shareNone,
+    );
+    expect(
+      ShareMessageHelper.resolveShareMessage('shareError', loc),
       loc.shareError,
     );
-    expect(FilesProvider.resolveShareMessage('Other text', loc), 'Other text');
+    expect(
+      ShareMessageHelper.resolveShareMessage('Other text', loc),
+      'Other text',
+    );
   });
 }

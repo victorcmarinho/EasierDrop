@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/helpers/system.dart';
+import 'package:easier_drop/services/window_manager_service.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -99,11 +100,11 @@ void main() {
 
   group('SystemHelper Final 100% Coverage', () {
     test('lifecycle: hide, open, exit', () async {
-      await SystemHelper.hide();
-      await SystemHelper.open();
+      await WindowManagerService.instance.hide();
+      await WindowManagerService.instance.open();
       await IOOverrides.runZoned(() async {
         try {
-          await SystemHelper.exit();
+          await WindowManagerService.instance.exitApp();
         } catch (_) {}
       }, exit: (code) => throw Exception());
     });
@@ -124,12 +125,11 @@ void main() {
     });
 
     test('window listener methods', () async {
-      final helper = SystemHelper();
-      await helper.onWindowClose();
+      WindowManagerService.instance.onWindowClose();
 
       // Ensure we have a different value before calling resize
       SettingsService.instance.setWindowBounds(w: 0.0, h: 0.0);
-      helper.onWindowResize();
+      WindowManagerService.instance.onWindowResize();
       // Use a robust wait for the async void method to finish
       for (
         int i = 0;
@@ -142,7 +142,7 @@ void main() {
 
       // Ensure we have a different value before calling move
       SettingsService.instance.setWindowBounds(x: 0.0, y: 0.0);
-      helper.onWindowMove();
+      WindowManagerService.instance.onWindowMove();
       for (
         int i = 0;
         i < 10 && SettingsService.instance.settings.windowX != 100.0;
@@ -183,7 +183,7 @@ void main() {
           });
 
       try {
-        await SystemHelper.openSettings();
+        await WindowManagerService.instance.openSettings();
       } catch (_) {
         // If int fails, try String
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -194,7 +194,7 @@ void main() {
               }
               return null;
             });
-        await SystemHelper.openSettings();
+        await WindowManagerService.instance.openSettings();
       }
 
       // Force error in setPosition

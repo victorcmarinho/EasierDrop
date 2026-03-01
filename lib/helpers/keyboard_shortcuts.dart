@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:pasteboard/pasteboard.dart';
-import 'package:easier_drop/helpers/system.dart';
+import 'package:easier_drop/services/window_manager_service.dart';
 
 class ClearAllIntent extends Intent {
   const ClearAllIntent();
@@ -34,11 +34,10 @@ class KeyboardShortcuts {
 
     // Compartilhar: Cmd+Shift+C ou Cmd+Enter
     LogicalKeySet(
-          LogicalKeyboardKey.meta,
-          LogicalKeyboardKey.shift,
-          LogicalKeyboardKey.keyC,
-        ):
-        const ShareIntent(),
+      LogicalKeyboardKey.meta,
+      LogicalKeyboardKey.shift,
+      LogicalKeyboardKey.keyC,
+    ): const ShareIntent(),
     LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.enter):
         const ShareIntent(),
 
@@ -77,7 +76,7 @@ class KeyboardShortcuts {
       ),
       PreferencesIntent: CallbackAction<PreferencesIntent>(
         onInvoke: (intent) async {
-          await SystemHelper.openSettings();
+          await WindowManagerService.instance.openSettings();
           return null;
         },
       ),

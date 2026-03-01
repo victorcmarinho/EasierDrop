@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
+import 'package:easier_drop/helpers/share_message_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class CustomShareResult {
@@ -232,17 +233,17 @@ void main() {
       final testLoc = _TestLocalizations();
 
       expect(
-        FilesProvider.resolveShareMessage('shareNone', testLoc),
-        'No files to share',
+        ShareMessageHelper.resolveShareMessage('shareNone', testLoc),
+        testLoc.shareNone,
       );
 
       expect(
-        FilesProvider.resolveShareMessage('shareError', testLoc),
-        'Error sharing files',
+        ShareMessageHelper.resolveShareMessage('shareError', testLoc),
+        testLoc.shareError,
       );
 
       expect(
-        FilesProvider.resolveShareMessage('outra mensagem', testLoc),
+        ShareMessageHelper.resolveShareMessage('outra mensagem', testLoc),
         'outra mensagem',
       );
     });

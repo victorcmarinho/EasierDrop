@@ -1,5 +1,6 @@
 import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/helpers/system.dart';
+import 'package:easier_drop/services/window_manager_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:easier_drop/services/settings_service.dart';
@@ -73,7 +74,7 @@ void main() {
 
   group('SystemHelper Tests', () {
     test('hide calls windowManager hide and setSkipTaskbar', () async {
-      await SystemHelper.hide();
+      await WindowManagerService.instance.hide();
 
       expect(
         windowLog,
@@ -90,7 +91,7 @@ void main() {
     test(
       'open calls windowManager show, focus, and setSkipTaskbar false',
       () async {
-        await SystemHelper.open();
+        await WindowManagerService.instance.open();
 
         expect(
           windowLog,

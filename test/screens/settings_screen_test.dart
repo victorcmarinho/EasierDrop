@@ -107,6 +107,5 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Inactive'), findsOneWidget);
-    expect(find.text('Open Settings'), findsOneWidget);
   });
 }

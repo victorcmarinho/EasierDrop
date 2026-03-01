@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:easier_drop/helpers/system.dart';
+import 'package:easier_drop/services/window_manager_service.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,16 +48,15 @@ void main() {
 
   group('SystemHelper Missing Coverage', () {
     test('onWindowClose calls hide', () async {
-      final helper = SystemHelper();
       // This should call hide() and thus setSkipTaskbar and windowManager.hide()
-      await helper.onWindowClose();
+      WindowManagerService.instance.onWindowClose();
     });
 
     test('exit calls destructions', () async {
       await IOOverrides.runZoned(
         () async {
           try {
-            await SystemHelper.exit();
+            await WindowManagerService.instance.exitApp();
           } catch (_) {}
         },
         exit: (code) {

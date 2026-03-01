@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/helpers/system.dart';
+import 'package:easier_drop/services/window_manager_service.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -118,16 +119,16 @@ void main() {
 
   group('SystemHelper Comprehensive Tests', () {
     test('hide and open', () async {
-      await SystemHelper.hide();
+      await WindowManagerService.instance.hide();
       expect(windowLog.any((m) => m.method == 'hide'), isTrue);
 
       windowLog.clear();
-      await SystemHelper.open();
+      await WindowManagerService.instance.open();
       expect(windowLog.any((m) => m.method == 'show'), isTrue);
     });
 
     test('openSettings creates window', () async {
-      await SystemHelper.openSettings();
+      await WindowManagerService.instance.openSettings();
       expect(multiWindowLog.any((m) => m.method == 'createWindow'), isTrue);
     });
 
@@ -135,7 +136,7 @@ void main() {
       await IOOverrides.runZoned(
         () async {
           try {
-            await SystemHelper.exit();
+            await WindowManagerService.instance.exitApp();
           } catch (_) {}
           expect(windowLog.any((m) => m.method == 'destroy'), isTrue);
         },
@@ -146,8 +147,10 @@ void main() {
     });
 
     test('onWindowClose calls hide', () async {
-      final helper = SystemHelper();
-      await helper.onWindowClose();
+      WindowManagerService.instance.onWindowClose();
+      await Future.delayed(
+        const Duration(milliseconds: 100),
+      ); // wait for async hide
       expect(windowLog.any((m) => m.method == 'hide'), isTrue);
     });
 
@@ -163,12 +166,11 @@ void main() {
     });
 
     test('window events', () async {
-      final helper = SystemHelper();
-      helper.onWindowResize();
+      WindowManagerService.instance.onWindowResize();
       await Future.delayed(const Duration(milliseconds: 800));
       expect(SettingsService.instance.settings.windowW, equals(400.0));
 
-      helper.onWindowMove();
+      WindowManagerService.instance.onWindowMove();
       await Future.delayed(const Duration(milliseconds: 800));
       expect(SettingsService.instance.settings.windowX, equals(100.0));
     });

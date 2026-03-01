@@ -17,6 +17,7 @@ import 'package:easier_drop/screens/update_screen.dart';
 import 'package:easier_drop/screens/welcome_screen.dart';
 import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/services/settings_service.dart';
+import 'package:easier_drop/services/window_manager_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -139,7 +140,7 @@ class EasierDrop extends StatelessWidget {
   }
 
   Future<void> _checkForUpdates(BuildContext context) async {
-    await SystemHelper.openUpdateWindow();
+    await WindowManagerService.instance.openUpdateWindow();
   }
 
   Locale? _parseLocale(String? localeCode) {

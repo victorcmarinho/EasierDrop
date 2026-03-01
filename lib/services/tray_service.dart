@@ -4,9 +4,9 @@ import 'package:tray_manager/tray_manager.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 
 import 'package:easier_drop/services/analytics_service.dart';
-import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/services/update_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easier_drop/services/window_manager_service.dart';
 
 class TrayService with ChangeNotifier {
   static final TrayService instance = TrayService._();
@@ -57,14 +57,14 @@ class TrayService with ChangeNotifier {
           if (_updateUrl != null) await launchUrl(Uri.parse(_updateUrl!));
           break;
         case 'preferences':
-          await SystemHelper.openSettings();
+          await WindowManagerService.instance.openSettings();
           break;
         case 'show_window':
-          await SystemHelper.open();
+          await WindowManagerService.instance.open();
           break;
 
         case 'exit_app':
-          await SystemHelper.exit();
+          await WindowManagerService.instance.exitApp();
           break;
       }
     } catch (e) {

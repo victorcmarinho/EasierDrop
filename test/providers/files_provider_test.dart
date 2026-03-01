@@ -3,6 +3,7 @@ import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/services/file_repository.dart';
 import 'package:easier_drop/services/settings_service.dart';
+import 'package:easier_drop/helpers/share_message_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -207,14 +208,14 @@ void main() {
       final loc = AppLocalizationsEn();
 
       expect(
-        FilesProvider.resolveShareMessage('shareNone', loc),
+        ShareMessageHelper.resolveShareMessage('shareNone', loc),
         loc.shareNone,
       );
       expect(
-        FilesProvider.resolveShareMessage('shareError', loc),
+        ShareMessageHelper.resolveShareMessage('shareError', loc),
         loc.shareError,
       );
-      expect(FilesProvider.resolveShareMessage('custom', loc), 'custom');
+      expect(ShareMessageHelper.resolveShareMessage('custom', loc), 'custom');
     });
 
     test('dispose cancels timer', () {

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:easier_drop/helpers/system.dart';
 import 'package:easier_drop/services/settings_service.dart';
+import 'package:easier_drop/services/window_manager_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -57,23 +58,22 @@ void main() {
 
   test('brute force coverage', () async {
     // Hide/Open
-    await SystemHelper.hide();
-    await SystemHelper.open();
+    await WindowManagerService.instance.hide();
+    await WindowManagerService.instance.open();
 
     // Initialize paths
     await SystemHelper.initialize(isSecondaryWindow: false);
     await SystemHelper.initialize(isSecondaryWindow: true, windowId: '0');
 
     // Listener methods
-    final helper = SystemHelper();
-    await helper.onWindowClose();
-    helper.onWindowResize();
-    helper.onWindowMove();
+    WindowManagerService.instance.onWindowClose();
+    WindowManagerService.instance.onWindowResize();
+    WindowManagerService.instance.onWindowMove();
 
     // Exit
     await IOOverrides.runZoned(() async {
       try {
-        await SystemHelper.exit();
+        await WindowManagerService.instance.exitApp();
       } catch (_) {}
     }, exit: (code) => throw Exception());
 
@@ -82,7 +82,7 @@ void main() {
 
     // Open Settings (ignore errors)
     try {
-      await SystemHelper.openSettings();
+      await WindowManagerService.instance.openSettings();
     } catch (_) {}
 
     // Give time for async void methods
