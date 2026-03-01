@@ -4,6 +4,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easier_drop/web/website_app.dart';
+import 'package:easier_drop/web/rich_link.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -72,6 +73,7 @@ class _HomePageState extends State<HomePage> {
             _buildHeader(loc, theme),
             _buildHero(loc, theme),
             _buildFeatures(loc, theme),
+            _buildRichLink(loc, theme),
             _buildChangelog(loc, theme),
             _buildFooter(loc, theme),
           ],
@@ -477,6 +479,21 @@ class _HomePageState extends State<HomePage> {
       child: Text(
         loc.webFooterText,
         style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+      ),
+    );
+  }
+
+  Widget _buildRichLink(AppLocalizations loc, ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      child: Center(
+        child: RichLink(
+          title: 'Easier Drop',
+          subtitle:
+              'A prateleira flutuante para arquivos que falta no seu macOS. Organize seu fluxo de trabalho de forma nativa e rápida.',
+          url: 'https://easierdrop.victorcmarinho.app/',
+          imagePath: 'assets/web/rich_link_banner.png',
+        ),
       ),
     );
   }

@@ -8,7 +8,7 @@
 
 [🇺🇸 English](README.md) | [🇧🇷 Português](README_pt.md) | [🇪🇸 Español](README_es.md)
 
-[**🌐 Website**](https://victorcmarinho.github.io/EasierDrop/)
+[**🌐 Website**](https://easierdrop.victorcmarinho.app/)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)](https://www.apple.com/macos/)
