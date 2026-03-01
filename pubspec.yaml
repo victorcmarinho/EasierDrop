@@ -57,7 +57,7 @@ flutter:
     - path: assets/icon/icon.icns
       platforms:
         - macos
-    - path: assets/promo/
+    - path: assets/promo/demo.webp
       platforms:
         - web
     - path: CHANGELOG.md
