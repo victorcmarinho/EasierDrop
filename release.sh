@@ -103,7 +103,7 @@ print_header "4. Building RELEASE Version (Universal Build)"
 echo -e "📦 Compiling with obfuscation and split debug info..."
 echo -e "   This may take a minute..."
 # Obfuscation and split-debug-info help reduce size
-flutter build macos --release --obfuscate --split-debug-info=./build/debug-info $DART_DEFINES
+flutter build macos --release --obfuscate --split-debug-info=./build/debug-info --tree-shake-icons $DART_DEFINES
 
 RELEASE_SRC="build/macos/Build/Products/Release/easier_drop.app"
 
