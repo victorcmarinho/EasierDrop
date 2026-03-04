@@ -59,7 +59,7 @@ Desenvolvido com Flutter e ganchos nativos do macOS, o Easier Drop é incrivelme
 
 ---
 
-## 🛠 Instalação
+## 🛠 Instalação e Segurança
 
 ### Baixar App
 [**Baixar Última Versão**](https://github.com/victorcmarinho/EasierDrop/releases)
@@ -72,12 +72,52 @@ brew tap victorcmarinho/easier-drop https://github.com/victorcmarinho/EasierDrop
 brew install --cask easier-drop
 ```
 
-> **Nota:** Se o aplicativo não abrir com erro de "danificado" (comum em instalações via Homebrew de apps não notariados), execute este comando no terminal:
-> ```bash
-> xattr -d com.apple.quarantine "/Applications/Easier Drop.app"
-> ```
+### ⚠️ Importante: Segurança e Bypass do Gatekeeper
+Como o Easier Drop é um projeto independente de estudo/hobby, ele **não possui uma assinatura paga de desenvolvedor Apple** (que custa US$ 99/ano). 
+
+Por isso, o macOS aplicará uma quarentena de segurança que impede a abertura do app, exibindo mensagens como "App Danificado" ou "O desenvolvedor não pode ser verificado". **Isso acontece mesmo se você instalar via Homebrew.**
+
+**Para resolver, você DEVE executar este comando no Terminal após a instalação:**
+
+```bash
+sudo xattr -rd com.apple.quarantine "/Applications/Easier Drop.app"
+```
+
+> **Por que isso é necessário?** Sem a anuidade de US$ 99, a Apple não permite a "notarização" automática. Este comando remove manualmente a flag de quarentena que o macOS coloca em apps baixados da internet sem assinatura oficial.
+
+#### 🖱️ Alternativa Visual (Sem Terminal)
+Se você não quiser usar o terminal:
+1. Tente abrir o **Easier Drop** na sua pasta Aplicativos.
+2. Quando o macOS exibir o aviso de segurança, clique em **'OK'**.
+3. Vá em **Ajustes do Sistema** > **Privacidade e Segurança**.
+4. Role até o final da página e procure a seção **'Segurança'**.
+5. Você verá um aviso dizendo que o Easier Drop foi bloqueado. Clique em **'Abrir Mesmo Assim'**.
+6. Digite sua senha do Mac e confirme. O app abrirá normalmente!
+
+### Problemas com Acessibilidade?
+Se o gesto de agitar parar de funcionar após um update:
+1. Vá em *Ajustes do Sistema > Privacidade e Segurança > Acessibilidade*.
+2. Remova o **Easier Drop** da lista usando o botão de menos (-).
+3. Abra o app e permita que ele solicite a permissão novamente do zero.
 
 ---
+
+## ❤️ Apoie o Projeto e a Assinatura Apple
+
+O Easier Drop continuará sendo gratuito e de código aberto. No entanto, para remover esses avisos de segurança e facilitar a vida de todos os usuários, nosso objetivo é adquirir uma assinatura oficial de desenvolvedor Apple.
+
+**Meta: US$ 100/ano** via GitHub Sponsors.
+
+Se o Easier Drop facilita sua vida, considere nos ajudar a bater essa meta! Com a assinatura, poderemos notarizar o app, removendo a necessidade de comandos de terminal para instalação.
+
+<div align="center">
+  <a href="https://github.com/sponsors/victorcmarinho">
+    <img src="https://img.shields.io/badge/Sponsor-❤️-pink?style=for-the-badge" alt="Sponsor">
+  </a>
+</div>
+
+---
+
 
 ## ⌨️ Atalhos Pro
 

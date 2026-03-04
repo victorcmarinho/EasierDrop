@@ -72,6 +72,8 @@ class _HomePageState extends State<HomePage> {
             _buildHeader(loc, theme),
             _buildHero(loc, theme),
             _buildFeatures(loc, theme),
+            _buildBypassInstructions(loc, theme),
+            _buildSponsorship(loc, theme),
             _buildChangelog(loc, theme),
             _buildFooter(loc, theme),
           ],
@@ -436,6 +438,222 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(
               fontSize: 16,
               color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBypassInstructions(AppLocalizations loc, ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
+      width: double.infinity,
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      child: Column(
+        children: [
+          Container(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      color: theme.colorScheme.error,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        loc.webBypassTitle,
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  loc.webBypassInstruction,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: theme.colorScheme.outlineVariant),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: SelectableText(
+                          'sudo xattr -rd com.apple.quarantine "/Applications/Easier Drop.app"',
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          Clipboard.setData(
+                            const ClipboardData(
+                              text:
+                                  'sudo xattr -rd com.apple.quarantine "/Applications/Easier Drop.app"',
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Copied!')),
+                          );
+                        },
+                        icon: const Icon(Icons.copy),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  loc.webBypassMotivation,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontStyle: FontStyle.italic,
+                    color: theme.colorScheme.secondary,
+                  ),
+                ),
+                const SizedBox(height: 48),
+                Divider(color: theme.colorScheme.outlineVariant),
+                const SizedBox(height: 48),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.visibility_rounded,
+                      color: theme.colorScheme.primary,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        loc.webBypassVisualTitle,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  loc.webBypassVisualInstruction,
+                  style: TextStyle(
+                    fontSize: 16,
+                    height: 1.6,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSponsorship(AppLocalizations loc, ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 40),
+      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
+      width: double.infinity,
+      child: Column(
+        children: [
+          Container(
+            constraints: const BoxConstraints(maxWidth: 800),
+            padding: const EdgeInsets.all(40),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: theme.colorScheme.primary.withValues(alpha: 0.2),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.05),
+                  blurRadius: 30,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.favorite,
+                  color: theme.colorScheme.primary,
+                  size: 48,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  loc.webSponsorsTitle,
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  loc.webSponsorsDesc,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  loc.webSponsorsGoal,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    height: 1.5,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 40),
+                ElevatedButton.icon(
+                  onPressed: () =>
+                      _launchUrl('https://github.com/sponsors/victorcmarinho'),
+                  icon: const Icon(Icons.volunteer_activism),
+                  label: const Text('GitHub Sponsors'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 20,
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

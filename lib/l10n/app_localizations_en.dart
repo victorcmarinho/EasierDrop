@@ -237,4 +237,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get webFeature3Desc => 'Just shake your mouse to quickly reveal the drop window.';
+
+  @override
+  String get webBypassTitle => 'Important Installation Info';
+
+  @override
+  String get webBypassInstruction => 'Since Easier Drop is an independent/hobby project and does not have a paid Apple Developer subscription (\$99/year), macOS will apply a security quarantine. **Even when installing via Homebrew**, you will need to run the command below in Terminal to allow opening:';
+
+  @override
+  String get webBypassMotivation => 'Apple requires an annual fee for apps to be \'notarized\' transparently. Until we reach our sponsorship goal, the manual command is the only way to ensure the app and its Accessibility permissions function correctly.';
+
+  @override
+  String get webBypassVisualTitle => 'Visual Alternative (No Terminal)';
+
+  @override
+  String get webBypassVisualInstruction => 'If Terminal is not for you, follow these steps:\n\n1. Try to open Closer Drop normally in your **Applications** folder.\n2. When the security warning pops up, click **\'OK\'**.\n3. Open **System Settings** > **Privacy & Security**.\n4. Scroll down to the \'Security\' section. You\'ll see a message about Closer Drop. Click **\'Open Anyway\'**.\n5. Enter your Mac password and confirm. You\'re all set!';
+
+  @override
+  String get webSponsorsTitle => 'Support the Project';
+
+  @override
+  String get webSponsorsDesc => 'Help Easier Drop become a verified Apple Developer!';
+
+  @override
+  String get webSponsorsGoal => 'Our goal is to reach \$100/year via GitHub Sponsors to acquire an official subscription. This will allow the app to be installed without Gatekeeper warnings and maintain Accessibility permissions between updates.';
 }

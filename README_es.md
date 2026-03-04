@@ -59,7 +59,7 @@ Creado con Flutter y ganchos nativos de macOS, Easier Drop es increíblemente li
 
 ---
 
-## 🛠 Instalación
+## 🛠 Instalación y Seguridad
 
 ### Descargar App
 [**Descargar Última Versión**](https://github.com/victorcmarinho/EasierDrop/releases)
@@ -72,10 +72,49 @@ brew tap victorcmarinho/easier-drop https://github.com/victorcmarinho/EasierDrop
 brew install --cask easier-drop
 ```
 
-> **Nota:** Si la aplicación no se abre con un error de "dañado" (común en instalaciones vía Homebrew de apps no notariadas), ejecuta este comando en la terminal:
-> ```bash
-> xattr -d com.apple.quarantine "/Applications/Easier Drop.app"
-> ```
+### ⚠️ Importante: Bypass de Gatekeeper
+Como Easier Drop es un proyecto independiente de estudio/hobby, **no tiene una suscripción de desarrollador Apple paga** (que cuesta US$ 99/año). 
+
+Por lo tanto, macOS aplicará una cuarentena de seguridad que impide la apertura de la aplicación, mostrando mensajes como "App dañada" o "El desarrollador no puede ser verificado". **Esto sucede incluso si instalas a través de Homebrew.**
+
+**Para solucionarlo, DEBES ejecutar este comando en la Terminal después de la instalación:**
+
+```bash
+sudo xattr -rd com.apple.quarantine "/Applications/Easier Drop.app"
+```
+
+#### 🖱️ Alternativa Visual (Sin Terminal)
+Si no te sientes cómodo con la Terminal:
+1. Intenta abrir **Easier Drop** en tu carpeta de Aplicaciones.
+2. Cuando aparezca el aviso de seguridad, haz clic en **'OK'**.
+3. Ve a **Ajustes del Sistema** > **Privacidad y Seguridad**.
+4. Desplázate hasta la sección de **'Seguridad'**.
+5. Verás un aviso sobre Easier Drop. Haz clic en **'Abrir de todos modos'**.
+6. Ingresa tu contraseña de Mac y confirma. ¡Listo!
+
+> **¿Por qué es necesario esto?** Sin la cuota anual de US$ 99, Apple no permite la "notarización" automática. Este proceso elimina manualmente la marca de cuarentena que macOS pone en las aplicaciones descargadas de Internet sin una firma oficial.
+
+### ¿Problemas con la Accesibilidad?
+Si el gesto de agitar deja de funcionar después de una actualización:
+1. Ve a *Ajustes del Sistema > Privacidad y Seguridad > Accesibilidad*.
+2. Elimina **Easier Drop** de la lista usando el botón de menos (-).
+3. Abre la aplicación y permite que solicite el permiso de nuevo desde cero.
+
+---
+
+## ❤️ Apoya el Proyecto y la Suscripción de Apple
+
+Easier Drop seguirá siendo gratuito y de código abierto. Sin embargo, para eliminar estos avisos de seguridad y facilitar la vida a todos los usuarios, nuestro objetivo es adquirir una suscripción oficial de desarrollador de Apple.
+
+**Meta: US$ 100/año** a través de GitHub Sponsors.
+
+Si Easier Drop te facilita la vida, ¡considera ayudarnos a alcanzar esta meta! Con la suscripción, podremos notarizar la aplicación, eliminando la necesidad de comandos de terminal o bypasses manuales.
+
+<div align="center">
+  <a href="https://github.com/sponsors/victorcmarinho">
+    <img src="https://img.shields.io/badge/Sponsor-❤️-pink?style=for-the-badge" alt="Sponsor">
+  </a>
+</div>
 
 ---
 
@@ -138,26 +177,12 @@ Para ejecutar el proyecto localmente:
 ### Ejecución de Pruebas
 Mantenemos la calidad del código con un conjunto completo de pruebas unitarias.
 Para ejecutar las pruebas:
-```bash
-flutter test
-```
-Para comprobar la cobertura:
-```bash
-flutter test --coverage
-genhtml coverage/lcov.info -o coverage/html
-```
+1. `flutter test`
+2. Para comprobar la cobertura: 
+   `flutter test --coverage`
+   `genhtml coverage/lcov.info -o coverage/html`
 
 ### Variables de Entorno
 El proyecto utiliza archivos `.env` para la configuración:
 - `APTABASE_APP_KEY`: Tu clave de telemetría de Aptabase.
 - `GITHUB_LATEST_RELEASE_URL`: Punto de enlace de la API para las comprobaciones de actualización.
-
-## ❤️ Apoya el Proyecto
-
-Si Easier Drop hace tu vida más fácil, ¡considera apoyar al desarrollador!
-
-<div align="center">
-  <a href="https://github.com/sponsors/victorcmarinho">
-    <img src="https://img.shields.io/badge/Sponsor-❤️-pink?style=for-the-badge" alt="Sponsor">
-  </a>
-</div>

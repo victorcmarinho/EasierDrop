@@ -114,5 +114,13 @@
   "webFeature2Title": "Operaciones por Lote",
   "webFeature2Desc": "Selecciona múltiples archivos y arrástralos juntos.",
   "webFeature3Title": "Agitar para Abrir",
-  "webFeature3Desc": "Simplemente agita tu ratón para revelar la ventana rápidamente."
+  "webFeature3Desc": "Simplemente agita tu ratón para revelar la ventana rápidamente.",
+  "webBypassTitle": "Información Importante sobre la Instalación",
+  "webBypassInstruction": "Como Easier Drop es un proyecto independiente/hobby y no tiene una suscripción de desarrollador Apple paga ($99/año), macOS aplicará una cuarentena de seguridad. **Incluso instalando vía Homebrew**, deberás ejecutar o comando siguiente en la Terminal para permitir la apertura:",
+  "webBypassMotivation": "Apple requiere una cuota anual para que las aplicaciones sean 'notarizadas' de forma transparente. Hasta que alcancemos nuestro objetivo de patrocinio, el comando manual es la única forma de garantizar que la aplicación y sus permisos de Accesibilidad funcionen correctamente.",
+  "webBypassVisualTitle": "Alternativa Visual (Sin Terminal)",
+  "webBypassVisualInstruction": "Si no te sientes cómodo con la Terminal, sigue estos pasos:\n\n1. Intenta abrir Faster Drop normalmente en tu carpeta de **Aplicaciones**.\n2. Cuando aparezca el aviso de seguridad, haz clic en **'OK'**.\n3. Abre **Ajustes del Sistema** > **Privacidad y Seguridad**.\n4. Desplázate hasta la sección 'Seguridad'. Verás un mensaje sobre Faster Drop. Haz clic en **'Abrir de todos modos'**.\n5. Ingresa tu contraseña de Mac y confirma. ¡Listo!",
+  "webSponsorsTitle": "Apoya el Proyecto",
+  "webSponsorsDesc": "¡Ayuda a Easier Drop a convertirse en un desarrollador verificado de Apple!",
+  "webSponsorsGoal": "Nuestro objetivo es alcanzar $100/año a través de GitHub Sponsors para adquirir una suscripción oficial. Esto permitirá que la aplicación se instale sin avisos de Gatekeeper y mantenga los permisos de Accesibilidad entre actualizaciones."
 }
