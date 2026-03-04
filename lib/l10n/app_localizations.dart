@@ -492,6 +492,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Just shake your mouse to quickly reveal the drop window.'**
   String get webFeature3Desc;
+
+  /// No description provided for @webBypassTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Important Installation Info'**
+  String get webBypassTitle;
+
+  /// No description provided for @webBypassInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Since Easier Drop is an independent/hobby project and does not have a paid Apple Developer subscription (\$99/year), macOS will apply a security quarantine. **Even when installing via Homebrew**, you will need to run the command below in Terminal to allow opening:'**
+  String get webBypassInstruction;
+
+  /// No description provided for @webBypassMotivation.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple requires an annual fee for apps to be \'notarized\' transparently. Until we reach our sponsorship goal, the manual command is the only way to ensure the app and its Accessibility permissions function correctly.'**
+  String get webBypassMotivation;
+
+  /// No description provided for @webBypassVisualTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Visual Alternative (No Terminal)'**
+  String get webBypassVisualTitle;
+
+  /// No description provided for @webBypassVisualInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'If Terminal is not for you, follow these steps:\n\n1. Try to open Closer Drop normally in your **Applications** folder.\n2. When the security warning pops up, click **\'OK\'**.\n3. Open **System Settings** > **Privacy & Security**.\n4. Scroll down to the \'Security\' section. You\'ll see a message about Closer Drop. Click **\'Open Anyway\'**.\n5. Enter your Mac password and confirm. You\'re all set!'**
+  String get webBypassVisualInstruction;
+
+  /// No description provided for @webSponsorsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support the Project'**
+  String get webSponsorsTitle;
+
+  /// No description provided for @webSponsorsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Help Easier Drop become a verified Apple Developer!'**
+  String get webSponsorsDesc;
+
+  /// No description provided for @webSponsorsGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Our goal is to reach \$100/year via GitHub Sponsors to acquire an official subscription. This will allow the app to be installed without Gatekeeper warnings and maintain Accessibility permissions between updates.'**
+  String get webSponsorsGoal;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

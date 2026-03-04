@@ -114,5 +114,13 @@
   "webFeature2Title": "Operações em Lote",
   "webFeature2Desc": "Selecione vários arquivos e arraste-os juntos para outro lugar.",
   "webFeature3Title": "Agite para Abrir",
-  "webFeature3Desc": "Basta agitar o mouse para revelar rapidamente a janela."
+  "webFeature3Desc": "Basta agitar o mouse para revelar rapidamente a janela.",
+  "webBypassTitle": "Informação Importante sobre a Instalação",
+  "webBypassInstruction": "Como o Easier Drop é um projeto independente/hobby e não possui uma assinatura paga de desenvolvedor Apple (US$ 99/ano), o macOS aplicará uma quarentena de segurança. **Mesmo instalando via Homebrew**, você precisará executar o comando abaixo no Terminal para permitir a abertura:",
+  "webBypassMotivation": "A Apple exige o pagamento de uma anuidade para que aplicativos sejam 'notarizados' de forma transparente. Até atingirmos nossa meta de patrocínio, o comando manual é o único meio de garantir o funcionamento do app e das permissões de Acessibilidade.",
+  "webBypassVisualTitle": "Alternativa Visual (Sem Terminal)",
+  "webBypassVisualInstruction": "Se o comando no Terminal não funcionar ou você preferir a interface visual:\n\n1. Tente abrir o Easier Drop normalmente na pasta **Aplicativos**.\n2. Quando aparecer o aviso de segurança, clique em **'OK'**.\n3. Abra os **Ajustes do Sistema** (System Settings) > **Privacidade e Segurança**.\n4. Role até o final e procure a seção 'Segurança'. Você verá uma mensagem sobre o Easier Drop. Clique em **'Abrir Mesmo Assim'**.\n5. Digite sua senha do Mac e confirme. Agora o app abrirá normalmente!",
+  "webSponsorsTitle": "Apoie o Projeto",
+  "webSponsorsDesc": "Ajude o Easier Drop a se tornar um desenvolvedor verificado da Apple!",
+  "webSponsorsGoal": "Nosso objetivo é atingir US$ 100/ano via GitHub Sponsors para adquirir a assinatura oficial. Isso permitirá que o app seja instalado sem avisos do Gatekeeper e mantenha as permissões de Acessibilidade entre atualizações."
 }

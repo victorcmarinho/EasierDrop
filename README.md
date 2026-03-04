@@ -59,7 +59,7 @@ Built with Flutter and native macOS hooks, Easier Drop is incredibly lightweight
 
 ---
 
-## 🛠 Installation
+## 🛠 Installation & Security
 
 ### Download App
 [**Download Latest Release**](https://github.com/victorcmarinho/EasierDrop/releases)
@@ -72,12 +72,52 @@ brew tap victorcmarinho/easier-drop https://github.com/victorcmarinho/EasierDrop
 brew install --cask easier-drop
 ```
 
-> **Note:** If the app fails to open with a "damaged" error (common with Homebrew installs of non-notarized apps), run this command in your terminal:
-> ```bash
-> xattr -d com.apple.quarantine "/Applications/Easier Drop.app"
-> ```
+### ⚠️ Important: Gatekeeper Bypass
+Since Easier Drop is an independent hobby/study project, it **does not have a paid Apple Developer subscription** ($99/year). 
+
+Consequently, macOS will apply a security quarantine that prevents the app from opening, showing messages like "App is damaged" or "Developer cannot be verified." **This happens even if you install via Homebrew.**
+
+**To fix this, you MUST run this command in Terminal after installation:**
+
+```bash
+sudo xattr -rd com.apple.quarantine "/Applications/Easier Drop.app"
+```
+
+#### 🖱️ Visual Alternative (No Terminal)
+If you're not comfortable with the Terminal:
+1. Try to open **Easier Drop** in your Applications folder.
+2. When the security warning pops up, click **'OK'**.
+3. Go to **System Settings** > **Privacy & Security**.
+4. Scroll to the bottom and find the **'Security'** section.
+5. You'll see a notice about Easier Drop. Click **'Open Anyway'**.
+6. Enter your Mac password and confirm. You're all set!
+
+> **Why is this necessary?** Without the $99/year fee, Apple doesn't allow automatic "notarization." This process manually removes the quarantine flag that macOS puts on apps downloaded from the internet without an official signature.
+
+### Accessibility Issues?
+If the shake gesture stops working after an update:
+1. Go to *System Settings > Privacy & Security > Accessibility*.
+2. Remove **Easier Drop** from the list using the minus (-) button.
+3. Open the app and allow it to request permission again from scratch.
 
 ---
+
+## ❤️ Support the Project & Apple Subscription
+
+Easier Drop will remain free and open-source. However, to remove these security warnings and make life easier for all users, our goal is to acquire an official Apple Developer subscription.
+
+**Goal: $100/year** via GitHub Sponsors.
+
+If Easier Drop makes your life easier, consider helping us reach this goal! With the subscription, we can notarize the app, removing the need for terminal commands or manual bypasses.
+
+<div align="center">
+  <a href="https://github.com/sponsors/victorcmarinho">
+    <img src="https://img.shields.io/badge/Sponsor-❤️-pink?style=for-the-badge" alt="Sponsor">
+  </a>
+</div>
+
+---
+
 
 ## ⌨️ Pro Shortcuts
 
@@ -152,12 +192,3 @@ The project uses `.env` files for configuration:
 - `APTABASE_APP_KEY`: Your Aptabase telemetry key.
 - `GITHUB_LATEST_RELEASE_URL`: API endpoint for update checks.
 
-## ❤️ Support the Project
-
-If Easier Drop makes your life easier, consider supporting the developer!
-
-<div align="center">
-  <a href="https://github.com/sponsors/victorcmarinho">
-    <img src="https://img.shields.io/badge/Sponsor-❤️-pink?style=for-the-badge" alt="Sponsor">
-  </a>
-</div>
