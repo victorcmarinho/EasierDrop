@@ -1,4 +1,5 @@
 import 'dart:io' as io;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easier_drop/services/analytics_service.dart';
@@ -14,6 +15,11 @@ class NativeEventsService {
   static const MethodChannel _shakeChannel = MethodChannel(
     AppConstants.shakeChannelName,
   );
+  
+  @visibleForTesting
+  Future<void> Function() exitAppFn = WindowManagerService.instance.exitApp;
+  @visibleForTesting
+  Future<dynamic> Function(String, List<String>) processStarter = io.Process.start;
 
   void initialize() {
     _shakeChannel.setMethodCallHandler(_handleShakeEvent);
@@ -52,25 +58,25 @@ class NativeEventsService {
     );
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
-    } else {
-      final Uri fallbackUrl = Uri.parse(
-        'x-apple.systempreferences:com.apple.preference.security',
-      );
-      if (await canLaunchUrl(fallbackUrl)) {
-        await launchUrl(fallbackUrl);
-      }
+      return;
+    } 
+
+    final Uri fallbackUrl = Uri.parse(
+      'x-apple.systempreferences:com.apple.preference.security',
+    );
+    if (await canLaunchUrl(fallbackUrl)) {
+      await launchUrl(fallbackUrl);
     }
   }
 
   Future<void> restartApp() async {
-    if (io.Platform.isMacOS) {
-      final String executable = io.Platform.resolvedExecutable;
-      final String appBundlePath = io.File(
-        executable,
-      ).parent.parent.parent.path;
+    if (!io.Platform.isMacOS) return;
 
-      await io.Process.start('open', ['-n', appBundlePath]);
-      await WindowManagerService.instance.exitApp();
-    }
+    final String path = io.File(
+      io.Platform.resolvedExecutable,
+    ).parent.parent.parent.path;
+
+    await processStarter('open', ['-n', path]);
+    await exitAppFn();
   }
 }
