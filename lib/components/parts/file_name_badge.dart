@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:marquee_text/marquee_text.dart';
+import 'package:easier_drop/helpers/marquee_text.dart';
 
 class FileNameBadge extends StatelessWidget {
   const FileNameBadge({super.key, required this.label});

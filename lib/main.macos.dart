@@ -78,8 +78,8 @@ class EasierDrop extends StatelessWidget {
   }
 
   Widget _buildApp() {
-    return AnimatedBuilder(
-      animation: SettingsService.instance,
+    return ListenableBuilder(
+      listenable: SettingsService.instance,
       builder: (context, _) {
         final settings = SettingsService.instance;
         final locale = _parseLocale(settings.localeCode);
@@ -121,7 +121,7 @@ class EasierDrop extends StatelessWidget {
         PlatformMenu(
           label: 'Easier Drop',
           menus: [
-            PlatformProvidedMenuItem(type: PlatformProvidedMenuItemType.about),
+            const PlatformProvidedMenuItem(type: PlatformProvidedMenuItemType.about),
             PlatformMenuItemGroup(
               members: [
                 PlatformMenuItem(
@@ -130,7 +130,7 @@ class EasierDrop extends StatelessWidget {
                 ),
               ],
             ),
-            PlatformProvidedMenuItem(type: PlatformProvidedMenuItemType.quit),
+            const PlatformProvidedMenuItem(type: PlatformProvidedMenuItemType.quit),
           ],
         ),
       ],

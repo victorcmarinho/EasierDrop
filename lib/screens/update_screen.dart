@@ -166,7 +166,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
         PushButton(
           controlSize: ControlSize.large,
           onPressed: _closeWindow,
-          child: Text('OK'),
+          child: const Text('OK'),
         ),
       ],
     );

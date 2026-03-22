@@ -48,14 +48,8 @@ class FilesProvider with ChangeNotifier {
       DateTime.now().difference(_lastLimitHit!) <
           AppConstants.limitNotificationDuration;
 
-  List<FileReference> get files {
-    final list = _cachedFilesList ??= List.unmodifiable(_files.values);
-    AnalyticsService.instance.debug(
-      'files getter called. Map size: ${_files.length}, List size: ${list.length}',
-      tag: 'FilesProvider',
-    );
-    return list;
-  }
+  List<FileReference> get files =>
+      _cachedFilesList ??= List.unmodifiable(_files.values);
 
   List<XFile> get validXFiles {
     if (_cachedXFiles != null) return _cachedXFiles!;
@@ -198,7 +192,7 @@ class FilesProvider with ChangeNotifier {
     try {
       final validFilesList = validXFiles;
       if (validFilesList.isEmpty) {
-        return ShareResult('shareNone', ShareResultStatus.unavailable);
+        return const ShareResult('shareNone', ShareResultStatus.unavailable);
       }
 
       final params = ShareParams(
@@ -221,7 +215,7 @@ class FilesProvider with ChangeNotifier {
         'Error sharing files: $e',
         tag: 'FilesProvider',
       );
-      return ShareResult('shareError', ShareResultStatus.unavailable);
+      return const ShareResult('shareError', ShareResultStatus.unavailable);
     }
   }
 

@@ -113,7 +113,7 @@ void main() {
     });
     group('FilesStack Widget Tests Additional', () {
       testWidgets('renders shimmer when files are processing', (tester) async {
-        final file1 = FileReference(pathname: '/path/1', isProcessing: true);
+        final file1 = const FileReference(pathname: '/path/1', isProcessing: true);
 
         await tester.pumpWidget(
           MaterialApp(

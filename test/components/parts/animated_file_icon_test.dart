@@ -196,7 +196,7 @@ void main() {
   testWidgets('AnimatedFileIcon builds default icon when nothing available', (
     tester,
   ) async {
-    final file = FileReference(pathname: '/test.png');
+    final file = const FileReference(pathname: '/test.png');
 
     await tester.pumpWidget(
       MaterialApp(

@@ -15,7 +15,7 @@ void main() {
     late MockFilesProvider mockFilesProvider;
 
     setUpAll(() {
-      registerFallbackValue(Iterable<dynamic>.empty());
+      registerFallbackValue(const Iterable<dynamic>.empty());
     });
 
     setUp(() {

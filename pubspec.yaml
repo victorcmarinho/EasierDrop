@@ -8,40 +8,39 @@ environment:
   sdk: ^3.10.0
 
 dependencies:
-  window_manager: ^0.5.1
-  provider: ^6.1.5+1
-  share_plus: ^12.0.0
-  tray_manager: ^0.5.1
+  aptabase_flutter: ^0.4.1
   cupertino_icons: ^1.0.8
-  macos_ui: ^2.2.0
+  desktop_multi_window: ^0.3.0
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  path_provider: ^2.1.5
-  path: ^1.9.1
-  intl: ^0.20.2
-  http: ^1.6.0
-  pub_semver: ^2.2.0
-  package_info_plus: ^8.3.1
-  url_launcher: ^6.3.2
-  desktop_multi_window: ^0.3.0
-  shimmer: ^3.0.0
-  aptabase_flutter: ^0.4.1
-  pasteboard: ^0.4.0
-  marquee_text: ^2.5.0+1
-  meta: ^1.11.0
   flutter_markdown: ^0.7.7+1
+  http: ^1.6.0
+  intl: ^0.20.2
+  macos_ui: ^2.2.0
+  meta: ^1.11.0
+  package_info_plus: ^8.3.1
+  pasteboard: ^0.5.0
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  provider: ^6.1.5+1
+  pub_semver: ^2.2.0
+  share_plus: ^12.0.0
+  shimmer: ^3.0.0
+  tray_manager: ^0.5.1
+  url_launcher: ^6.3.2
+  window_manager: ^0.5.1
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  build_runner: ^2.9.0
   flutter_launcher_icons: ^0.14.4
   flutter_lints: ^6.0.0
-  path_provider_platform_interface: ^2.1.2
-  mocktail: ^1.0.4
+  flutter_test:
+    sdk: flutter
   mockito: ^5.5.1
-  build_runner: ^2.9.0
+  mocktail: ^1.0.4
+  path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8
   url_launcher_platform_interface: ^2.0.0
 

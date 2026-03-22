@@ -59,13 +59,21 @@ class FilesSurface extends StatelessWidget {
             _buildMainContainer(context),
             DraggingOverlay(visible: draggingOut),
             LimitOverlay(visible: showLimit, loc: loc),
-            FileActionsBar(
-              hasFiles: hasFiles,
-              filesProvider: filesProvider,
-              buttonKey: buttonKey,
-              getButtonPosition: getButtonPosition,
-              loc: loc,
-              onClear: onClear,
+            // Wrap in a GestureDetector that consumes pan events so the
+            // parent onPanStart (which starts the drag-out) is never reached
+            // when the user clicks/drags these buttons.
+            GestureDetector(
+              behavior: HitTestBehavior.deferToChild,
+              onPanStart: (_) {},
+              onPanUpdate: (_) {},
+              child: FileActionsBar(
+                hasFiles: hasFiles,
+                filesProvider: filesProvider,
+                buttonKey: buttonKey,
+                getButtonPosition: getButtonPosition,
+                loc: loc,
+                onClear: onClear,
+              ),
             ),
           ],
         ),

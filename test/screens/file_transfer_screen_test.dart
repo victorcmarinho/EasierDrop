@@ -247,9 +247,9 @@ void main() {
       final widget = MaterialApp(
         home: ChangeNotifierProvider<FilesProvider>.value(
           value: mockFilesProvider,
-          child: FileTransferScreen(
+          child: const FileTransferScreen(
             testMode: true,
-            testDragDrop: const MockDragDrop(),
+            testDragDrop: MockDragDrop(),
           ),
         ),
       );

@@ -25,7 +25,7 @@ class MockDragDrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('Mock DragDrop');
+    return const Text('Mock DragDrop');
   }
 }
 
@@ -67,7 +67,7 @@ class MockedFileTransferScreen extends StatelessWidget {
             },
           ),
         },
-        child: Focus(
+        child: const Focus(
           autofocus: true,
           child: Stack(children: [MockDragDrop(), MockTray()]),
         ),

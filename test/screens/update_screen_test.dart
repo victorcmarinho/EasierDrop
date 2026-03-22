@@ -57,10 +57,10 @@ void main() {
 
   Future<void> pumpUpdateScreen(WidgetTester tester) async {
     await tester.pumpWidget(
-      MacosApp(
+      const MacosApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const UpdateScreen(),
+        home: UpdateScreen(),
       ),
     );
   }

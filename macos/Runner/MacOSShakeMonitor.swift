@@ -96,7 +96,7 @@ class MacOSShakeMonitor: NSObject {
         }
         
         let currentLocation = event.location
-        let currentTime = Date().timeIntervalSince1970
+        let currentTime = ProcessInfo.processInfo.systemUptime
         
         // Skip first point or large jumps
         if lastLocation == .zero {

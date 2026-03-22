@@ -40,7 +40,7 @@ void main() {
 
   group('FilesProvider Tests', () {
     test('addFile adds a single file and manages isProcessing', () async {
-      final file = FileReference(pathname: '/path/to/file1.txt');
+      final file = const FileReference(pathname: '/path/to/file1.txt');
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
       when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
@@ -62,8 +62,8 @@ void main() {
     });
 
     test('addFiles adds multiple files and manages isProcessing', () async {
-      final file1 = FileReference(pathname: '/path/to/file1.txt');
-      final file2 = FileReference(pathname: '/path/to/file2.txt');
+      final file1 = const FileReference(pathname: '/path/to/file1.txt');
+      final file2 = const FileReference(pathname: '/path/to/file2.txt');
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
       when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
@@ -82,7 +82,7 @@ void main() {
     });
 
     test('does not add duplicate files', () async {
-      final file1 = FileReference(pathname: '/path/to/file1.txt');
+      final file1 = const FileReference(pathname: '/path/to/file1.txt');
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
       when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
@@ -96,7 +96,7 @@ void main() {
     });
 
     test('clear removes all files', () async {
-      final file1 = FileReference(pathname: '/path/to/file1.txt');
+      final file1 = const FileReference(pathname: '/path/to/file1.txt');
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
       when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
@@ -112,7 +112,7 @@ void main() {
     });
 
     test('removeFile removes specific file', () async {
-      final file1 = FileReference(pathname: '/path/to/file1.txt');
+      final file1 = const FileReference(pathname: '/path/to/file1.txt');
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
       when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
@@ -129,7 +129,7 @@ void main() {
 
     test('removeByPath removes specific file by path', () async {
       const path = '/path/to/file1.txt';
-      final file1 = FileReference(pathname: path);
+      final file1 = const FileReference(pathname: path);
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
       when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
@@ -151,9 +151,9 @@ void main() {
         maxFiles: 2,
       );
 
-      final file1 = FileReference(pathname: '/file1.txt');
-      final file2 = FileReference(pathname: '/file2.txt');
-      final file3 = FileReference(pathname: '/file3.txt');
+      final file1 = const FileReference(pathname: '/file1.txt');
+      final file2 = const FileReference(pathname: '/file2.txt');
+      final file3 = const FileReference(pathname: '/file3.txt');
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
       when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
@@ -180,8 +180,8 @@ void main() {
         maxFiles: 10,
       );
 
-      final file1 = FileReference(pathname: '/valid.txt');
-      final file2 = FileReference(pathname: '/invalid.txt');
+      final file1 = const FileReference(pathname: '/valid.txt');
+      final file2 = const FileReference(pathname: '/invalid.txt');
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
       when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);

@@ -33,11 +33,11 @@ class DragCoordinator {
     );
   }
 
-  void dispose() {
+  Future<void> dispose() async {
     FileDropService.instance.setMethodCallHandler(null);
     DragOutService.instance.setHandler(null);
     _dropSubscription?.cancel();
-    FileDropService.instance.stop();
+    await FileDropService.instance.stop();
     draggingOut.dispose();
     hovering.dispose();
   }

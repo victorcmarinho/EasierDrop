@@ -98,40 +98,36 @@ void main() {
       );
     });
 
-    test('_testReadability handles FileSystemException', () async {
+    test('validateFile: file with no read permission still passes stat check',
+        () async {
+      // After the perf refactor, validateFile only checks stat() (file exists
+      // and is a regular file). It no longer opens the file to read a byte.
+      // A chmod-000 file still has a valid stat, so validateFile returns true.
       final nonReadable = File('non_readable.txt');
       await nonReadable.writeAsString('secret');
-
       await Process.run('chmod', ['000', nonReadable.path]);
-
       try {
         final result = await repository.validateFile(nonReadable.path);
-        expect(result, isFalse);
+        expect(result, isTrue); // stat succeeds; readability is not checked
       } finally {
         await Process.run('chmod', ['644', nonReadable.path]);
-        if (await nonReadable.exists()) {
-          await nonReadable.delete();
-        }
+        if (await nonReadable.exists()) await nonReadable.delete();
       }
     });
 
-    test('_testReadability handles generic exception', () async {
+    test('validateFile returns false when stat() throws', () async {
+      // Verify that an exception during stat() is caught and returns false.
       await IOOverrides.runZoned(
         () async {
-          final result = await repository.validateFile('generic_exception.txt');
+          final result = await repository.validateFile('stat_exception.txt');
           expect(result, isFalse);
         },
         createFile: (path) {
           final mockFile = _MockFile(path);
-          if (path == 'generic_exception.txt') {
-            when(() => mockFile.exists()).thenAnswer((_) async => true);
+          if (path == 'stat_exception.txt') {
             when(
               () => mockFile.stat(),
-            ).thenAnswer((_) async => _MockFileStat(FileSystemEntityType.file));
-
-            when(
-              () => mockFile.open(mode: any(named: 'mode')),
-            ).thenAnswer((_) async => throw Exception('Generic error'));
+            ).thenThrow(const FileSystemException('stat error'));
           }
           return mockFile;
         },

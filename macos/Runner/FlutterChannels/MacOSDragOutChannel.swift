@@ -6,6 +6,9 @@ final class MacOSDragOutChannel: NSObject {
     private var handlers: [ObjectIdentifier: IndividualDragOutHandler] = [:]
 
     func setup(view: NSView, messenger: FlutterBinaryMessenger) {
+        // Prune stale handlers for deallocated views before adding a new one
+        handlers = handlers.filter { $0.value.isViewAlive }
+
         let key = ObjectIdentifier(messenger as AnyObject)
         if handlers[key] == nil {
             handlers[key] = IndividualDragOutHandler(view: view, messenger: messenger)
@@ -19,6 +22,7 @@ final class IndividualDragOutHandler: NSObject, NSDraggingSource {
     private var channel: FlutterMethodChannel?
     private var forceCopyFromCmd: Bool = false
 
+    var isViewAlive: Bool { view != nil }
     init(view: NSView, messenger: FlutterBinaryMessenger) {
         self.view = view
         self.messenger = messenger
