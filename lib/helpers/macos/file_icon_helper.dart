@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'package:flutter/services.dart';
 import 'package:easier_drop/services/constants.dart';
 import 'package:easier_drop/services/analytics_service.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 
 class FileIconHelper {
   static const MethodChannel _channel = MethodChannel(
@@ -13,7 +14,7 @@ class FileIconHelper {
   static final LinkedHashMap<String, Uint8List> _iconCache = LinkedHashMap();
 
   static Future<Uint8List?> getFileIcon(String filePath) async {
-    try {
+    final (result, error) = await safeCall<Uint8List?>(() async {
       final extension = _extractExtension(filePath);
       if (extension == null) return null;
 
@@ -32,29 +33,33 @@ class FileIconHelper {
         _insert(extension, iconData);
       }
       return iconData;
-    } catch (e) {
+    });
+
+    if (error != null) {
       AnalyticsService.instance.error(
-        'Erro ao obter ícone: $e',
+        'Erro ao obter ícone: $error',
         tag: 'FileIconHelper',
       );
       return null;
     }
+
+    return result;
   }
 
   static Future<Uint8List?> getFilePreview(String filePath) async {
-    try {
-      final Uint8List? previewData = await _channel.invokeMethod(
-        'getFilePreview',
-        filePath,
-      );
-      return previewData;
-    } catch (e) {
+    final (result, error) = await safeCall<Uint8List?>(
+      () => _channel.invokeMethod('getFilePreview', filePath)
+    );
+
+    if (error != null) {
       AnalyticsService.instance.error(
-        'Erro ao obter preview: $e',
+        'Erro ao obter preview: $error',
         tag: 'FileIconHelper',
       );
       return null;
     }
+    
+    return result;
   }
 
   static void _insert(String key, Uint8List value) {

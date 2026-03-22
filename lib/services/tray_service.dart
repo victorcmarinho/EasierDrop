@@ -7,25 +7,28 @@ import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/services/update_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easier_drop/services/window_manager_service.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 
 class TrayService with ChangeNotifier {
-  static final TrayService instance = TrayService._();
+  static TrayService _instance = TrayService._();
+  static TrayService get instance => _instance;
+  @visibleForTesting
+  static set instance(TrayService value) => _instance = value;
   TrayService._();
 
   String? _updateUrl;
   String? get updateUrl => _updateUrl;
 
   Future<void> configure() async {
-    try {
-      await trayManager.setIcon('assets/icon/icon.icns');
-    } catch (e) {
-      AnalyticsService.instance.warn('Failed to load tray icon: $e');
+    final (_, error) = await safeCall(() => trayManager.setIcon('assets/icon/icon.icns'));
+    if (error != null) {
+      AnalyticsService.instance.warn('Failed to load tray icon: $error');
     }
   }
 
   Future<void> checkForUpdates() async {
-    final url = await UpdateService.instance.checkForUpdates();
-    if (url != _updateUrl) {
+    final (url, error) = await UpdateService.instance.checkForUpdates();
+    if (error == null && url != _updateUrl) {
       _updateUrl = url;
       notifyListeners();
     }
@@ -51,7 +54,7 @@ class TrayService with ChangeNotifier {
   }
 
   Future<void> handleMenuItemClick(MenuItem menuItem) async {
-    try {
+    final (_, error) = await safeCall(() async {
       switch (menuItem.key) {
         case 'update_available':
           if (_updateUrl != null) await launchUrl(Uri.parse(_updateUrl!));
@@ -67,8 +70,10 @@ class TrayService with ChangeNotifier {
           await WindowManagerService.instance.exitApp();
           break;
       }
-    } catch (e) {
-      AnalyticsService.instance.error('Error handling tray menu item: $e');
+    });
+
+    if (error != null) {
+      AnalyticsService.instance.error('Error handling tray menu item: $error');
     }
   }
 

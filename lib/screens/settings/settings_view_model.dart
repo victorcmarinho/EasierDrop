@@ -20,7 +20,8 @@ class SettingsViewModel extends ChangeNotifier {
 
     final launchPerm = await SettingsService.instance
         .checkLaunchAtLoginPermission();
-    final shakePerm = await NativeEventsService.instance.checkShakePermission();
+    final (shakePermData, _) = await NativeEventsService.instance.checkShakePermission();
+    final shakePerm = shakePermData ?? false;
 
     _hasLaunchAtLoginPermission = launchPerm;
     _isCheckingPermission = false;

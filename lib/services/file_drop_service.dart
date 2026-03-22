@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'constants.dart';
+import 'analytics_service.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 
 class FileDropService {
   FileDropService._();
@@ -12,6 +14,13 @@ class FileDropService {
   final StreamController<List<String>> _filesController =
       StreamController.broadcast();
 
+  @visibleForTesting
+  void resetForTesting() {
+    _monitoring = false;
+    _sub?.cancel();
+    _sub = null;
+  }
+
   Stream<List<String>> get filesStream => _filesController.stream;
 
   bool _monitoring = false;
@@ -19,20 +28,43 @@ class FileDropService {
 
   Future<void> start() async {
     if (_monitoring) return;
-    await _channel.invokeMethod(PlatformChannels.startMonitor);
-    final eventChannel = const EventChannel(PlatformChannels.fileDropEvents);
-    _sub = eventChannel.receiveBroadcastStream().listen((event) {
-      if (event is List) {
-        _filesController.add(List<String>.from(event));
-      }
+    
+    final (_, error) = await safeCall(() async {
+      await _channel.invokeMethod(PlatformChannels.startMonitor);
+      final eventChannel = const EventChannel(PlatformChannels.fileDropEvents);
+      _sub = eventChannel.receiveBroadcastStream().listen((event) {
+        if (event is List) {
+          _filesController.add(List<String>.from(event));
+        }
+      });
     });
+
+    if (error != null) {
+      AnalyticsService.instance.error(
+        'Falha ao iniciar monitoramento de arquivos: $error',
+        tag: 'FileDropService',
+      );
+      return;
+    }
+
     _monitoring = true;
   }
 
   Future<void> stop() async {
     if (!_monitoring) return;
-    await _channel.invokeMethod(PlatformChannels.stopMonitor);
-    await _sub?.cancel();
+    
+    final (_, error) = await safeCall(() async {
+      await _channel.invokeMethod(PlatformChannels.stopMonitor);
+      await _sub?.cancel();
+    });
+
+    if (error != null) {
+       AnalyticsService.instance.error(
+        'Falha ao parar monitoramento de arquivos: $error',
+        tag: 'FileDropService',
+      );
+    }
+
     _sub = null;
     _monitoring = false;
   }

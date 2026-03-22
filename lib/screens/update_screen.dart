@@ -34,21 +34,22 @@ class _UpdateScreenState extends State<UpdateScreen> {
   }
 
   Future<void> _checkForUpdates() async {
-    try {
-      final url = await UpdateService.instance.checkForUpdates();
+    final (url, error) = await UpdateService.instance.checkForUpdates();
+    if (error != null) {
       if (mounted) {
         setState(() {
-          _updateUrl = url;
+          _errorMessage = error.toString();
           _isLoading = false;
         });
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = e.toString();
-          _isLoading = false;
-        });
-      }
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _updateUrl = url;
+        _isLoading = false;
+      });
     }
   }
 

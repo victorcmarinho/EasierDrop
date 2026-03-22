@@ -2,10 +2,17 @@ import 'package:easier_drop/controllers/drag_coordinator.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/services/file_drop_service.dart';
+import 'package:easier_drop/services/file_repository.dart';
+import 'package:easier_drop/services/file_thumbnail_service.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
+
+class MockFileRepository extends Mock implements FileRepository {}
+
+class MockThumbnailService extends Mock implements FileThumbnailService {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -15,13 +22,42 @@ void main() {
     late DragCoordinator coordinator;
     late BuildContext context;
 
-
+    late MockFileRepository mockRepo;
+    late MockThumbnailService mockThumb;
 
     setUp(() async {
-      provider = FilesProvider(enableMonitoring: false);
+      mockRepo = MockFileRepository();
+      mockThumb = MockThumbnailService();
+      when(
+        () => mockRepo.validateFile(any()),
+      ).thenAnswer((_) async => (true, null));
+      when(() => mockRepo.validateFileSync(any())).thenReturn(true);
+      when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
+      when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
+      when(
+        () => mockThumb.loadThumbnails(
+          pathname: any(named: 'pathname'),
+          getCurrentFile: any(named: 'getCurrentFile'),
+          onUpdate: any(named: 'onUpdate'),
+        ),
+      ).thenAnswer((_) async {});
+
+      provider = FilesProvider(
+        repository: mockRepo,
+        thumbnailService: mockThumb,
+        enableMonitoring: false,
+      );
+
+      registerFallbackValue('/default/path');
+
       try {
         await FileDropService.instance.stop();
       } catch (_) {}
+      FileDropService.instance.resetForTesting();
+    });
+
+    tearDown(() async {
+      await FileDropService.instance.stop();
     });
 
     Widget buildTestWidget() {
@@ -60,6 +96,17 @@ void main() {
       provider.addFileForTest(const FileReference(pathname: '/unknown_test'));
       coordinator.handleOutboundTest({'status': 'ok', 'op': 'unknown'});
       expect(provider.files.length, 1);
+
+      // Hover
+      coordinator.setHover(true);
+      expect(coordinator.hovering.value, isTrue);
+      coordinator.setHover(false);
+      expect(coordinator.hovering.value, isFalse);
+
+      // Clear when already empty (branching)
+      provider.clear();
+      coordinator.handleOutboundTest({'status': 'ok', 'op': 'move'});
+      expect(provider.files.length, 0);
     });
 
     testWidgets('beginExternalDrag com lista vazia (cobertura)', (

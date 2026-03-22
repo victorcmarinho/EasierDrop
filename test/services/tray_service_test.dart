@@ -72,10 +72,15 @@ void main() {
   });
 
   group('Testes de TrayService', () {
-    test('instance retorna singleton', () {
+    test('instance retorna singleton e setter funciona', () {
       final instance1 = TrayService.instance;
       final instance2 = TrayService.instance;
       expect(instance1, same(instance2));
+      
+      final newInstance = TrayService.instance; 
+      TrayService.instance = newInstance;
+      expect(TrayService.instance, same(newInstance));
+      TrayService.instance = instance1; // Restore
     });
 
     test('configure define o ícone da bandeja', () async {
@@ -248,7 +253,7 @@ void main() {
       final mockUpdateService = MockUpdateService();
       when(
         () => mockUpdateService.checkForUpdates(),
-      ).thenAnswer((_) async => 'https://github.com/update');
+      ).thenAnswer((_) async => ('https://github.com/update', null));
 
       final originalInstance = UpdateService.instance;
       UpdateService.instance = mockUpdateService;

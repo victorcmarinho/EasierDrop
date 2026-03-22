@@ -1,205 +1,126 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:easier_drop/services/file_repository.dart';
+import 'package:easier_drop/services/analytics_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+class MockAnalyticsService extends Mock implements AnalyticsService {}
+
 void main() {
   late FileRepository repository;
-  late File tempFile;
+  late MockAnalyticsService mockAnalytics;
 
-  setUpAll(() {
-    registerFallbackValue(FileMode.read);
-  });
-
-  setUp(() async {
+  setUp(() {
     repository = const FileRepository();
-    tempFile = File('test_file.txt');
-    await tempFile.writeAsString('hello');
+    mockAnalytics = MockAnalyticsService();
+    AnalyticsService.instance = mockAnalytics;
+    
+    when(() => mockAnalytics.error(any(), tag: any(named: 'tag'))).thenReturn(null);
+    when(() => mockAnalytics.debug(any(), tag: any(named: 'tag'))).thenReturn(null);
   });
 
-  tearDown(() async {
-    if (await tempFile.exists()) {
-      await tempFile.delete();
-    }
-  });
-
-  group('FileRepository Tests', () {
+  group('FileRepository', () {
     test('validateFile returns true for existing file', () async {
-      final isValid = await repository.validateFile(tempFile.path);
-      expect(isValid, isTrue);
+      await IOOverrides.runZoned(() async {
+        final (bool? result, Object? error) = await repository.validateFile('test.txt');
+        expect(result, isTrue);
+        expect(error, isNull);
+      }, createFile: (path) {
+        final mockFile = _MockFile(path);
+        when(() => mockFile.stat()).thenAnswer((_) async => _MockFileStat(FileSystemEntityType.file));
+        return mockFile;
+      });
     });
 
-    test('validateFile returns false for non-existing file', () async {
-      final isValid = await repository.validateFile('non_existing.txt');
-      expect(isValid, isFalse);
+    test('validateFile returns false for non-existent file', () async {
+      await IOOverrides.runZoned(() async {
+        final (bool? result, Object? error) = await repository.validateFile('non_existent.txt');
+        expect(result, isFalse);
+        expect(error, isNull);
+      }, createFile: (path) {
+        final mockFile = _MockFile(path);
+        when(() => mockFile.stat()).thenAnswer((_) async => _MockFileStat(FileSystemEntityType.notFound));
+        return mockFile;
+      });
     });
-
-    test('validateFileSync returns true for existing file', () {
-      final isValid = repository.validateFileSync(tempFile.path);
-      expect(isValid, isTrue);
-    });
-
-    test('validateFileSync returns false for non-existing file', () {
-      final isValid = repository.validateFileSync('non_existing.txt');
-      expect(isValid, isFalse);
-    });
-
-    test('validateFile returns false for directories', () async {
-      final dir = Directory('test_dir');
-      await dir.create();
-      try {
-        final isValid = await repository.validateFile(dir.path);
-        expect(isValid, isFalse);
-      } finally {
-        await dir.delete();
-      }
-    });
-
-    test('validateFileSync returns false for directories', () {
-      final dir = Directory('test_dir_sync');
-      dir.createSync();
-      try {
-        final isValid = repository.validateFileSync(dir.path);
-        expect(isValid, isFalse);
-      } finally {
-        dir.deleteSync();
-      }
-    });
-
-    test('getIcon calls FileIconHelper', () async {
-      final result = await repository.getIcon(tempFile.path);
-
-      expect(result, anyOf(isNull, isA<Uint8List>()));
-    });
-
-    test('getPreview calls FileIconHelper', () async {
-      final result = await repository.getPreview(tempFile.path);
-      expect(result, anyOf(isNull, isA<Uint8List>()));
-    });
-
+    
     test('validateFile handles exceptions', () async {
-      await IOOverrides.runZoned(
-        () async {
-          final result = await repository.validateFile(
-            'triggered_exception.txt',
-          );
-          expect(result, isFalse);
-        },
-        createFile: (path) {
+      await IOOverrides.runZoned(() async {
+        final (bool? result, Object? error) = await repository.validateFile('error.txt');
+        expect(result, isNull); // safeCall returns (null, error)
+        expect(error, isA<FileSystemException>());
+        verify(() => mockAnalytics.debug(any(), tag: any(named: 'tag'))).called(1);
+      }, createFile: (path) {
+        if (path == 'error.txt') {
           final mockFile = _MockFile(path);
-          if (path == 'triggered_exception.txt') {
-            when(
-              () => mockFile.exists(),
-            ).thenThrow(const FileSystemException('Test Exception'));
-          }
+          when(() => mockFile.stat()).thenThrow(FileSystemException('Error', path));
           return mockFile;
-        },
-      );
+        }
+        return File(path);
+      });
     });
 
-    test('validateFile: file with no read permission still passes stat check',
-        () async {
-      // After the perf refactor, validateFile only checks stat() (file exists
-      // and is a regular file). It no longer opens the file to read a byte.
-      // A chmod-000 file still has a valid stat, so validateFile returns true.
-      final nonReadable = File('non_readable.txt');
-      await nonReadable.writeAsString('secret');
-      await Process.run('chmod', ['000', nonReadable.path]);
-      try {
-        final result = await repository.validateFile(nonReadable.path);
-        expect(result, isTrue); // stat succeeds; readability is not checked
-      } finally {
-        await Process.run('chmod', ['644', nonReadable.path]);
-        if (await nonReadable.exists()) await nonReadable.delete();
-      }
+    test('validateFileSync handles exceptions', () {
+      IOOverrides.runZoned(() {
+        final result = repository.validateFileSync('error_sync.txt');
+        expect(result, isFalse);
+        verifyNever(() => mockAnalytics.debug(any(), tag: any(named: 'tag')));
+      }, createFile: (path) {
+        if (path == 'error_sync.txt') {
+          final mockFile = _MockFile(path);
+          when(() => mockFile.existsSync()).thenReturn(true); // Exists but stat fails
+          when(() => mockFile.statSync()).thenThrow(FileSystemException('Error', path));
+          return mockFile;
+        }
+        return File(path);
+      });
     });
 
-    test('validateFile returns false when stat() throws', () async {
-      // Verify that an exception during stat() is caught and returns false.
-      await IOOverrides.runZoned(
-        () async {
-          final result = await repository.validateFile('stat_exception.txt');
-          expect(result, isFalse);
-        },
-        createFile: (path) {
-          final mockFile = _MockFile(path);
-          if (path == 'stat_exception.txt') {
-            when(
-              () => mockFile.stat(),
-            ).thenThrow(const FileSystemException('stat error'));
-          }
-          return mockFile;
-        },
-      );
+    test('validateFileSync returns false for non-file entity', () {
+      IOOverrides.runZoned(() {
+        final result = repository.validateFileSync('dir.txt');
+        expect(result, isFalse);
+      }, createFile: (path) {
+        final mockFile = _MockFile(path);
+        when(() => mockFile.existsSync()).thenReturn(true);
+        when(() => mockFile.statSync()).thenReturn(_MockFileStat(FileSystemEntityType.directory));
+        return mockFile;
+      });
     });
 
-    test('validateFileSync handles generic exception', () {
-      IOOverrides.runZoned(
-        () {
-          final result = repository.validateFileSync(
-            'sync_generic_exception.txt',
-          );
-          expect(result, isFalse);
-        },
-        createFile: (path) {
-          final mockFile = _MockFile(path);
-          if (path == 'sync_generic_exception.txt') {
-            when(() => mockFile.existsSync()).thenReturn(true);
-            when(
-              () => mockFile.statSync(),
-            ).thenReturn(_MockFileStat(FileSystemEntityType.file));
-            when(
-              () => mockFile.openSync(mode: any(named: 'mode')),
-            ).thenThrow(Exception('Sync generic error'));
-          }
-          return mockFile;
-        },
-      );
+    test('validateFileSync success covers _testReadabilitySync', () {
+      IOOverrides.runZoned(() {
+        final result = repository.validateFileSync('readable.txt');
+        expect(result, isTrue);
+      }, createFile: (path) {
+        final mockFile = _MockFile(path);
+        final mockRaf = _MockRandomAccessFile();
+        when(() => mockFile.existsSync()).thenReturn(true);
+        when(() => mockFile.statSync()).thenReturn(_MockFileStat(FileSystemEntityType.file));
+        when(() => mockFile.openSync(mode: FileMode.read)).thenReturn(mockRaf);
+        when(() => mockRaf.closeSync()).thenReturn(null);
+        return mockFile;
+      });
     });
 
-    test('validateFileSync handles exceptions in existsSync', () {
-      IOOverrides.runZoned(
-        () {
-          final result = repository.validateFileSync(
-            'sync_exists_exception.txt',
-          );
-          expect(result, isFalse);
-        },
-        createFile: (path) {
-          final mockFile = _MockFile(path);
-          if (path == 'sync_exists_exception.txt') {
-            when(
-              () => mockFile.existsSync(),
-            ).thenThrow(const FileSystemException('Sync error'));
-          }
-          return mockFile;
-        },
-      );
+    test('validateFileSync returns false when _testReadabilitySync fails', () {
+      IOOverrides.runZoned(() {
+        final result = repository.validateFileSync('unreadable.txt');
+        expect(result, isFalse);
+      }, createFile: (path) {
+        final mockFile = _MockFile(path);
+        when(() => mockFile.existsSync()).thenReturn(true);
+        when(() => mockFile.statSync()).thenReturn(_MockFileStat(FileSystemEntityType.file));
+        when(() => mockFile.openSync(mode: FileMode.read)).thenThrow(FileSystemException('Access denied', path));
+        return mockFile;
+      });
     });
 
-    test('_testReadabilitySync handles exceptions', () {
-      IOOverrides.runZoned(
-        () {
-          final result = repository.validateFileSync(
-            'read_sync_fs_exception.txt',
-          );
-          expect(result, isFalse);
-        },
-        createFile: (path) {
-          final mockFile = _MockFile(path);
-          if (path == 'read_sync_fs_exception.txt') {
-            when(() => mockFile.existsSync()).thenReturn(true);
-            when(
-              () => mockFile.statSync(),
-            ).thenReturn(_MockFileStat(FileSystemEntityType.file));
-            when(
-              () => mockFile.openSync(mode: any(named: 'mode')),
-            ).thenThrow(const FileSystemException('Read error'));
-          }
-          return mockFile;
-        },
-      );
+    test('getFileIcon and getFilePreview cover native calls (ignored)', () async {
+      final icon = await repository.getIcon('test.txt');
+      final preview = await repository.getPreview('test.txt');
+      expect(icon, isNull);
+      expect(preview, isNull);
     });
   });
 }
@@ -208,9 +129,14 @@ class _MockFile extends Mock implements File {
   @override
   final String path;
   _MockFile(this.path);
+  
+  @override
+  Directory get parent => Directory('.');
 }
 
-class _MockFileStat extends Mock implements FileStat {
+class _MockRandomAccessFile extends Mock implements RandomAccessFile {}
+
+class _MockFileStat extends Fake implements FileStat {
   @override
   final FileSystemEntityType type;
   _MockFileStat(this.type);

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
 
@@ -24,9 +25,9 @@ class UpdateService {
 
   static UpdateService instance = UpdateService();
 
-  Future<String?> checkForUpdates() async {
+  Future<(String?, Object?)> checkForUpdates() async {
     AnalyticsService.instance.updateCheckStarted();
-    try {
+    final (data, error) = await safeCall(() async {
       final response = await _client.getLatestRelease();
 
       if (response.statusCode == 200) {
@@ -43,14 +44,19 @@ class UpdateService {
           return releaseUrl;
         }
       }
-    } catch (e) {
-      AnalyticsService.instance.warn('Failed to check for updates: $e');
+      return null;
+    });
+
+    if (error != null) {
+      AnalyticsService.instance.warn('Failed to check for updates: $error');
+      return (null, error);
     }
-    return null;
+
+    return (data, null);
   }
 
   bool isBetterVersion(String latestTag, String currentVersion) {
-    try {
+    final (result, error) = safeCallSync<bool>(() {
       if (latestTag.isEmpty) return false;
 
       final cleanLatest =
@@ -60,9 +66,13 @@ class UpdateService {
       final current = Version.parse(currentVersion);
 
       return latest > current;
-    } catch (e) {
-      AnalyticsService.instance.warn('Version parsing error: $e');
+    });
+
+    if (error != null) {
+      AnalyticsService.instance.warn('Version parsing error: $error');
       return false;
     }
+    
+    return result ?? false;
   }
 }

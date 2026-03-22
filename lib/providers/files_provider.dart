@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:easier_drop/services/analytics_service.dart';
 
 import 'package:easier_drop/helpers/app_constants.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/services/file_repository.dart';
 import 'package:easier_drop/services/settings_service.dart';
@@ -30,21 +31,17 @@ class FilesProvider with ChangeNotifier {
        _thumbnailService = thumbnailService ?? FileThumbnailService(repository),
        _maxFilesOverride = maxFiles {
     if (enableMonitoring) {
-      // coverage:ignore-start
       _monitorTimer = Timer.periodic(
         AppConstants.monitorInterval,
         (_) => _rescanInternal(),
       );
-      // coverage:ignore-end
     }
   }
 
   int get _maxFiles => _maxFilesOverride ?? SettingsService.instance.maxFiles;
-  DateTime? get lastLimitHit => _lastLimitHit; // coverage:ignore-line
-  bool get isEmpty => _files.isEmpty; // coverage:ignore-line
-  // coverage:ignore-start
+  DateTime? get lastLimitHit => _lastLimitHit;
+  bool get isEmpty => _files.isEmpty;
   bool get hasFiles => _files.isNotEmpty;
-  // coverage:ignore-end
   int get fileCount => _files.length;
 
   bool get recentlyAtLimit =>
@@ -86,11 +83,13 @@ class FilesProvider with ChangeNotifier {
   Future<void> addFiles(Iterable<FileReference> files) async {
     if (files.isEmpty) return;
 
-    try {
+    final (_, error) = await safeCall(() async {
       final validated = await Future.wait(
         files.map((f) async {
           if (_files.containsKey(f.pathname)) return null;
-          return await _repository.validateFile(f.pathname) ? f : null;
+          final (isValid, error) = await _repository.validateFile(f.pathname);
+          if (error != null) return null;
+          return isValid == true ? f : null;
         }),
       );
 
@@ -132,9 +131,11 @@ class FilesProvider with ChangeNotifier {
         _invalidateCache();
         notifyListeners();
       }
-    } catch (e) {
+    });
+
+    if (error != null) {
       AnalyticsService.instance.error(
-        'Error adding files: $e',
+        'Error adding files: $error',
         tag: 'FilesProvider',
       );
     }
@@ -193,13 +194,12 @@ class FilesProvider with ChangeNotifier {
   }
 
   Future<Object> shared({Offset? position}) async {
-    try {
+    final (result, error) = await safeCall<Object>(() async {
       final validFilesList = validXFiles;
       if (validFilesList.isEmpty) {
         return const ShareResult('shareNone', ShareResultStatus.unavailable);
       }
 
-      // coverage:ignore-start
       final params = ShareParams(
         files: validFilesList,
         sharePositionOrigin: position != null
@@ -212,17 +212,20 @@ class FilesProvider with ChangeNotifier {
             : null,
       );
 
-      final result = await SharePlus.instance.share(params);
+      final shareResult = await SharePlus.instance.share(params);
       AnalyticsService.instance.fileShared(count: validFilesList.length);
-      return result;
-    } catch (e) {
+      return shareResult;
+    });
+
+    if (error != null) {
       AnalyticsService.instance.error(
-        'Error sharing files: $e',
+        'Error sharing files: $error',
         tag: 'FilesProvider',
       );
       return const ShareResult('shareError', ShareResultStatus.unavailable);
     }
-    // coverage:ignore-end
+
+    return result ?? const ShareResult('shareError', ShareResultStatus.unavailable);
   }
 
   void _rescanInternal() {

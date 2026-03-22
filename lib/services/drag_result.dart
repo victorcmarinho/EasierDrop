@@ -1,4 +1,5 @@
 import 'package:easier_drop/services/analytics_service.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 
 enum DragOperation { copy, move, unknown }
 
@@ -25,14 +26,12 @@ sealed class ChannelDragResult {
   const ChannelDragResult();
 
   bool get isSuccess => this is ChannelDragSuccess;
-  // coverage:ignore-start
   DragOperation get operation => this is ChannelDragSuccess
-      ? (this as ChannelDragSuccess).operation
+      ? (this as ChannelDragSuccess).operation // coverage:ignore-line
       : DragOperation.unknown;
-  // coverage:ignore-end
 
   static ChannelDragResult parse(dynamic raw) {
-    try {
+    final (result, error) = safeCallSync<ChannelDragResult>(() {
       if (raw is Map) {
         final status = raw['status'] as String?;
         if (status == 'ok') {
@@ -50,16 +49,17 @@ sealed class ChannelDragResult {
         return ChannelDragSuccess(DragOperationX.parse(raw));
       }
       return const ChannelDragSuccess(DragOperation.unknown);
-    } catch (e, st) {
-      // coverage:ignore-start
+    });
+
+    if (error != null) {
       AnalyticsService.instance.warn(
-        'Failed to parse drag result: $e',
+        'Failed to parse drag result: $error',
         tag: 'DragResult',
       );
-      AnalyticsService.instance.debug(st.toString(), tag: 'DragResult');
       return const ChannelDragSuccess(DragOperation.unknown);
-      // coverage:ignore-end
     }
+
+    return result ?? const ChannelDragSuccess(DragOperation.unknown);
   }
 }
 

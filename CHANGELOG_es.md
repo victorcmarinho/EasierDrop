@@ -10,6 +10,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 ### Añadido
 - **Suite de Pruebas**: Cobertura de pruebas ampliada con pruebas exhaustivas para internacionalización, gestión de temas y la superposición de arrastre.
 - **Accesibilidad**: Se agregaron etiquetas semánticas a `FileNameBadge` para un mejor soporte de lectores de pantalla.
+- **CI/CD**: Añadido un flujo de trabajo en GitHub Actions para ejecutar automáticamente las pruebas y enviar informes de cobertura a Coveralls.
 
 ### Mejorado
 - **Transiciones de Marquee**: Se mejoró la estabilidad y confiabilidad de las animaciones de `MarqueeText`, especialmente durante actualizaciones rápidas de texto y en entornos de prueba.
@@ -20,6 +21,10 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 ### Refactorizado
 - **Arquitectura**: Se introdujo un widget `MarqueeText` personalizado y se refactorizaron los servicios `MacosUpdatesService` y `WindowManagerService` para admitir simulacros (mocking) y mejorar la capacidad de prueba.
 - **Dependencias**: Se simplificaron las dependencias de paquetes y se actualizaron varias bibliotecas a sus versiones más recientes.
+
+### Corregido
+- **Selección de Idioma**: Se corrigió un error por el que la pantalla de configuración siempre mostraba el inglés como seleccionado por defecto, ignorando el idioma activo.
+- **Inicialización de Configuración**: Se corrigió un problema por el que la configuración guardada no se cargaba desde el disco al iniciar la aplicación.
 
 ### Eliminado
 - **Pruebas Obsoletas**: Se eliminaron las pruebas redundantes de la pantalla de transferencia de archivos y sus simulacros asociados.

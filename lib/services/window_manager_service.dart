@@ -9,12 +9,20 @@ import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:easier_drop/services/tray_service.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 
 class WindowManagerService with WindowListener {
-  static final WindowManagerService _instance = WindowManagerService._();
+  static WindowManagerService _instance = WindowManagerService._();
   WindowManagerService._();
 
-  static WindowManagerService get instance => _instance; // coverage:ignore-line
+  static WindowManagerService get instance => _instance;
+  @visibleForTesting
+  static set instance(WindowManagerService value) => _instance = value;
+
+  @visibleForTesting
+  WindowManager? mockWindowManager;
+
+  WindowManager get _wm => mockWindowManager ?? windowManager;
   
   bool _initialized = false;
   @visibleForTesting
@@ -44,47 +52,42 @@ class WindowManagerService with WindowListener {
     bool isSecondaryWindow = false,
     String? windowId,
   }) async {
-    if (!_initialized) { // coverage:ignore-line
+    if (!_initialized) {
       SettingsService.instance.addListener(_onSettingsChanged);
-      _initialized = true; // coverage:ignore-line
+      _initialized = true;
     }
 
-    // coverage:ignore-start
     if (isSecondaryWindow) {
       await _setupSecondaryWindow(windowId);
       return;
     }
-    // coverage:ignore-end
 
     await _setupMainWindow();
   }
 
-  // coverage:ignore-start
   Future<void> _setupMainWindow() async {
-    windowManager.addListener(this);
+    _wm.addListener(this);
     await Future.wait([TrayService.instance.configure(), _configureWindow()]);
   }
-  // coverage:ignore-end
 
-  // coverage:ignore-start
   Future<void> _setupSecondaryWindow(String? windowId) async {
-    await windowManager.ensureInitialized();
-    await windowManager.setTitleBarStyle(
+    await _wm.ensureInitialized();
+    await _wm.setTitleBarStyle(
       TitleBarStyle.hidden,
       windowButtonVisibility: true,
     );
-    await windowManager.setResizable(false);
-    await windowManager.setMaximizable(false);
-    await windowManager.setAlwaysOnTop(
+    await _wm.setResizable(false);
+    await _wm.setMaximizable(false);
+    await _wm.setAlwaysOnTop(
       SettingsService.instance.settings.isAlwaysOnTop,
     );
 
-    try {
+    final (_, error) = await safeCall(() async {
       final controller = await WindowController.fromCurrentEngine();
       final args = jsonDecode(controller.arguments) as Map<String, dynamic>;
 
       if (args['title'] != null) {
-        await windowManager.setTitle(args['title'] as String);
+        await _wm.setTitle(args['title'] as String);
       }
 
       final double width =
@@ -94,7 +97,7 @@ class WindowManagerService with WindowListener {
           AppConstants.defaultWindowSize;
 
       if (args['x'] != null && args['y'] != null) {
-        await windowManager.setBounds(
+        await _wm.setBounds(
           Rect.fromLTWH(
             (args['x'] as num).toDouble(),
             (args['y'] as num).toDouble(),
@@ -103,28 +106,28 @@ class WindowManagerService with WindowListener {
           ),
         );
       } else {
-        await windowManager.setSize(Size(width, height));
+        await _wm.setSize(Size(width, height));
       }
 
       if (args['center'] == true) {
-        await windowManager.center();
+        await _wm.center();
       }
 
       await controller.show();
-    } catch (e) {
-      AnalyticsService.instance.warn('Failed to setup secondary window: $e');
+    });
+
+    if (error != null) {
+      AnalyticsService.instance.warn('Failed to setup secondary window: $error');
       if (windowId != null) {
         WindowController.fromWindowId(windowId).show();
       }
     }
   }
-  // coverage:ignore-end
 
-  // coverage:ignore-start
   Future<void> _configureWindow() async {
-    await windowManager.ensureInitialized();
-    await windowManager.setResizable(false);
-    await windowManager.setMaximizable(false);
+    await _wm.ensureInitialized();
+    await _wm.setResizable(false);
+    await _wm.setMaximizable(false);
 
     const defaultSize = Size(
       AppConstants.defaultWindowSize,
@@ -144,32 +147,28 @@ class WindowManagerService with WindowListener {
       skipTaskbar: false,
     );
 
-    await windowManager.waitUntilReadyToShow(options, () async {
+    await _wm.waitUntilReadyToShow(options, () async {
       await _restoreWindowPosition();
 
       await Future.wait([
-        windowManager.setPreventClose(true),
-        windowManager.setVisibleOnAllWorkspaces(true),
+        _wm.setPreventClose(true),
+        _wm.setVisibleOnAllWorkspaces(true),
       ]);
     });
   }
-  // coverage:ignore-end
 
-  // coverage:ignore-start
   Future<void> _restoreWindowPosition() async {
     final s = SettingsService.instance;
     if (s.windowX != null && s.windowY != null) {
-      try {
-        await windowManager.setPosition(
-          Offset(s.windowX!.toDouble(), s.windowY!.toDouble()),
-          animate: false,
-        );
-      } catch (e) {
-        AnalyticsService.instance.warn('Failed to restore window position: $e');
+      final (_, error) = await safeCall(() => _wm.setPosition(
+        Offset(s.windowX!.toDouble(), s.windowY!.toDouble()),
+        animate: false,
+      ));
+      if (error != null) {
+        AnalyticsService.instance.warn('Failed to restore window position: $error');
       }
     }
   }
-  // coverage:ignore-end
 
   Future<void> _onSettingsChanged() async {
     final s = SettingsService.instance.settings;
@@ -177,11 +176,11 @@ class WindowManagerService with WindowListener {
 
     if (_lastOpacity != s.windowOpacity) {
       _lastOpacity = s.windowOpacity;
-      futures.add(windowManager.setOpacity(s.windowOpacity));
+      futures.add(_wm.setOpacity(s.windowOpacity));
     }
     if (_lastAlwaysOnTop != s.isAlwaysOnTop) {
       _lastAlwaysOnTop = s.isAlwaysOnTop;
-      futures.add(windowManager.setAlwaysOnTop(s.isAlwaysOnTop));
+      futures.add(_wm.setAlwaysOnTop(s.isAlwaysOnTop));
     }
 
     if (futures.isNotEmpty) {
@@ -189,7 +188,6 @@ class WindowManagerService with WindowListener {
     }
   }
 
-  // coverage:ignore-start
   Future<void> createNewWindow(double x, double y) async {
     final windowIds = await WindowController.getAll();
     if (windowIds.length >= AppConstants.maxWindows) {
@@ -224,26 +222,24 @@ class WindowManagerService with WindowListener {
     );
     AnalyticsService.instance.shakeWindowCreated();
   }
-  // coverage:ignore-end
 
   Future<void> hide() async {
     await Future.wait([
-      windowManager.hide(),
-      windowManager.setSkipTaskbar(true),
+      _wm.hide(),
+      _wm.setSkipTaskbar(true),
     ]);
-    AnalyticsService.instance.trackEvent('window_hidden');
+    AnalyticsService.instance.windowHidden();
   }
 
   Future<void> open() async {
     await Future.wait([
-      windowManager.show(),
-      windowManager.focus(),
-      windowManager.setSkipTaskbar(false),
+      _wm.show(),
+      _wm.focus(),
+      _wm.setSkipTaskbar(false),
     ]);
-    AnalyticsService.instance.trackEvent('window_shown');
+    AnalyticsService.instance.windowShown();
   }
 
-  // coverage:ignore-start
   Map<String, dynamic> _createWindowArgs({
     required String args,
     String? title,
@@ -267,9 +263,7 @@ class WindowManagerService with WindowListener {
       'y': y,
     };
   }
-  // coverage:ignore-end
 
-  // coverage:ignore-start
   Future<void> openSettings() async {
     final window = await WindowController.create(
       WindowConfiguration(
@@ -286,9 +280,7 @@ class WindowManagerService with WindowListener {
     await window.show();
     AnalyticsService.instance.settingsOpened();
   }
-  // coverage:ignore-end
 
-  // coverage:ignore-start
   Future<void> openUpdateWindow() async {
     final window = await WindowController.create(
       WindowConfiguration(
@@ -304,17 +296,16 @@ class WindowManagerService with WindowListener {
     );
     await window.show();
   }
-  // coverage:ignore-end
 
   Future<void> exitApp() async {
     await Future.wait([
       TrayService.instance.destroy(),
-      windowManager.destroy(),
+      _wm.destroy(),
     ]);
     if (mockExitApp != null) {
       await mockExitApp!();
     } else {
-      io.exit(0); // coverage:ignore-line
+      io.exit(0);
     }
   }
 
@@ -323,25 +314,21 @@ class WindowManagerService with WindowListener {
     await hide();
   }
 
-  // coverage:ignore-start
   @override
   void onWindowResize() {
     _resizeDebounce?.cancel();
     _resizeDebounce = Timer(_geometryDebounce, () async {
-      final size = await windowManager.getSize();
+      final size = await _wm.getSize();
       SettingsService.instance.setWindowBounds(w: size.width, h: size.height);
     });
   }
-  // coverage:ignore-end
 
-  // coverage:ignore-start
   @override
   void onWindowMove() {
     _moveDebounce?.cancel();
     _moveDebounce = Timer(_geometryDebounce, () async {
-      final pos = await windowManager.getPosition();
+      final pos = await _wm.getPosition();
       SettingsService.instance.setWindowBounds(x: pos.dx, y: pos.dy);
     });
   }
-  // coverage:ignore-end
 }

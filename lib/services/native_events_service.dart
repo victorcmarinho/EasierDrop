@@ -2,15 +2,19 @@ import 'dart:io' as io;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/services/window_manager_service.dart';
 
 class NativeEventsService {
-  static final NativeEventsService _instance = NativeEventsService._();
+  static NativeEventsService _instance = NativeEventsService._();
   NativeEventsService._();
 
   static NativeEventsService get instance => _instance;
+  
+  @visibleForTesting
+  static set instance(NativeEventsService value) => _instance = value;
 
   static const MethodChannel _shakeChannel = MethodChannel(
     AppConstants.shakeChannelName,
@@ -20,6 +24,10 @@ class NativeEventsService {
   Future<void> Function() exitAppFn = WindowManagerService.instance.exitApp;
   @visibleForTesting
   Future<dynamic> Function(String, List<String>) processStarter = io.Process.start;
+  @visibleForTesting
+  bool isMacOS = io.Platform.isMacOS;
+  @visibleForTesting
+  String resolvedExecutable = io.Platform.resolvedExecutable;
 
   void initialize() {
     _shakeChannel.setMethodCallHandler(_handleShakeEvent);
@@ -40,16 +48,20 @@ class NativeEventsService {
     }
   }
 
-  Future<bool> checkShakePermission() async {
-    try {
+  Future<(bool?, Object?)> checkShakePermission() async {
+    final (data, error) = await safeCall(() async {
       final bool? result = await _shakeChannel.invokeMethod<bool>(
         'checkPermission',
       );
       return result ?? false;
-    } catch (e) {
-      AnalyticsService.instance.warn('Failed to check shake permission: $e');
-      return false;
+    });
+
+    if (error != null) {
+      AnalyticsService.instance.warn('Failed to check shake permission: $error');
+      return (null, error);
     }
+    
+    return (data, null);
   }
 
   Future<void> openAccessibilitySettings() async {
@@ -70,10 +82,10 @@ class NativeEventsService {
   }
 
   Future<void> restartApp() async {
-    if (!io.Platform.isMacOS) return;
+    if (!isMacOS) return;
 
     final String path = io.File(
-      io.Platform.resolvedExecutable,
+      resolvedExecutable,
     ).parent.parent.parent.path;
 
     await processStarter('open', ['-n', path]);

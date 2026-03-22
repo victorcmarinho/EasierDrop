@@ -2,13 +2,17 @@ import 'dart:developer' as dev;
 import 'package:aptabase_flutter/aptabase_flutter.dart';
 import 'package:easier_drop/config/env_config.dart';
 import 'package:easier_drop/services/settings_service.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 import 'package:flutter/foundation.dart';
 
 enum LogLevel { trace, debug, info, warn, error }
 
 class AnalyticsService {
   AnalyticsService._();
-  static final AnalyticsService instance = AnalyticsService._();
+  static AnalyticsService _instance = AnalyticsService._();
+  static AnalyticsService get instance => _instance;
+  @visibleForTesting
+  static set instance(AnalyticsService value) => _instance = value;
   @visibleForTesting
   static bool debugTestMode = kDebugMode;
   @visibleForTesting
@@ -19,6 +23,11 @@ class AnalyticsService {
   @visibleForTesting
   bool get testInitialized => _initialized;
   bool _initialized = false;
+  @visibleForTesting
+  void resetForTesting() {
+    _initialized = false;
+  }
+
   static LogLevel minLevel = kDebugMode ? LogLevel.debug : LogLevel.info;
 
   Future<void> initialize() async {
@@ -30,18 +39,20 @@ class AnalyticsService {
       return;
     }
 
-    try {
+    final (_, error) = await safeCall(() async {
       if (!debugTestMode) {
         await Aptabase.init(key);
       }
       _initialized = true;
       info('Aptabase inicializado com sucesso.');
-    } catch (e) {
-      warn('Falha ao inicializar Aptabase: $e');
+    });
+
+    if (error != null) {
+      warn('Falha ao inicializar Aptabase: $error');
     }
   }
 
-  void trackEvent(String name, [Map<String, dynamic>? props]) {
+  Future<void> trackEvent(String name, [Map<String, dynamic>? props]) async {
     if (!SettingsService.instance.telemetryEnabled) return;
 
     if (debugTestMode) {
@@ -56,10 +67,9 @@ class AnalyticsService {
 
     if (!_initialized) return;
 
-    try {
-      Aptabase.instance.trackEvent(name, props);
-    } catch (e) {
-      warn('Falha ao enviar evento $name: $e');
+    final (_, error) = await safeCall(() async => Aptabase.instance.trackEvent(name, props));
+    if (error != null) {
+      warn('Falha ao enviar evento $name: $error'); // coverage:ignore-line
     }
   }
 
@@ -98,6 +108,9 @@ class AnalyticsService {
 
   void settingsChanged(String key, dynamic value) =>
       trackEvent('settings_changed', {'key': key, 'value': value});
+
+  void windowShown() => trackEvent('window_shown');
+  void windowHidden() => trackEvent('window_hidden');
 
   static void _log(
     String message, {

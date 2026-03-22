@@ -39,6 +39,7 @@ class FileNameBadge extends StatelessWidget {
                 ),
               ),
               speed: 20,
+              maxWidth: 94,
             ),
           ),
         ),

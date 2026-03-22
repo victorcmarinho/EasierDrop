@@ -1,34 +1,40 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 import 'package:easier_drop/helpers/macos/file_icon_helper.dart';
 import 'package:easier_drop/services/analytics_service.dart';
 
 class FileRepository {
   const FileRepository();
 
-  Future<bool> validateFile(String pathname) async {
-    try {
+  Future<(bool?, Object?)> validateFile(String pathname) async {
+    final (data, error) = await safeCall(() async {
       final stat = await File(pathname).stat();
       return stat.type == FileSystemEntityType.file;
-    } catch (e) {
+    });
+
+    if (error != null) {
       AnalyticsService.instance.debug(
-        'Error validating file: $pathname ($e)',
+        'Error validating file: $pathname ($error)',
         tag: 'FileRepo',
       );
-      return false;
+      return (null, error);
     }
+
+    return (data, null);
   }
 
   bool validateFileSync(String pathname) {
-    try {
+    final (result, error) = safeCallSync<bool>(() {
       final file = File(pathname);
       if (!file.existsSync()) return false;
       if (file.statSync().type != FileSystemEntityType.file) return false;
 
       return _testReadabilitySync(file);
-    } catch (_) {
-      return false;
-    }
+    });
+    
+    if (error != null) return false;
+    return result ?? false;
   }
 
   Future<Uint8List?> getIcon(String pathname) async {
@@ -44,15 +50,14 @@ class FileRepository {
 
   bool _testReadabilitySync(File file) {
     RandomAccessFile? raf;
-    try {
+    final (result, error) = safeCallSync<bool>(() {
       raf = file.openSync(mode: FileMode.read);
       return true;
-    } catch (e) {
-      return false;
-    } finally {
-      try {
-        raf?.closeSync();
-      } catch (_) {}
-    }
+    });
+
+    safeCallSync(() => raf?.closeSync());
+
+    if (error != null) return false;
+    return result ?? false;
   }
 }
