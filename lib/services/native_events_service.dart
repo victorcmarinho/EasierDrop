@@ -8,10 +8,13 @@ import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/services/window_manager_service.dart';
 
 class NativeEventsService {
-  static final NativeEventsService _instance = NativeEventsService._();
+  static NativeEventsService _instance = NativeEventsService._();
   NativeEventsService._();
 
   static NativeEventsService get instance => _instance;
+  
+  @visibleForTesting
+  static set instance(NativeEventsService value) => _instance = value;
 
   static const MethodChannel _shakeChannel = MethodChannel(
     AppConstants.shakeChannelName,
@@ -21,6 +24,10 @@ class NativeEventsService {
   Future<void> Function() exitAppFn = WindowManagerService.instance.exitApp;
   @visibleForTesting
   Future<dynamic> Function(String, List<String>) processStarter = io.Process.start;
+  @visibleForTesting
+  bool isMacOS = io.Platform.isMacOS;
+  @visibleForTesting
+  String resolvedExecutable = io.Platform.resolvedExecutable;
 
   void initialize() {
     _shakeChannel.setMethodCallHandler(_handleShakeEvent);
@@ -75,10 +82,10 @@ class NativeEventsService {
   }
 
   Future<void> restartApp() async {
-    if (!io.Platform.isMacOS) return;
+    if (!isMacOS) return;
 
     final String path = io.File(
-      io.Platform.resolvedExecutable,
+      resolvedExecutable,
     ).parent.parent.parent.path;
 
     await processStarter('open', ['-n', path]);

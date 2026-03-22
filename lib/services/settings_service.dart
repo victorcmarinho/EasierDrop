@@ -13,7 +13,10 @@ import 'package:easier_drop/model/app_settings.dart';
 
 class SettingsService with ChangeNotifier {
   SettingsService._();
-  static final SettingsService instance = SettingsService._();
+  static SettingsService _instance = SettingsService._();
+  static SettingsService get instance => _instance;
+  @visibleForTesting
+  static set instance(SettingsService value) => _instance = value;
 
   @visibleForTesting
   SettingsService.forTesting();

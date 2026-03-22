@@ -1,63 +1,160 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:easier_drop/helpers/marquee_text.dart';
 
+// ignore_for_file: prefer_const_constructors
+
 void main() {
-  Widget createWidget({required String text, double maxWidth = 100}) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: SizedBox(
-            width: maxWidth,
-            child: MarqueeText(
-              text: TextSpan(text: text),
-              pauseDuration: Duration.zero,
-            ),
+  group('MarqueeText', () {
+    /// Wraps [child] in a minimal scaffold so fonts/layout work.
+    Widget wrap(Widget child) => Directionality(
+          textDirection: TextDirection.ltr,
+          child: child,
+        );
+
+    testWidgets('renders static text when content fits', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          MarqueeText(
+            text: const TextSpan(text: 'Hi'),
+            maxWidth: 500,
           ),
         ),
-      ),
-    );
-  }
-
-  group('MarqueeText', () {
-    testWidgets('renderiza texto estático quando cabe no espaço', (tester) async {
-       await tester.pumpWidget(createWidget(text: 'Small', maxWidth: 500));
-       await tester.pump(const Duration(milliseconds: 100));
-       
-       expect(find.descendant(of: find.byType(MarqueeText), matching: find.byType(CustomPaint)), findsOneWidget);
+      );
+      await tester.pump();
+      await tester.pump();
+      // With maxWidth=500 the short text should NOT scroll.
+      expect(find.byType(ListView), findsNothing);
+      expect(find.byType(CustomPaint), findsOneWidget);
     });
 
-    testWidgets('inicia animação quando texto é maior que o espaço', (tester) async {
-       await tester.pumpWidget(createWidget(text: 'This is a very long text that should scroll across the screen', maxWidth: 50));
-       await tester.pump(const Duration(milliseconds: 100)); // Inicia o Timer
-       
-       // Timer(pauseDuration, ...)
-       await tester.pump(const Duration(milliseconds: 100));
-       
-       // Agora a animação deve ter começado (ctrl.forward() em modo de teste)
-       await tester.pump(const Duration(milliseconds: 100));
-       
-       expect(find.descendant(of: find.byType(MarqueeText), matching: find.byType(AnimatedBuilder)), findsOneWidget);
+    testWidgets('renders scrolling ListView when text overflows', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          MarqueeText(
+            // Very long text to guarantee overflow.
+            text: const TextSpan(
+              text: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+                  'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+            ),
+            maxWidth: 1, // Force scroll
+            pauseDuration: Duration.zero,
+          ),
+        ),
+      );
+      // First pump → initState / addPostFrameCallback schedules _updateLayout
+      await tester.pump();
+      // Second pump → _updateLayout runs and sets _needsScroll = true
+      await tester.pump();
+
+      expect(find.byType(ListView), findsOneWidget);
     });
 
-    testWidgets('atualiza medições ao mudar o texto', (tester) async {
-       await tester.pumpWidget(createWidget(text: 'Small', maxWidth: 500));
-       await tester.pump(const Duration(milliseconds: 100));
-       
-       // Mudar para um texto longo (trigger didUpdateWidget)
-       await tester.pumpWidget(createWidget(text: 'This is now a very long text', maxWidth: 20));
-       await tester.pump(const Duration(milliseconds: 100));
-       await tester.pump(const Duration(milliseconds: 100));
-       
-       expect(find.descendant(of: find.byType(MarqueeText), matching: find.byType(AnimatedBuilder)), findsOneWidget);
+    testWidgets('didUpdateWidget triggers re-layout when text changes',
+        (tester) async {
+      var label = 'short';
+
+      await tester.pumpWidget(
+        wrap(
+          StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                children: [
+                  GestureDetector(
+                    key: const Key('tap_to_change'),
+                    onTap: () => setState(() => label = 'A' * 200),
+                    child: const Text('tap'),
+                  ),
+                  MarqueeText(
+                    text: TextSpan(text: label),
+                    maxWidth: 100, // force scroll when text is long (but not for 'short')
+                    pauseDuration: Duration.zero,
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      );
+
+      await tester.pump(); // initial build
+      await tester.pump(); // post-frame callback
+
+      // Initially short text — no ListView
+      expect(find.byType(ListView), findsNothing);
+
+      // Trigger text change → didUpdateWidget → _updateLayout
+      await tester.tap(find.byKey(const Key('tap_to_change')));
+      await tester.pump(); // rebuild
+      await tester.pump(); // post-frame callback for new layout
+
+      expect(find.byType(ListView), findsOneWidget);
     });
 
-    testWidgets('shouldRepaint coverage', (tester) async {
-       // Exercitar shouldRepaint de forma indireta ou direta se possível
-       // Como são classes internas privadas, vamos apenas garantir que a árvore mude
-       await tester.pumpWidget(createWidget(text: 'Small', maxWidth: 500));
-       await tester.pumpWidget(createWidget(text: 'Small', maxWidth: 501));
-       await tester.pump();
+    testWidgets('Timer fires and animationController advances', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          MarqueeText(
+            text: TextSpan(text: 'A' * 200),
+            maxWidth: 1,
+            pauseDuration: const Duration(milliseconds: 10),
+            speed: 100,
+          ),
+        ),
+      );
+      await tester.pump(); // initState
+      await tester.pump(); // _updateLayout → _startAnimation → starts Timer
+
+      // Advance past the pauseDuration so the Timer fires
+      await tester.pump(const Duration(milliseconds: 50));
+      // No crash = Timer callback covered
+    });
+
+    testWidgets('dispose cancels timer and animation controller', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          MarqueeText(
+            text: TextSpan(text: 'A' * 200),
+            maxWidth: 1,
+            pauseDuration: const Duration(milliseconds: 10),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      // Replace widget tree → dispose() is called on the old state
+      await tester.pumpWidget(wrap(const SizedBox()));
+      // No crash = dispose() covered
+    });
+
+    testWidgets(
+        'didUpdateWidget with same props does NOT re-trigger layout',
+        (tester) async {
+      // Build with identical props twice to hit the "no-change" guard in didUpdateWidget
+      const span = TextSpan(text: 'same');
+      await tester.pumpWidget(
+        wrap(
+          MarqueeText(
+            text: span,
+            maxWidth: 500,
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+      await tester.pump();
+
+      // Rebuild with exact same props — didUpdateWidget should be a no-op
+      await tester.pumpWidget(
+        wrap(
+          MarqueeText(
+            text: span,
+            maxWidth: 500,
+          ),
+        ),
+      );
+      await tester.pump();
     });
   });
 }

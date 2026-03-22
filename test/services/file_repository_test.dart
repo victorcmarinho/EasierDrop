@@ -88,6 +88,34 @@ void main() {
       });
     });
 
+    test('validateFileSync success covers _testReadabilitySync', () {
+      IOOverrides.runZoned(() {
+        final result = repository.validateFileSync('readable.txt');
+        expect(result, isTrue);
+      }, createFile: (path) {
+        final mockFile = _MockFile(path);
+        final mockRaf = _MockRandomAccessFile();
+        when(() => mockFile.existsSync()).thenReturn(true);
+        when(() => mockFile.statSync()).thenReturn(_MockFileStat(FileSystemEntityType.file));
+        when(() => mockFile.openSync(mode: FileMode.read)).thenReturn(mockRaf);
+        when(() => mockRaf.closeSync()).thenReturn(null);
+        return mockFile;
+      });
+    });
+
+    test('validateFileSync returns false when _testReadabilitySync fails', () {
+      IOOverrides.runZoned(() {
+        final result = repository.validateFileSync('unreadable.txt');
+        expect(result, isFalse);
+      }, createFile: (path) {
+        final mockFile = _MockFile(path);
+        when(() => mockFile.existsSync()).thenReturn(true);
+        when(() => mockFile.statSync()).thenReturn(_MockFileStat(FileSystemEntityType.file));
+        when(() => mockFile.openSync(mode: FileMode.read)).thenThrow(FileSystemException('Access denied', path));
+        return mockFile;
+      });
+    });
+
     test('getFileIcon and getFilePreview cover native calls (ignored)', () async {
       final icon = await repository.getIcon('test.txt');
       final preview = await repository.getPreview('test.txt');
@@ -105,6 +133,8 @@ class _MockFile extends Mock implements File {
   @override
   Directory get parent => Directory('.');
 }
+
+class _MockRandomAccessFile extends Mock implements RandomAccessFile {}
 
 class _MockFileStat extends Fake implements FileStat {
   @override

@@ -13,17 +13,14 @@ class AnalyticsService {
   static AnalyticsService get instance => _instance;
   @visibleForTesting
   static set instance(AnalyticsService value) => _instance = value;
-  // coverage:ignore-start
   @visibleForTesting
   static bool debugTestMode = kDebugMode;
   @visibleForTesting
   static String? testAppKey;
   @visibleForTesting
   static void Function(String, Map<String, dynamic>?)? testTrackEvent;
-  // coverage:ignore-end
 
   @visibleForTesting
-  // coverage:ignore-line
   bool get testInitialized => _initialized;
   bool _initialized = false;
   @visibleForTesting
@@ -31,21 +28,17 @@ class AnalyticsService {
     _initialized = false;
   }
 
-  // coverage:ignore-line
   static LogLevel minLevel = kDebugMode ? LogLevel.debug : LogLevel.info;
 
   Future<void> initialize() async {
     if (_initialized) return;
 
-    // coverage:ignore-start
     final key = testAppKey ?? Env.aptabaseAppKey;
     if (key.isEmpty) {
       warn('Aptabase App Key não configurada. Telemetria desativada.');
       return;
     }
-    // coverage:ignore-end
 
-    // coverage:ignore-start
     final (_, error) = await safeCall(() async {
       if (!debugTestMode) {
         await Aptabase.init(key);
@@ -57,10 +50,9 @@ class AnalyticsService {
     if (error != null) {
       warn('Falha ao inicializar Aptabase: $error');
     }
-    // coverage:ignore-end
   }
 
-  void trackEvent(String name, [Map<String, dynamic>? props]) {
+  Future<void> trackEvent(String name, [Map<String, dynamic>? props]) async {
     if (!SettingsService.instance.telemetryEnabled) return;
 
     if (debugTestMode) {
@@ -73,14 +65,12 @@ class AnalyticsService {
       return;
     }
 
-    // coverage:ignore-start
     if (!_initialized) return;
 
-    final (_, error) = safeCallSync(() => Aptabase.instance.trackEvent(name, props));
+    final (_, error) = await safeCall(() async => Aptabase.instance.trackEvent(name, props));
     if (error != null) {
-      warn('Falha ao enviar evento $name: $error');
+      warn('Falha ao enviar evento $name: $error'); // coverage:ignore-line
     }
-    // coverage:ignore-end
   }
 
   void appStarted() => trackEvent('app_started');
@@ -127,7 +117,6 @@ class AnalyticsService {
     LogLevel level = LogLevel.info,
     String tag = 'App',
   }) {
-    // coverage:ignore-start
     if (!debugTestMode) return;
 
     if (level.index < minLevel.index) return;
@@ -139,7 +128,6 @@ class AnalyticsService {
     } else {
       dev.log(line, name: tag);
     }
-    // coverage:ignore-end
   }
 
   static String _prefix(LogLevel level) {

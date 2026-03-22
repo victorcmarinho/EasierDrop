@@ -43,13 +43,13 @@ class _TrayState extends State<Tray> with TrayListener {
 
   @override
   void onTrayIconMouseDown() {
-    TrayService.instance.checkForUpdates(); // coverage:ignore-line
-    trayManager.popUpContextMenu(); // coverage:ignore-line
+    TrayService.instance.checkForUpdates();
+    trayManager.popUpContextMenu();
   }
 
   @override
   void onTrayMenuItemClick(MenuItem menuItem) {
-    TrayService.instance.handleMenuItemClick(menuItem); // coverage:ignore-line
+    TrayService.instance.handleMenuItemClick(menuItem);
   }
 
   @override

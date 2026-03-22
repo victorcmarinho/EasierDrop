@@ -10,7 +10,10 @@ import 'package:easier_drop/services/window_manager_service.dart';
 import 'package:easier_drop/core/utils/result_handler.dart';
 
 class TrayService with ChangeNotifier {
-  static final TrayService instance = TrayService._();
+  static TrayService _instance = TrayService._();
+  static TrayService get instance => _instance;
+  @visibleForTesting
+  static set instance(TrayService value) => _instance = value;
   TrayService._();
 
   String? _updateUrl;

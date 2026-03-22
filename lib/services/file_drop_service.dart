@@ -30,9 +30,9 @@ class FileDropService {
     if (_monitoring) return;
     
     final (_, error) = await safeCall(() async {
-      await _channel.invokeMethod(PlatformChannels.startMonitor); // coverage:ignore-line
+      await _channel.invokeMethod(PlatformChannels.startMonitor);
       final eventChannel = const EventChannel(PlatformChannels.fileDropEvents);
-      _sub = eventChannel.receiveBroadcastStream().listen((event) { // coverage:ignore-line
+      _sub = eventChannel.receiveBroadcastStream().listen((event) {
         if (event is List) {
           _filesController.add(List<String>.from(event));
         }
@@ -54,7 +54,7 @@ class FileDropService {
     if (!_monitoring) return;
     
     final (_, error) = await safeCall(() async {
-      await _channel.invokeMethod(PlatformChannels.stopMonitor); // coverage:ignore-line
+      await _channel.invokeMethod(PlatformChannels.stopMonitor);
       await _sub?.cancel();
     });
 

@@ -74,11 +74,13 @@ void main() {
       expect(res.operation, DragOperation.unknown);
     });
 
-    test('parse catch block coverage', () {
-      // Forçamos um erro de cast ou similar
-      // Como o código tem um generic try-catch, vamos simular algo que exploda na lógica
-      // Por exemplo, passar um Map que tenha algo que falhe no parse
-      // Mas o parse é bem robusto. Vamos usar coverage ignore se necessário.
+    test('parse catch block coverage — triggers error path', () {
+      // Passing {status: 'ok', op: 42} causes `raw['op'] as String?` to throw a
+      // TypeError inside safeCallSync. The catch block (lines 54-60) then logs a
+      // warning and returns ChannelDragSuccess(DragOperation.unknown).
+      final res = ChannelDragResult.parse({'status': 'ok', 'op': 42});
+      expect(res.isSuccess, isTrue);
+      expect(res.operation, DragOperation.unknown);
     });
   });
 }

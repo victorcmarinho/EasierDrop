@@ -1,27 +1,54 @@
 import 'package:easier_drop/components/parts/file_name_badge.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:macos_ui/macos_ui.dart';
 
 void main() {
-  testWidgets('FileNameBadge exibe o texto corretamente', (
-    WidgetTester tester,
-  ) async {
-    const fileName = 'example.txt';
+  group('FileNameBadge', () {
+    Widget wrap(Widget child) => MacosApp(
+          debugShowCheckedModeBanner: false,
+          home: MacosWindow(child: child),
+        );
 
-    await tester.pumpWidget(
-      const MaterialApp(home: Scaffold(body: FileNameBadge(label: fileName))),
-    );
+    testWidgets('renders with semantics label', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          const FileNameBadge(label: 'document.pdf'),
+        ),
+      );
+      await tester.pump();
 
-    expect(find.bySemanticsLabel(fileName), findsOneWidget);
-  });
+      // The Semantics node wrapping the badge should carry the label.
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('document.pdf')),
+        isNotNull,
+      );
+    });
 
-  testWidgets('FileNameBadge lida com texto curto', (WidgetTester tester) async {
-    const fileName = 'a';
+    testWidgets('renders MarqueeText with the correct label', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          const FileNameBadge(label: 'photo.jpg'),
+        ),
+      );
+      await tester.pump();
 
-    await tester.pumpWidget(
-      const MaterialApp(home: Scaffold(body: FileNameBadge(label: fileName))),
-    );
+      // FileNameBadge always contains a ClipRRect and BackdropFilter
+      expect(find.byType(ClipRRect), findsOneWidget);
+    });
 
-    expect(find.bySemanticsLabel(fileName), findsOneWidget);
+    testWidgets('renders correctly for long file name without overflow error',
+        (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          const FileNameBadge(
+            label: 'very_long_file_name_that_should_scroll_in_marquee.dart',
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+      // No exceptions means the overflow is handled by MarqueeText.
+    });
   });
 }

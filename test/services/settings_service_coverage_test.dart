@@ -38,7 +38,7 @@ class FakeAnalyticsService extends Fake implements AnalyticsService {
   }
 
   @override
-  void trackEvent(String name, [Map<String, dynamic>? properties]) {}
+  Future<void> trackEvent(String name, [Map<String, dynamic>? properties]) async {}
   
   @override
   void debug(String message, {String tag = 'App'}) {}

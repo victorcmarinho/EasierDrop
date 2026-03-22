@@ -3,12 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-/// A pure-Flutter marquee widget. Scrolls [text] horizontally when it is
-/// wider than the available space. When the text fits, it is displayed
-/// statically — no overflow warnings, no external packages.
-///
-/// Inspired by the bytedance/marquee_text implementation but rewritten for
-/// modern Dart/Flutter (null-safe, uses [LayoutBuilder] + [CustomPaint]).
 class MarqueeText extends StatefulWidget {
   const MarqueeText({
     super.key,
@@ -16,20 +10,18 @@ class MarqueeText extends StatefulWidget {
     this.speed = 30.0,
     this.gap = 40.0,
     this.pauseDuration = const Duration(seconds: 1),
+    this.maxWidth = double.infinity,
   });
 
-  /// The styled text to display.
   final TextSpan text;
 
-  /// Scroll speed in logical pixels per second.
   final double speed;
 
-  /// Gap between the end of one cycle and the start of the next, in dp.
   final double gap;
 
-  /// How long to pause at the start before scrolling begins (and after
-  /// one full cycle before looping).
   final Duration pauseDuration;
+
+  final double maxWidth;
 
   @override
   State<MarqueeText> createState() => _MarqueeTextState();
@@ -37,126 +29,99 @@ class MarqueeText extends StatefulWidget {
 
 class _MarqueeTextState extends State<MarqueeText>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final maxWidth = constraints.maxWidth;
-
-        return _MarqueeCanvas(
-          textSpan: widget.text,
-          maxWidth: maxWidth,
-          speed: widget.speed,
-          gap: widget.gap,
-          pauseDuration: widget.pauseDuration,
-          controller: _controller,
-        );
-      },
-    );
-  }
-}
-
-/// Internal widget that owns the canvas and drives the animation.
-class _MarqueeCanvas extends StatefulWidget {
-  const _MarqueeCanvas({
-    required this.textSpan,
-    required this.maxWidth,
-    required this.speed,
-    required this.gap,
-    required this.pauseDuration,
-    required this.controller,
-  });
-
-  final TextSpan textSpan;
-  final double maxWidth;
-  final double speed;
-  final double gap;
-  final Duration pauseDuration;
-  final AnimationController controller;
-
-  @override
-  State<_MarqueeCanvas> createState() => _MarqueeCanvasState();
-}
-
-class _MarqueeCanvasState extends State<_MarqueeCanvas> {
+  late AnimationController _animationController;
   late TextPainter _painter;
-  double _textWidth = 0;
   bool _needsScroll = false;
+  bool _hasLaidOut = false;
+  double _textWidth = 0.0;
   Timer? _timer;
 
+  late final ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
-    _measure();
-    _startIfNeeded();
+    _scrollController = ScrollController();
+    _painter = TextPainter(textDirection: TextDirection.ltr);
+    _animationController = AnimationController(vsync: this);
+    _animationController.addListener(() {
+      if (mounted && _needsScroll && _scrollController.hasClients) {
+        _scrollController.jumpTo(
+          _animationController.value * (_textWidth + widget.gap),
+        );
+      }
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateLayout());
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _animationController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  // coverage:ignore-start
   @override
-  void didUpdateWidget(_MarqueeCanvas old) {
-    super.didUpdateWidget(old);
-    final textChanged =
-        old.textSpan.toPlainText() != widget.textSpan.toPlainText() ||
-            old.maxWidth != widget.maxWidth;
-    if (textChanged) {
-      _measure();
-      _startIfNeeded();
+  void didUpdateWidget(MarqueeText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text ||
+        oldWidget.speed != widget.speed ||
+        oldWidget.gap != widget.gap ||
+        oldWidget.pauseDuration != widget.pauseDuration ||
+        oldWidget.maxWidth != widget.maxWidth) {
+      if (mounted && _scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+      _updateLayout();
     }
   }
-  // coverage:ignore-end
 
-  void _measure() {
-    _painter = TextPainter(
-      text: widget.textSpan,
-      textDirection: TextDirection.ltr,
-      maxLines: 1,
-    )..layout(maxWidth: double.infinity);
+  void _updateLayout() {
+    if (!mounted) return;
 
+    _painter.text = widget.text;
+    _painter.layout();
+    _hasLaidOut = true;
     _textWidth = _painter.width;
-    _needsScroll = _textWidth > widget.maxWidth;
+
+    final availableWidth = widget.maxWidth;
+    final bool shouldScroll = _textWidth > availableWidth;
+
+    setState(() {
+      _needsScroll = shouldScroll;
+    });
+
+    if (_needsScroll) {
+      _startAnimation();
+    } else {
+      _stopAnimation();
+    }
   }
 
-  void _startIfNeeded() {
+  void _stopAnimation() {
     _timer?.cancel();
-    final ctrl = widget.controller;
-    ctrl.stop();
-    ctrl.reset();
+    _animationController.stop();
+    _animationController.reset();
+  }
+
+  void _startAnimation() {
+    _stopAnimation();
 
     if (!_needsScroll) return;
 
-    // Total scroll distance = text width + gap
     final totalDistance = _textWidth + widget.gap;
     final durationMs = (totalDistance / widget.speed * 1000).round();
 
-    ctrl.duration = Duration(milliseconds: durationMs);
+    _animationController.duration = Duration(milliseconds: durationMs);
 
     _timer = Timer(widget.pauseDuration, () {
       if (mounted) {
-        // Only repeat if not in tests, as repeating animations hang pumpAndSettle.
         if (kDebugMode && Platform.environment.containsKey('FLUTTER_TEST')) {
-          ctrl.forward();
+          _animationController.forward();
         } else {
-          ctrl.repeat(); // coverage:ignore-line
+          _animationController.repeat(); // coverage:ignore-line
         }
       }
     });
@@ -164,15 +129,21 @@ class _MarqueeCanvasState extends State<_MarqueeCanvas> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_hasLaidOut) {
+      return const SizedBox();
+    }
+
     if (!_needsScroll) {
-      // Text fits: render it statically, clipped — no overflow warning.
-      final centeredOffset = (widget.maxWidth - _textWidth) / 2;
       return SizedBox(
         height: _painter.height,
         child: ClipRect(
           child: CustomPaint(
-            painter: _TextPainterDelegate(_painter, offset: centeredOffset),
-            size: Size(widget.maxWidth, _painter.height),
+            size: Size(_textWidth, _painter.height),
+            painter: _MarqueePainter(
+              text: widget.text,
+              offset: Offset.zero,
+              painter: _painter,
+            ),
           ),
         ),
       );
@@ -180,76 +151,46 @@ class _MarqueeCanvasState extends State<_MarqueeCanvas> {
 
     return SizedBox(
       height: _painter.height,
-      child: ClipRect(
-        child: AnimatedBuilder(
-          animation: widget.controller,
-          builder: (_, child) {
-            final totalDistance = _textWidth + widget.gap;
-            final scrollOffset = widget.controller.value * totalDistance;
-            return CustomPaint(
-              painter: _ScrollingTextPainter(
+      child: ListView.builder(
+        controller: _scrollController,
+        physics: const NeverScrollableScrollPhysics(),
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.only(right: widget.gap),
+            child: CustomPaint(
+              size: Size(_textWidth, _painter.height),
+              painter: _MarqueePainter(
+                text: widget.text,
+                offset: Offset.zero,
                 painter: _painter,
-                scrollOffset: scrollOffset,
-                gap: widget.gap,
-                textWidth: _textWidth,
-                containerWidth: widget.maxWidth,
               ),
-              size: Size(widget.maxWidth, _painter.height),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 }
 
-/// Static painter — draws text at a fixed offset.
-class _TextPainterDelegate extends CustomPainter {
-  _TextPainterDelegate(this._painter, {required this.offset});
-  final TextPainter _painter;
-  final double offset;
+class _MarqueePainter extends CustomPainter {
+  final TextSpan text;
+  final Offset offset;
+  final TextPainter painter;
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    _painter.paint(canvas, Offset(offset, 0));
-  }
-
-  @override // coverage:ignore-line
-  bool shouldRepaint(_TextPainterDelegate old) => old.offset != offset; // coverage:ignore-line
-}
-
-/// Scrolling painter — renders one or two copies of the text to create a
-/// seamless loop without any gap/jump artefacts.
-class _ScrollingTextPainter extends CustomPainter {
-  const _ScrollingTextPainter({
+  _MarqueePainter({
+    required this.text,
+    required this.offset,
     required this.painter,
-    required this.scrollOffset,
-    required this.gap,
-    required this.textWidth,
-    required this.containerWidth,
   });
 
-  final TextPainter painter;
-  final double scrollOffset;
-  final double gap;
-  final double textWidth;
-  final double containerWidth;
-
   @override
   void paint(Canvas canvas, Size size) {
-    final stride = textWidth + gap;
-
-    // Draw as many copies as needed so the canvas always appears full.
-    double x = -scrollOffset;
-    while (x < containerWidth) {
-      if (x + textWidth > 0) {
-        painter.paint(canvas, Offset(x, 0));
-      }
-      x += stride;
-    }
+    painter.paint(canvas, offset);
   }
 
-  @override // coverage:ignore-line
-  bool shouldRepaint(_ScrollingTextPainter old) => // coverage:ignore-line
-      old.scrollOffset != scrollOffset; // coverage:ignore-line
+  @override
+  bool shouldRepaint(_MarqueePainter oldDelegate) {
+    return oldDelegate.text != text || oldDelegate.offset != offset;
+  }
 }

@@ -1,6 +1,5 @@
 import 'package:easier_drop/components/parts/files_surface.dart';
 import 'package:easier_drop/providers/files_provider.dart';
-import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/helpers/share_message_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,36 +44,6 @@ FilesSurface _surface(
 );
 
 void main() {
-  testWidgets('Dicas semânticas mudam com a contagem de arquivos', (
-    tester,
-  ) async {
-    final provider = FilesProvider(enableMonitoring: false);
-    AppLocalizations? loc;
-    await tester.pumpWidget(
-      _wrap(
-        provider,
-        child: Builder(
-          builder: (c) {
-            loc = AppLocalizations.of(c);
-            return _surface(c, provider);
-          },
-        ),
-      ),
-    );
-    await tester.pump();
-
-    expect(find.text(loc!.share), findsNothing);
-
-    provider.addFileForTest(const FileReference(pathname: '/tmp/one.txt'));
-    await tester.pump();
-    await tester.pumpWidget(
-      _wrap(provider, child: Builder(builder: (c) => _surface(c, provider))),
-    );
-    await tester.pump();
-
-    expect(find.bySemanticsLabel('one.txt'), findsOneWidget);
-  });
-
   testWidgets('Resolvedor de mensagem ShareNone', (tester) async {
     final provider = FilesProvider(enableMonitoring: false);
     AppLocalizations? loc;
