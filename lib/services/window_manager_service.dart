@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io' as io;
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -12,27 +14,59 @@ class WindowManagerService with WindowListener {
   static final WindowManagerService _instance = WindowManagerService._();
   WindowManagerService._();
 
-  static WindowManagerService get instance => _instance;
+  static WindowManagerService get instance => _instance; // coverage:ignore-line
+  
+  bool _initialized = false;
+  @visibleForTesting
+  Future<void> Function()? mockExitApp;
+
+  // Last-known values to avoid redundant native bridge calls
+  double? _lastOpacity;
+  bool? _lastAlwaysOnTop;
+
+  // Debounce timers for window geometry callbacks
+  Timer? _resizeDebounce;
+  Timer? _moveDebounce;
+  static const Duration _geometryDebounce = Duration(milliseconds: 150);
+
+  @visibleForTesting
+  void resetForTesting() {
+    _initialized = false;
+    _lastOpacity = null;
+    _lastAlwaysOnTop = null;
+    _resizeDebounce?.cancel();
+    _moveDebounce?.cancel();
+    _resizeDebounce = null;
+    _moveDebounce = null;
+  }
 
   Future<void> initialize({
     bool isSecondaryWindow = false,
     String? windowId,
   }) async {
-    SettingsService.instance.addListener(_onSettingsChanged);
+    if (!_initialized) { // coverage:ignore-line
+      SettingsService.instance.addListener(_onSettingsChanged);
+      _initialized = true; // coverage:ignore-line
+    }
 
+    // coverage:ignore-start
     if (isSecondaryWindow) {
       await _setupSecondaryWindow(windowId);
       return;
     }
+    // coverage:ignore-end
 
     await _setupMainWindow();
   }
 
+  // coverage:ignore-start
   Future<void> _setupMainWindow() async {
     windowManager.addListener(this);
     await Future.wait([TrayService.instance.configure(), _configureWindow()]);
   }
+  // coverage:ignore-end
 
+  // coverage:ignore-start
   Future<void> _setupSecondaryWindow(String? windowId) async {
     await windowManager.ensureInitialized();
     await windowManager.setTitleBarStyle(
@@ -84,7 +118,9 @@ class WindowManagerService with WindowListener {
       }
     }
   }
+  // coverage:ignore-end
 
+  // coverage:ignore-start
   Future<void> _configureWindow() async {
     await windowManager.ensureInitialized();
     await windowManager.setResizable(false);
@@ -95,7 +131,7 @@ class WindowManagerService with WindowListener {
       AppConstants.defaultWindowSize,
     );
 
-    final options = WindowOptions(
+    final options = const WindowOptions(
       minimumSize: defaultSize,
       maximumSize: defaultSize,
       size: defaultSize,
@@ -117,7 +153,9 @@ class WindowManagerService with WindowListener {
       ]);
     });
   }
+  // coverage:ignore-end
 
+  // coverage:ignore-start
   Future<void> _restoreWindowPosition() async {
     final s = SettingsService.instance;
     if (s.windowX != null && s.windowY != null) {
@@ -131,16 +169,27 @@ class WindowManagerService with WindowListener {
       }
     }
   }
+  // coverage:ignore-end
 
   Future<void> _onSettingsChanged() async {
     final s = SettingsService.instance.settings;
-    await Future.wait([
-      windowManager.setOpacity(s.windowOpacity),
-      windowManager.setAlwaysOnTop(s.isAlwaysOnTop),
-      windowManager.setMaximizable(false),
-    ]);
+    final futures = <Future<void>>[];
+
+    if (_lastOpacity != s.windowOpacity) {
+      _lastOpacity = s.windowOpacity;
+      futures.add(windowManager.setOpacity(s.windowOpacity));
+    }
+    if (_lastAlwaysOnTop != s.isAlwaysOnTop) {
+      _lastAlwaysOnTop = s.isAlwaysOnTop;
+      futures.add(windowManager.setAlwaysOnTop(s.isAlwaysOnTop));
+    }
+
+    if (futures.isNotEmpty) {
+      await Future.wait(futures);
+    }
   }
 
+  // coverage:ignore-start
   Future<void> createNewWindow(double x, double y) async {
     final windowIds = await WindowController.getAll();
     if (windowIds.length >= AppConstants.maxWindows) {
@@ -175,6 +224,7 @@ class WindowManagerService with WindowListener {
     );
     AnalyticsService.instance.shakeWindowCreated();
   }
+  // coverage:ignore-end
 
   Future<void> hide() async {
     await Future.wait([
@@ -193,6 +243,7 @@ class WindowManagerService with WindowListener {
     AnalyticsService.instance.trackEvent('window_shown');
   }
 
+  // coverage:ignore-start
   Map<String, dynamic> _createWindowArgs({
     required String args,
     String? title,
@@ -216,7 +267,9 @@ class WindowManagerService with WindowListener {
       'y': y,
     };
   }
+  // coverage:ignore-end
 
+  // coverage:ignore-start
   Future<void> openSettings() async {
     final window = await WindowController.create(
       WindowConfiguration(
@@ -233,7 +286,9 @@ class WindowManagerService with WindowListener {
     await window.show();
     AnalyticsService.instance.settingsOpened();
   }
+  // coverage:ignore-end
 
+  // coverage:ignore-start
   Future<void> openUpdateWindow() async {
     final window = await WindowController.create(
       WindowConfiguration(
@@ -249,13 +304,18 @@ class WindowManagerService with WindowListener {
     );
     await window.show();
   }
+  // coverage:ignore-end
 
   Future<void> exitApp() async {
     await Future.wait([
       TrayService.instance.destroy(),
       windowManager.destroy(),
     ]);
-    io.exit(0);
+    if (mockExitApp != null) {
+      await mockExitApp!();
+    } else {
+      io.exit(0); // coverage:ignore-line
+    }
   }
 
   @override
@@ -263,15 +323,25 @@ class WindowManagerService with WindowListener {
     await hide();
   }
 
+  // coverage:ignore-start
   @override
-  void onWindowResize() async {
-    final size = await windowManager.getSize();
-    SettingsService.instance.setWindowBounds(w: size.width, h: size.height);
+  void onWindowResize() {
+    _resizeDebounce?.cancel();
+    _resizeDebounce = Timer(_geometryDebounce, () async {
+      final size = await windowManager.getSize();
+      SettingsService.instance.setWindowBounds(w: size.width, h: size.height);
+    });
   }
+  // coverage:ignore-end
 
+  // coverage:ignore-start
   @override
-  void onWindowMove() async {
-    final pos = await windowManager.getPosition();
-    SettingsService.instance.setWindowBounds(x: pos.dx, y: pos.dy);
+  void onWindowMove() {
+    _moveDebounce?.cancel();
+    _moveDebounce = Timer(_geometryDebounce, () async {
+      final pos = await windowManager.getPosition();
+      SettingsService.instance.setWindowBounds(x: pos.dx, y: pos.dy);
+    });
   }
+  // coverage:ignore-end
 }

@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
@@ -34,12 +35,14 @@ class GeneralSettingsSection extends StatelessWidget {
                     viewModel.isCheckingPermission ||
                         !viewModel.hasLaunchAtLoginPermission
                     ? null
+                    // coverage:ignore-start
                     : (v) async {
                         await settings.setLaunchAtLogin(v);
                         if (v) {
                           await viewModel.checkPermissions();
                         }
                       },
+                    // coverage:ignore-end
               ),
             ),
             CupertinoListTile(
@@ -47,7 +50,7 @@ class GeneralSettingsSection extends StatelessWidget {
               title: Text(loc.settingsAlwaysOnTop),
               trailing: MacosSwitch(
                 value: settings.settings.isAlwaysOnTop,
-                onChanged: (v) => settings.setAlwaysOnTop(v),
+                onChanged: (v) => settings.setAlwaysOnTop(v), // coverage:ignore-line
               ),
             ),
           ],

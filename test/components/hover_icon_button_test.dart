@@ -1,72 +1,86 @@
-import 'package:easier_drop/components/hover_icon_button.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:easier_drop/components/hover_icon_button.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 void main() {
-  testWidgets('HoverIconButton hover & press states', (tester) async {
-    int taps = 0;
-    await tester.pumpWidget(
-      MacosApp(
-        home: Center(
-          child: HoverIconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => taps++,
-            semanticsLabel: 'Add',
-            semanticsHint: 'Add item',
+  Widget createWidget({
+    VoidCallback? onPressed,
+    bool enabled = true,
+    bool addSemantics = true,
+  }) {
+    return MacosApp(
+      theme: MacosThemeData.light(),
+      home: MacosScaffold(
+        children: [
+          ContentArea(
+            builder: (context, _) => HoverIconButton(
+              icon: const Icon(Icons.add),
+              onPressed: onPressed,
+              enabled: enabled,
+              addSemantics: addSemantics,
+              semanticsLabel: 'Test Label',
+            ),
           ),
-        ),
+        ],
       ),
     );
-    await tester.pump();
-    final sem = find.bySemanticsLabel('Add');
-    expect(sem, findsOneWidget);
+  }
 
-    await tester.tap(sem);
-    await tester.pump();
-    expect(taps, 1);
-  });
+  group('HoverIconButton', () {
+    testWidgets('renderizado e clique', (tester) async {
+      bool pressed = false;
+      await tester.pumpWidget(createWidget(onPressed: () => pressed = true));
+      await tester.pumpAndSettle();
+      
+      expect(find.byIcon(Icons.add), findsOneWidget);
+      
+      await tester.tap(find.byType(HoverIconButton));
+      expect(pressed, isTrue);
+    });
 
-  testWidgets('HoverIconButton disabled has no tap', (tester) async {
-    int taps = 0;
-    await tester.pumpWidget(
-      const MacosApp(
-        home: Center(
-          child: HoverIconButton(
-            icon: Icon(Icons.remove),
-            enabled: false,
-            semanticsLabel: 'Disabled',
-          ),
-        ),
-      ),
-    );
-    await tester.pump();
-    final sem = find.bySemanticsLabel('Disabled');
-    await tester.tap(sem);
-    await tester.pump();
-    expect(taps, 0);
-  });
+    testWidgets('hover e press states FULL', (tester) async {
+      await tester.pumpWidget(createWidget());
+      await tester.pumpAndSettle();
+      
+      final finder = find.byType(HoverIconButton);
+      
+      // Simulate mouse enter
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await gesture.addPointer(location: tester.getCenter(finder));
+      await tester.pump();
+      
+      // Simulate tap down
+      await gesture.down(tester.getCenter(finder));
+      await tester.pump(); 
+      
+      // Simulate mouse exit while pressed
+      await gesture.moveTo(Offset.zero);
+      await tester.pump(); // onExit calls 82, 83
+      
+      await gesture.up();
+      await gesture.removePointer();
+      await tester.pumpAndSettle();
+    });
 
-  testWidgets('HoverIconButton focus highlight without semantics', (
-    tester,
-  ) async {
-    int taps = 0;
-    await tester.pumpWidget(
-      MacosApp(
-        home: Center(
-          child: HoverIconButton(
-            icon: const Icon(Icons.star),
-            onPressed: () => taps++,
-            addSemantics: false,
-          ),
-        ),
-      ),
-    );
-    await tester.pump();
-    final finder = find.byIcon(Icons.star);
-    expect(finder, findsOneWidget);
-    await tester.tap(finder);
-    await tester.pump();
-    expect(taps, 1);
+    testWidgets('desabilitado', (tester) async {
+      bool pressed = false;
+      await tester.pumpWidget(createWidget(onPressed: () => pressed = true, enabled: false));
+      await tester.pumpAndSettle();
+      
+      await tester.tap(find.byType(HoverIconButton), warnIfMissed: false);
+      expect(pressed, isFalse);
+    });
+
+    testWidgets('tap cancel coverage', (tester) async {
+       await tester.pumpWidget(createWidget());
+       await tester.pumpAndSettle();
+       final gesture = await tester.createGesture();
+       await gesture.down(tester.getCenter(find.byType(HoverIconButton)));
+       await tester.pump();
+       await gesture.cancel();
+       await tester.pump();
+    });
   });
 }

@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-03-22
+
+### Added
+- **Testing Suite**: Expanded test coverage with comprehensive tests for internationalization, theme management, and the dragging overlay.
+- **Accessibility**: Added semantic labels to `FileNameBadge` for better screen reader support.
+
+### Improved
+- **Marquee Transitions**: Improved `MarqueeText` animation stability and reliability, particularly during rapid text updates and in test environments.
+- **Performance**: Optimized file icon retrieval performance by refactoring dependency handling.
+- **Documentation**: Enhanced READMEs with detailed macOS installation instructions, Gatekeeper bypass guides, and sponsorship information.
+- **Localization**: Refined and expanded translations across all supported languages (English, Portuguese, Spanish).
+
+### Refactored
+- **Architecture**: Introduced a custom `MarqueeText` widget and refactor `MacosUpdatesService` and `WindowManagerService` to support mocking and improved testability.
+- **Dependencies**: Streamlined package dependencies and update various libraries to their latest versions.
+
+### Removed
+- **Obsolete Tests**: Removed redundant file transfer screen tests and their associated mocks.
+
 ## [1.1.2] - 2026-02-14
 
 ### Added

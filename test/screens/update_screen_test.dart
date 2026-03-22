@@ -9,6 +9,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+import 'package:flutter/material.dart';
 
 class MockUpdateService extends Mock implements UpdateService {}
 
@@ -57,16 +58,17 @@ void main() {
 
   Future<void> pumpUpdateScreen(WidgetTester tester) async {
     await tester.pumpWidget(
-      MacosApp(
+      const MacosApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const UpdateScreen(),
+        locale: Locale('pt'),
+        home: UpdateScreen(),
       ),
     );
   }
 
-  group('UpdateScreen', () {
-    testWidgets('shows loading indicator initially', (
+  group('UpdateScreen Tests', () {
+    testWidgets('exibe indicador de carregamento inicialmente', (
       WidgetTester tester,
     ) async {
       final completer = Completer<String?>();
@@ -83,7 +85,7 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('shows checkmark when no updates available', (
+    testWidgets('exibe ícone de sucesso quando não houver atualizações disponíveis', (
       WidgetTester tester,
     ) async {
       final completer = Completer<String?>();
@@ -100,7 +102,7 @@ void main() {
       expect(find.text('OK'), findsOneWidget);
     });
 
-    testWidgets('shows update available and download/later buttons', (
+    testWidgets('exibe atualização disponível e botões de baixar/depois', (
       WidgetTester tester,
     ) async {
       const updateUrl = 'https://example.com/update';
@@ -115,11 +117,11 @@ void main() {
       completer.complete(updateUrl);
       await tester.pumpAndSettle();
 
-      expect(find.text('Download'), findsOneWidget);
-      expect(find.text('Later'), findsOneWidget);
+      expect(find.text('Baixar'), findsOneWidget);
+      expect(find.text('Depois'), findsOneWidget);
     });
 
-    testWidgets('shows error message on failure', (WidgetTester tester) async {
+    testWidgets('exibe mensagem de erro na falha', (WidgetTester tester) async {
       final completer = Completer<String?>();
       when(
         () => mockUpdateService.checkForUpdates(),
@@ -128,14 +130,14 @@ void main() {
       await pumpUpdateScreen(tester);
       await tester.pump();
 
-      completer.completeError('Network Error');
+      completer.completeError('Erro de Rede');
       await tester.pumpAndSettle();
 
-      expect(find.text('Network Error'), findsOneWidget);
-      expect(find.text('Close'), findsOneWidget);
+      expect(find.text('Erro de Rede'), findsOneWidget);
+      expect(find.text('Fechar'), findsOneWidget);
     });
 
-    testWidgets('clicking Download launches URL and closes window', (
+    testWidgets('clicar em Baixar abre a URL e fecha a janela', (
       WidgetTester tester,
     ) async {
       const updateUrl = 'https://example.com/update';
@@ -154,7 +156,7 @@ void main() {
       completer.complete(updateUrl);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Download'));
+      await tester.tap(find.text('Baixar'));
       await tester.pump();
 
       verify(() => mockUrlLauncher.launchUrl(updateUrl, any())).called(1);

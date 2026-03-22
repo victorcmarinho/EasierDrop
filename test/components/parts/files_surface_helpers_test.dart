@@ -7,7 +7,7 @@ import 'package:mocktail/mocktail.dart';
 class MockAppLocalizations extends Mock implements AppLocalizations {}
 
 void main() {
-  group('FilesSurfaceHelpers Tests', () {
+  group('Testes do FilesSurfaceHelpers', () {
     late MockAppLocalizations mockLoc;
 
     setUp(() {
@@ -23,12 +23,12 @@ void main() {
     });
 
     group('FilesSemanticsHelper', () {
-      test('generateHint returns correct hint for empty list', () {
+      test('generateHint retorna a dica correta para lista vazia', () {
         final hint = FilesSemanticsHelper.generateHint([], mockLoc);
         expect(hint, equals('empty_hint'));
       });
 
-      test('generateHint returns correct hint for non-empty list', () {
+      test('generateHint retorna a dica correta para lista não vazia', () {
         final files = <FileReference>[
           const FileReference(pathname: 'test.txt'),
         ];
@@ -36,7 +36,7 @@ void main() {
         expect(hint, equals('has_files_hint'));
       });
 
-      test('generateFileLabel returns empty for empty list', () {
+      test('generateFileLabel retorna vazio para lista vazia', () {
         final label = FilesSemanticsHelper.generateFileLabel(
           <FileReference>[],
           mockLoc,
@@ -44,7 +44,7 @@ void main() {
         expect(label, isEmpty);
       });
 
-      test('generateFileLabel returns label for single file', () {
+      test('generateFileLabel retorna o rótulo para um único arquivo', () {
         final files = <FileReference>[
           const FileReference(pathname: 'test.txt'),
         ];
@@ -53,7 +53,7 @@ void main() {
         verify(() => mockLoc.fileLabelSingle('test.txt')).called(1);
       });
 
-      test('generateFileLabel returns label for multiple files', () {
+      test('generateFileLabel retorna o rótulo para vários arquivos', () {
         final files = <FileReference>[
           const FileReference(pathname: 'test1.txt'),
           const FileReference(pathname: 'test2.txt'),
@@ -65,7 +65,7 @@ void main() {
     });
 
     group('FilesSurfaceStyles', () {
-      test('constants are accessible', () {
+      test('as constantes estão acessíveis', () {
         expect(FilesSurfaceStyles.animationDuration, isA<Duration>());
         expect(FilesSurfaceStyles.opacityDuration, isA<Duration>());
         expect(FilesSurfaceStyles.borderWidth, greaterThan(0));

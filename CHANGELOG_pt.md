@@ -5,6 +5,25 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 22-03-2026
+
+### Adicionado
+- **Suíte de Testes**: Cobertura de testes expandida com testes abrangentes para internacionalização, gerenciamento de temas e a sobreposição de arrasto.
+- **Acessibilidade**: Adicionados rótulos semânticos ao `FileNameBadge` para melhor suporte a leitores de tela.
+
+### Melhorado
+- **Transições de Marquee**: Melhorada a estabilidade e confiabilidade das animações do `MarqueeText`, especialmente durante atualizações rápidas de texto e em ambientes de teste.
+- **Performance**: Otimizada a performance de recuperação de ícones de arquivos através da refatoração do gerenciamento de dependências.
+- **Documentação**: READMEs aprimorados com instruções detalhadas de instalação no macOS, guias para contornar o Gatekeeper e informações de patrocínio.
+- **Localização**: Traduções refinadas e expandidas em todos os idiomas suportados (Inglês, Português, Espanhol).
+
+### Refatorado
+- **Arquitetura**: Introduzido um widget personalizado `MarqueeText` e refatorados os serviços `MacosUpdatesService` e `WindowManagerService` para suportar mocking e melhorar a testabilidade.
+- **Dependências**: Dependências de pacotes simplificadas e atualização de diversas bibliotecas para suas versões mais recentes.
+
+### Removido
+- **Testes Obsoletos**: Removidos testes redundantes da tela de transferência de arquivos e seus mocks associados.
+
 ## [1.1.2] - 14-02-2026
 
 ### Adicionado

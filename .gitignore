@@ -13,6 +13,7 @@
 migrate_working_dir/
 coverage
 .env
+settings.json
 
 # IntelliJ related
 *.iml

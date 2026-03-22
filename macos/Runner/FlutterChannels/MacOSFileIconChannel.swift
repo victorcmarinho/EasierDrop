@@ -25,7 +25,7 @@ class MacOSFileIconChannel: NSObject {
         }
     }
     
-    private func getFileIcon(_ call: FlutterMethodCall, _ result: FlutterResult) {
+    private func getFileIcon(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let filePath = call.arguments as? String else {
             result(FlutterError(code: "INVALID_ARGUMENTS",
                               message: "Argumentos inválidos: o caminho do arquivo é esperado",
@@ -33,18 +33,24 @@ class MacOSFileIconChannel: NSObject {
             return
         }
         
-        let icon = NSWorkspace.shared.icon(forFile: filePath)
-        
-        guard let tiffData = icon.tiffRepresentation,
-              let bitmap = NSBitmapImageRep(data: tiffData),
-              let pngData = bitmap.representation(using: NSBitmapImageRep.FileType.png, properties: [:]) else {
-            result(FlutterError(code: "ICON_CONVERSION_FAILED",
-                              message: "Falha ao converter ícone",
-                              details: nil))
-            return
+        DispatchQueue.global(qos: .userInitiated).async {
+            let icon = NSWorkspace.shared.icon(forFile: filePath)
+            
+            guard let tiffData = icon.tiffRepresentation,
+                  let bitmap = NSBitmapImageRep(data: tiffData),
+                  let pngData = bitmap.representation(using: NSBitmapImageRep.FileType.png, properties: [:]) else {
+                DispatchQueue.main.async {
+                    result(FlutterError(code: "ICON_CONVERSION_FAILED",
+                                      message: "Falha ao converter ícone",
+                                      details: nil))
+                }
+                return
+            }
+            
+            DispatchQueue.main.async {
+                result(FlutterStandardTypedData(bytes: pngData))
+            }
         }
-        
-        result(FlutterStandardTypedData(bytes: pngData))
     }
 
     private func getFilePreview(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {

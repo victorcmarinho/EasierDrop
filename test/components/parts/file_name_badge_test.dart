@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('FileNameBadge displays text correctly', (
+  testWidgets('FileNameBadge exibe o texto corretamente', (
     WidgetTester tester,
   ) async {
     const fileName = 'example.txt';
@@ -12,16 +12,16 @@ void main() {
       const MaterialApp(home: Scaffold(body: FileNameBadge(label: fileName))),
     );
 
-    expect(find.text(fileName), findsOneWidget);
+    expect(find.bySemanticsLabel(fileName), findsOneWidget);
   });
 
-  testWidgets('FileNameBadge handles short text', (WidgetTester tester) async {
+  testWidgets('FileNameBadge lida com texto curto', (WidgetTester tester) async {
     const fileName = 'a';
 
     await tester.pumpWidget(
       const MaterialApp(home: Scaffold(body: FileNameBadge(label: fileName))),
     );
 
-    expect(find.text(fileName), findsOneWidget);
+    expect(find.bySemanticsLabel(fileName), findsOneWidget);
   });
 }

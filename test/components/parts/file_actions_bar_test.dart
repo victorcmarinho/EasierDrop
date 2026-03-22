@@ -10,7 +10,7 @@ import 'package:easier_drop/components/share_button.dart';
 import 'package:easier_drop/components/remove_button.dart';
 
 void main() {
-  testWidgets('Share/Remove buttons fade in and out with files', (
+  testWidgets('Botões Share/Remove aparecem e somem conforme os arquivos', (
     tester,
   ) async {
     final provider = FilesProvider(enableMonitoring: false);
@@ -18,7 +18,7 @@ void main() {
       ChangeNotifierProvider.value(
         value: provider,
         child: MacosApp(
-          locale: const Locale('en'),
+          locale: const Locale('pt'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: MacosWindow(
@@ -57,7 +57,7 @@ void main() {
       ChangeNotifierProvider.value(
         value: provider,
         child: MacosApp(
-          locale: const Locale('en'),
+          locale: const Locale('pt'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: MacosWindow(
@@ -94,7 +94,7 @@ void main() {
       ChangeNotifierProvider.value(
         value: provider,
         child: MacosApp(
-          locale: const Locale('en'),
+          locale: const Locale('pt'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: MacosWindow(

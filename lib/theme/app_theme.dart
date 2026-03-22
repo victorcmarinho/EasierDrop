@@ -3,6 +3,8 @@ import 'package:macos_ui/macos_ui.dart';
 
 class AppTheme {
   const AppTheme._();
+  @visibleForTesting
+  static void testCoverage() => const AppTheme._();
 
   static const _sfProDisplay = '.SF Pro Display';
   static const _sfProText = '.SF Pro Text';

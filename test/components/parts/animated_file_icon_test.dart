@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('AnimatedFileIcon builds preview when available', (tester) async {
+  testWidgets('AnimatedFileIcon reconstrói o preview quando disponível', (tester) async {
     final file = FileReference(
       pathname: '/test.png',
 
@@ -98,7 +98,7 @@ void main() {
     expect(find.byType(Image), findsOneWidget);
   });
 
-  testWidgets('AnimatedFileIcon builds icon when preview unavailable', (
+  testWidgets('AnimatedFileIcon reconstrói o ícone quando o preview não estiver disponível', (
     tester,
   ) async {
     final file = FileReference(
@@ -193,10 +193,10 @@ void main() {
     expect(find.byType(Image), findsOneWidget);
   });
 
-  testWidgets('AnimatedFileIcon builds default icon when nothing available', (
+  testWidgets('AnimatedFileIcon reconstrói o ícone padrão quando nada estiver disponível', (
     tester,
   ) async {
-    final file = FileReference(pathname: '/test.png');
+    final file = const FileReference(pathname: '/test.png');
 
     await tester.pumpWidget(
       MaterialApp(

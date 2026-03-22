@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:marquee_text/marquee_text.dart';
+import 'package:easier_drop/helpers/marquee_text.dart';
 
 class FileNameBadge extends StatelessWidget {
   const FileNameBadge({super.key, required this.label});
@@ -28,15 +28,18 @@ class FileNameBadge extends StatelessWidget {
             ),
             color: MacosTheme.of(context).primaryColor.withValues(alpha: 0.15),
           ),
-          child: MarqueeText(
-            text: TextSpan(
-              text: label,
-              style: MacosTheme.of(context).typography.caption1.copyWith(
-                fontWeight: FontWeight.w600,
-                color: MacosTheme.of(context).typography.body.color,
+          child: Semantics(
+            label: label,
+            child: MarqueeText(
+              text: TextSpan(
+                text: label,
+                style: MacosTheme.of(context).typography.caption1.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: MacosTheme.of(context).typography.body.color,
+                ),
               ),
+              speed: 20,
             ),
-            speed: 20,
           ),
         ),
       ),

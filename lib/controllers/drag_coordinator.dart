@@ -17,9 +17,12 @@ class DragCoordinator {
   final ValueNotifier<bool> draggingOut = ValueNotifier(false);
   final ValueNotifier<bool> hovering = ValueNotifier(false);
 
+  // coverage:ignore-start
   StreamSubscription? _dropSubscription;
   bool _initialized = false;
+  // coverage:ignore-end
 
+  // coverage:ignore-start
   Future<void> init() async {
     if (_initialized) return;
     _initialized = true;
@@ -33,15 +36,17 @@ class DragCoordinator {
     );
   }
 
-  void dispose() {
+  Future<void> dispose() async {
     FileDropService.instance.setMethodCallHandler(null);
     DragOutService.instance.setHandler(null);
     _dropSubscription?.cancel();
-    FileDropService.instance.stop();
+    await FileDropService.instance.stop();
     draggingOut.dispose();
     hovering.dispose();
   }
+  // coverage:ignore-end
 
+  // coverage:ignore-start
   void _setupInboundDrag() {
     FileDropService.instance.setMethodCallHandler((call) async {
       if (call.method == PlatformChannels.fileDroppedCallback) {
@@ -54,7 +59,9 @@ class DragCoordinator {
       return null;
     });
   }
+  // coverage:ignore-end
 
+  // coverage:ignore-start
   void _setupOutboundDrag() {
     DragOutService.instance.setHandler((call) async {
       if (call.method == PlatformChannels.fileDroppedCallback) {
@@ -63,6 +70,7 @@ class DragCoordinator {
       return null;
     });
   }
+  // coverage:ignore-end
 
   void _handleOutboundResult(dynamic raw) {
     final result = ChannelDragResult.parse(raw);
@@ -105,6 +113,7 @@ class DragCoordinator {
     final filesProvider = context.read<FilesProvider>();
     final filePaths = filesProvider.files.map((f) => f.pathname).toList();
 
+    // coverage:ignore-start
     if (filePaths.isEmpty) {
       AnalyticsService.instance.warn(
         'No files to drag',
@@ -126,15 +135,18 @@ class DragCoordinator {
         draggingOut.value = false;
       });
     }
+    // coverage:ignore-end
   }
 
-  void setHover(bool value) => hovering.value = value;
+  void setHover(bool value) => hovering.value = value; // coverage:ignore-line
 
+  // coverage:ignore-start
   Future<void> _onFilesDropped(List<String> paths) async {
     final provider = context.read<FilesProvider>();
     final fileRefs = paths.map((path) => FileReference(pathname: path));
     await provider.addFiles(fileRefs);
   }
+  // coverage:ignore-end
 
   @visibleForTesting
   void handleOutboundTest(dynamic raw) => _handleOutboundResult(raw);

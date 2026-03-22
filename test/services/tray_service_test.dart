@@ -71,14 +71,14 @@ void main() {
         .setMockMethodCallHandler(urlLauncherChannel, null);
   });
 
-  group('TrayService Tests', () {
-    test('instance returns singleton', () {
+  group('Testes de TrayService', () {
+    test('instance retorna singleton', () {
       final instance1 = TrayService.instance;
       final instance2 = TrayService.instance;
       expect(instance1, same(instance2));
     });
 
-    test('configure sets tray icon', () async {
+    test('configure define o ícone da bandeja', () async {
       await TrayService.instance.configure();
 
       expect(
@@ -97,7 +97,7 @@ void main() {
       );
     });
 
-    test('destroy calls trayManager destroy', () async {
+    test('destroy chama destroy do trayManager', () async {
       await TrayService.instance.destroy();
 
       expect(
@@ -108,11 +108,12 @@ void main() {
       );
     });
 
-    testWidgets('rebuildMenu creates menu without update', (tester) async {
+    testWidgets('rebuildMenu cria o menu sem atualização', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('pt'),
           home: Scaffold(),
         ),
       );
@@ -120,7 +121,7 @@ void main() {
       final context = tester.element(find.byType(Scaffold));
       final loc = AppLocalizations.of(context)!;
 
-      await TrayService.instance.rebuildMenu(loc: loc, currentLocale: 'en');
+      await TrayService.instance.rebuildMenu(loc: loc, currentLocale: 'pt');
 
       expect(
         trayLog,
@@ -130,11 +131,11 @@ void main() {
       );
     });
 
-    test('updateUrl getter returns null initially', () {
+    test('getter updateUrl retorna nulo inicialmente', () {
       expect(TrayService.instance.updateUrl, isNull);
     });
 
-    test('checkForUpdates updates updateUrl when changed', () async {
+    test('checkForUpdates atualiza updateUrl quando alterado', () async {
       const updateChannel = MethodChannel('package_info_plus');
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(updateChannel, (
@@ -169,7 +170,7 @@ void main() {
       }
     });
 
-    test('handleMenuItemClick handles all item keys', () async {
+    test('handleMenuItemClick lida com todas as chaves de itens', () async {
       final service = TrayService.instance;
 
       const multiWindowChannel = MethodChannel('desktop_multi_window');
@@ -231,11 +232,12 @@ void main() {
           .setMockMethodCallHandler(updateChannel, null);
     });
 
-    testWidgets('rebuildMenu with update URL', (tester) async {
+    testWidgets('rebuildMenu com atualização de URL', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('pt'),
           home: Scaffold(),
         ),
       );
@@ -253,7 +255,7 @@ void main() {
 
       try {
         await TrayService.instance.checkForUpdates();
-        await TrayService.instance.rebuildMenu(loc: loc, currentLocale: 'en');
+        await TrayService.instance.rebuildMenu(loc: loc, currentLocale: 'pt');
 
         expect(trayLog.any((m) => m.method == 'setContextMenu'), isTrue);
 
@@ -266,7 +268,7 @@ void main() {
       }
     });
 
-    test('configure handles errors gracefully', () async {
+    test('configure lida com erros graciosamente', () async {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(trayChannel, (MethodCall methodCall) async {
             if (methodCall.method == 'setIcon') throw Exception('Mock Error');
@@ -278,12 +280,12 @@ void main() {
     });
   });
 
-  group('TrayService ChangeNotifier Tests', () {
-    test('TrayService is a ChangeNotifier', () {
+  group('Testes de TrayService ChangeNotifier', () {
+    test('TrayService é um ChangeNotifier', () {
       expect(TrayService.instance, isA<ChangeNotifier>());
     });
 
-    test('listener can be added and removed', () async {
+    test('listener pode ser adicionado e removido', () async {
       void listener() {}
 
       TrayService.instance.addListener(listener);

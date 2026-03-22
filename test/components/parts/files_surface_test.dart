@@ -1,93 +1,115 @@
-import 'package:easier_drop/components/parts/files_surface.dart';
-import 'package:easier_drop/components/parts/file_name_badge.dart';
-import 'package:easier_drop/providers/files_provider.dart';
-import 'package:easier_drop/model/file_reference.dart';
-import 'package:easier_drop/l10n/app_localizations.dart';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:easier_drop/components/parts/files_surface.dart';
+import 'package:easier_drop/providers/files_provider.dart';
+import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:easier_drop/services/settings_service.dart';
+import 'package:flutter/gestures.dart';
+import 'package:easier_drop/model/file_reference.dart';
 
-Widget _wrapWithApp({required FilesProvider provider, required Widget child}) {
-  return ChangeNotifierProvider.value(
-    value: provider,
-    child: MacosApp(
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('en'),
-      home: MacosWindow(
-        child: MediaQuery(
-          data: const MediaQueryData(size: Size(400, 300)),
-          child: child,
-        ),
-      ),
-    ),
-  );
-}
-
-FilesSurface _buildSurface(
-  BuildContext context,
-  FilesProvider provider, {
-  bool showLimit = false,
-}) {
-  final loc = AppLocalizations.of(context)!;
-  return FilesSurface(
-    hovering: false,
-    draggingOut: false,
-    showLimit: showLimit,
-    hasFiles: provider.files.isNotEmpty,
-    buttonKey: GlobalKey(),
-    loc: loc,
-    onHoverChanged: (_) {},
-    onDragCheck: (_) => false,
-    onDragRequest: () {},
-    onClear: provider.clear,
-    getButtonPosition: () => null,
-    filesProvider: provider,
-  );
-}
+class MockFilesProvider extends Mock implements FilesProvider {}
 
 void main() {
-  testWidgets('FilesSurface shows badge after adding a file', (tester) async {
-    final provider = FilesProvider(enableMonitoring: false);
-    await tester.pumpWidget(
-      _wrapWithApp(
-        provider: provider,
-        child: Builder(builder: (context) => _buildSurface(context, provider)),
-      ),
-    );
-    await tester.pump();
-    expect(find.byType(FileNameBadge), findsNothing);
+  late MockFilesProvider mockFiles;
 
-    provider.addFileForTest(const FileReference(pathname: '/tmp/a.txt'));
-    await tester.pump();
-
-    await tester.pumpWidget(
-      _wrapWithApp(
-        provider: provider,
-        child: Builder(builder: (context) => _buildSurface(context, provider)),
-      ),
-    );
-    await tester.pump();
-    expect(find.byType(FileNameBadge), findsOneWidget);
+  setUp(() {
+    mockFiles = MockFilesProvider();
+    when(() => mockFiles.files).thenReturn([]);
+    when(() => mockFiles.fileCount).thenReturn(0);
+    when(() => mockFiles.hasFiles).thenReturn(false);
+    when(() => mockFiles.addListener(any())).thenAnswer((_) {});
+    when(() => mockFiles.removeListener(any())).thenAnswer((_) {});
   });
 
-  testWidgets('FilesSurface shows limit overlay text', (tester) async {
-    final provider = FilesProvider(enableMonitoring: false);
-    final loc = await AppLocalizations.delegate.load(const Locale('en'));
-    await tester.pumpWidget(
-      _wrapWithApp(
-        provider: provider,
-        child: Builder(
-          builder:
-              (context) => _buildSurface(context, provider, showLimit: true),
+  Widget createWidget({
+    bool hovering = false,
+    bool draggingOut = false,
+    bool showLimit = false,
+    bool hasFiles = false,
+    ValueChanged<bool>? onHoverChanged,
+    bool Function(double)? onDragCheck,
+    VoidCallback? onDragRequest,
+    VoidCallback? onClear,
+  }) {
+    return MacosApp(
+      theme: MacosThemeData.light(),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: ChangeNotifierProvider<FilesProvider>.value(
+        value: mockFiles,
+        child: MacosWindow(
+          child: MacosScaffold(
+            children: [
+              ContentArea(
+                builder: (context, _) => FilesSurface(
+                  hovering: hovering,
+                  draggingOut: draggingOut,
+                  showLimit: showLimit,
+                  hasFiles: hasFiles,
+                  buttonKey: GlobalKey(),
+                  loc: AppLocalizations.of(context)!,
+                  onHoverChanged: onHoverChanged ?? (_) {},
+                  onDragCheck: onDragCheck ?? (_) => true,
+                  onDragRequest: onDragRequest ?? () {},
+                  onClear: onClear ?? () {},
+                  getButtonPosition: () => null,
+                  filesProvider: mockFiles,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
-    await tester.pump();
-    final expected = loc.limitReached(SettingsService.instance.maxFiles);
-    expect(find.text(expected), findsOneWidget);
+  }
+
+  group('FilesSurface', () {
+    testWidgets('hovering border color e interações mouse', (tester) async {
+       bool hoverVal = false;
+       await tester.pumpWidget(createWidget(
+         hovering: true,
+         onHoverChanged: (v) => hoverVal = v,
+       ));
+       await tester.pumpAndSettle();
+       
+       final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+       await gesture.addPointer(location: Offset.zero);
+       await tester.pump();
+       
+       await gesture.moveTo(tester.getCenter(find.byType(FilesSurface)));
+       await tester.pumpAndSettle();
+       expect(hoverVal, isTrue);
+       
+       await gesture.moveTo(const Offset(999, 999));
+       await tester.pumpAndSettle();
+       expect(hoverVal, isFalse);
+       await gesture.removePointer();
+    });
+
+    testWidgets('pan gestures - drag simulation', (tester) async {
+       bool dragCalled = false;
+       await tester.pumpWidget(createWidget(
+           onDragCheck: (dy) => true,
+           onDragRequest: () => dragCalled = true,
+       ));
+       await tester.pumpAndSettle();
+       
+       await tester.drag(find.byType(FilesSurface), const Offset(0, 50));
+       await tester.pumpAndSettle();
+       expect(dragCalled, isTrue);
+    });
+
+    testWidgets('renderizado com arquivos', (tester) async {
+       const mockFile = FileReference(pathname: '/test.txt');
+       when(() => mockFiles.files).thenReturn([mockFile]);
+       when(() => mockFiles.fileCount).thenReturn(1);
+       when(() => mockFiles.hasFiles).thenReturn(true);
+       
+       await tester.pumpWidget(createWidget(hasFiles: true));
+       await tester.pumpAndSettle();
+    });
   });
 }

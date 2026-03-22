@@ -8,13 +8,8 @@ class FileRepository {
 
   Future<bool> validateFile(String pathname) async {
     try {
-      final file = File(pathname);
-      if (!await file.exists()) return false;
-
-      final stat = await file.stat();
-      if (stat.type != FileSystemEntityType.file) return false;
-
-      return await _testReadability(file);
+      final stat = await File(pathname).stat();
+      return stat.type == FileSystemEntityType.file;
     } catch (e) {
       AnalyticsService.instance.debug(
         'Error validating file: $pathname ($e)',
@@ -44,28 +39,8 @@ class FileRepository {
     return FileIconHelper.getFilePreview(pathname);
   }
 
-  Future<bool> _testReadability(File file) async {
-    RandomAccessFile? raf;
-    try {
-      raf = await file.open(mode: FileMode.read);
-      await raf.readByte();
-      return true;
-    } on FileSystemException catch (e) {
-      AnalyticsService.instance.warn(
-        'No read permission: ${file.path} (${e.osError?.message})',
-        tag: 'FileRepo',
-      );
-      return false;
-    } catch (e) {
-      AnalyticsService.instance.warn(
-        'Failed readability test: ${file.path} ($e)',
-        tag: 'FileRepo',
-      );
-      return false;
-    } finally {
-      await raf?.close();
-    }
-  }
+
+
 
   bool _testReadabilitySync(File file) {
     RandomAccessFile? raf;

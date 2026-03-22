@@ -11,11 +11,11 @@ class MockFilesProvider extends Mock implements FilesProvider {}
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('KeyboardShortcuts Tests', () {
+  group('Testes de KeyboardShortcuts', () {
     late MockFilesProvider mockFilesProvider;
 
     setUpAll(() {
-      registerFallbackValue(Iterable<dynamic>.empty());
+      registerFallbackValue(const Iterable<dynamic>.empty());
     });
 
     setUp(() {
@@ -35,7 +35,7 @@ void main() {
       await tester.pump();
     }
 
-    testWidgets('ClearAllIntent should clear files', (tester) async {
+    testWidgets('ClearAllIntent deve limpar os arquivos', (tester) async {
       when(() => mockFilesProvider.hasFiles).thenReturn(true);
       when(() => mockFilesProvider.clear()).thenAnswer((_) async {});
 
@@ -74,7 +74,7 @@ void main() {
       verify(() => mockFilesProvider.clear()).called(1);
     });
 
-    testWidgets('ShareIntent should trigger share', (tester) async {
+    testWidgets('ShareIntent deve acionar o compartilhamento', (tester) async {
       when(() => mockFilesProvider.shared()).thenAnswer((_) async => Object());
 
       final focusNode = FocusNode();
@@ -112,7 +112,7 @@ void main() {
       verify(() => mockFilesProvider.shared()).called(1);
     });
 
-    testWidgets('PreferencesIntent should open settings', (tester) async {
+    testWidgets('PreferencesIntent deve abrir as configurações', (tester) async {
       const channel = MethodChannel('desktop_multi_window');
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
@@ -155,7 +155,7 @@ void main() {
           .setMockMethodCallHandler(channel, null);
     });
 
-    testWidgets('PasteFilesIntent should add files from pasteboard', (
+    testWidgets('PasteFilesIntent deve adicionar arquivos da área de transferência', (
       tester,
     ) async {
       const channel = MethodChannel('pasteboard');
@@ -211,7 +211,7 @@ void main() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, null);
     });
-    group('Accessibility Intents', () {
+    group('Intents de Acessibilidade', () {
       test('ClearAllIntent', () {
         expect(const ClearAllIntent(), isA<ClearAllIntent>());
       });
