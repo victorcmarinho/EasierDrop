@@ -60,6 +60,17 @@ void main() {
       provider.addFileForTest(const FileReference(pathname: '/unknown_test'));
       coordinator.handleOutboundTest({'status': 'ok', 'op': 'unknown'});
       expect(provider.files.length, 1);
+
+      // Hover
+      coordinator.setHover(true);
+      expect(coordinator.hovering.value, isTrue);
+      coordinator.setHover(false);
+      expect(coordinator.hovering.value, isFalse);
+
+      // Clear when already empty (branching)
+      provider.clear();
+      coordinator.handleOutboundTest({'status': 'ok', 'op': 'move'});
+      expect(provider.files.length, 0);
     });
 
     testWidgets('beginExternalDrag com lista vazia (cobertura)', (

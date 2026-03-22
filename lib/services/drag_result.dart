@@ -26,11 +26,9 @@ sealed class ChannelDragResult {
   const ChannelDragResult();
 
   bool get isSuccess => this is ChannelDragSuccess;
-  // coverage:ignore-start
   DragOperation get operation => this is ChannelDragSuccess
       ? (this as ChannelDragSuccess).operation
       : DragOperation.unknown;
-  // coverage:ignore-end
 
   static ChannelDragResult parse(dynamic raw) {
     final (result, error) = safeCallSync<ChannelDragResult>(() {
@@ -54,13 +52,11 @@ sealed class ChannelDragResult {
     });
 
     if (error != null) {
-      // coverage:ignore-start
       AnalyticsService.instance.warn(
         'Failed to parse drag result: $error',
         tag: 'DragResult',
       );
       return const ChannelDragSuccess(DragOperation.unknown);
-      // coverage:ignore-end
     }
 
     return result ?? const ChannelDragSuccess(DragOperation.unknown);

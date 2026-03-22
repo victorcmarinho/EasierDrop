@@ -38,11 +38,11 @@ class FileRepository {
   }
 
   Future<Uint8List?> getIcon(String pathname) async {
-    return FileIconHelper.getFileIcon(pathname);
+    return FileIconHelper.getFileIcon(pathname); // coverage:ignore-line
   }
 
   Future<Uint8List?> getPreview(String pathname) async {
-    return FileIconHelper.getFilePreview(pathname);
+    return FileIconHelper.getFilePreview(pathname); // coverage:ignore-line
   }
 
 

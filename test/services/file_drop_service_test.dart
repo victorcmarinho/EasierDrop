@@ -1,75 +1,82 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/services.dart';
 import 'package:easier_drop/services/file_drop_service.dart';
+import 'package:easier_drop/services/analytics_service.dart';
+import 'package:easier_drop/services/constants.dart';
+import 'package:flutter/services.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockAnalyticsService extends Mock implements AnalyticsService {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  late MockAnalyticsService mockAnalytics;
+  late FileDropService service;
+  const channel = MethodChannel(PlatformChannels.fileDrop);
+
+  setUp(() {
+    mockAnalytics = MockAnalyticsService();
+    AnalyticsService.instance = mockAnalytics;
+    service = FileDropService.instance;
+    service.resetForTesting();
+    
+    when(() => mockAnalytics.error(any(), tag: any(named: 'tag'))).thenReturn(null);
+  });
 
   group('FileDropService', () {
-    late FileDropService service;
-
-    setUp(() {
-      service = FileDropService.instance;
-    });
-
-    test('filesStream retorna um Stream', () {
-      expect(service.filesStream, isA<Stream<List<String>>>());
-    });
-
-    test('isMonitoring inicialmente é falso', () {
-      expect(service.isMonitoring, isFalse);
-    });
-
-    test('pushTestEvent envia eventos para o stream', () async {
-      final receivedPaths = <List<String>>[];
-      final subscription = service.filesStream.listen((paths) {
-        receivedPaths.add(paths);
+    test('start() invokes native method and listens to events', () async {
+      bool startCalled = false;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+        if (call.method == PlatformChannels.startMonitor) {
+          startCalled = true;
+          return null;
+        }
+        return null;
       });
 
-      final testPaths = ['path/to/file1.txt', 'path/to/file2.txt'];
-      service.pushTestEvent(testPaths);
+      await service.start();
+      expect(startCalled, isTrue);
+      expect(service.isMonitoring, isTrue);
 
-      await Future.delayed(Duration.zero);
-
-      expect(receivedPaths, contains(testPaths));
-
-      await subscription.cancel();
+      // Test event emission
+      final future = service.filesStream.first;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .handlePlatformMessage(PlatformChannels.fileDropEvents, 
+          const StandardMethodCodec().encodeSuccessEnvelope(['file1.txt']), (_) {});
+      
+      final files = await future;
+      expect(files, equals(['file1.txt']));
+      
+      await service.stop();
     });
 
-    test('setMethodCallHandler configura um handler', () {
-      Future<dynamic> handler(MethodCall call) async {
+    test('start() logs error on exception', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async => throw Exception('Start error'));
+
+      await service.start();
+      expect(service.isMonitoring, isFalse);
+      verify(() => mockAnalytics.error(any(), tag: any(named: 'tag'))).called(1);
+    });
+
+    test('stop() invokes native method', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async => null);
+      await service.start();
+
+      bool stopCalled = false;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+        if (call.method == PlatformChannels.stopMonitor) {
+          stopCalled = true;
+          return null;
+        }
         return null;
-      }
-
-      expect(() => service.setMethodCallHandler(handler), returnsNormally);
-      service.setMethodCallHandler(null);
-    });
-
-    test('start/stop/dispose works with mocked channels', () async {
-      const channel = MethodChannel('file_drop_channel');
-
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-            return null;
-          });
-
-      await service.start();
-      expect(service.isMonitoring, isTrue);
-
-      await service.start();
-      expect(service.isMonitoring, isTrue);
+      });
 
       await service.stop();
+      expect(stopCalled, isTrue);
       expect(service.isMonitoring, isFalse);
-
-      await service.stop();
-      expect(service.isMonitoring, isFalse);
-
-      await service.dispose();
-      expect(service.isMonitoring, isFalse);
-
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(channel, null);
     });
   });
 }

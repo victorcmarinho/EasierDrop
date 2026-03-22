@@ -40,16 +40,16 @@ class SettingsService with ChangeNotifier {
     super.dispose();
   }
 
-  bool get isLoaded => _loaded; // coverage:ignore-line
-  AppSettings get settings => _settings; // coverage:ignore-line
+  bool get isLoaded => _loaded;
+  AppSettings get settings => _settings;
 
-  int get maxFiles => _settings.maxFiles; // coverage:ignore-line
-  double? get windowX => _settings.windowX; // coverage:ignore-line
-  double? get windowY => _settings.windowY; // coverage:ignore-line
-  double? get windowW => _settings.windowW; // coverage:ignore-line
-  double? get windowH => _settings.windowH; // coverage:ignore-line
-  String? get localeCode => _settings.localeCode; // coverage:ignore-line
-  bool get telemetryEnabled => _settings.telemetryEnabled; // coverage:ignore-line
+  int get maxFiles => _settings.maxFiles;
+  double? get windowX => _settings.windowX;
+  double? get windowY => _settings.windowY;
+  double? get windowW => _settings.windowW;
+  double? get windowH => _settings.windowH;
+  String? get localeCode => _settings.localeCode;
+  bool get telemetryEnabled => _settings.telemetryEnabled;
 
   Future<void> load() async {
     if (_loaded) return;
@@ -83,9 +83,7 @@ class SettingsService with ChangeNotifier {
     });
 
     if (error != null) {
-      // coverage:ignore-start
       AnalyticsService.instance.warn('Falha ao carregar settings: $error');
-      // coverage:ignore-end
     }
     
     _loaded = true;
@@ -119,11 +117,9 @@ class SettingsService with ChangeNotifier {
     });
 
     if (error != null) {
-      // coverage:ignore-start
       AnalyticsService.instance.warn(
         'Falha ao iniciar monitoramento de settings: $error',
       );
-      // coverage:ignore-end
     }
   }
 
@@ -144,9 +140,7 @@ class SettingsService with ChangeNotifier {
     });
 
     if (error != null) {
-      // coverage:ignore-start
       AnalyticsService.instance.warn('Failed to reload settings: $error');
-      // coverage:ignore-end
     }
   }
 
@@ -192,37 +186,31 @@ class SettingsService with ChangeNotifier {
     });
 
     if (error != null) {
-      // coverage:ignore-start
       AnalyticsService.instance.error('Failed to change launch at login: $error');
-      // coverage:ignore-end
     }
   }
 
   Future<bool> checkLaunchAtLoginPermission() async {
-    final (hasPermission, error) = await safeCall(() => _launchAtLoginChannel.invokeMethod<bool>('checkPermission')); // coverage:ignore-line
+    final (hasPermission, error) = await safeCall(() => _launchAtLoginChannel.invokeMethod<bool>('checkPermission'));
     
     if (error != null) {
-      // coverage:ignore-start
       AnalyticsService.instance.warn(
         'Failed to check launch at login permission: $error',
       );
       return false;
-      // coverage:ignore-end
     }
     
     return hasPermission ?? false;
   }
 
   Future<bool> getLaunchAtLoginStatus() async {
-    final (isEnabled, error) = await safeCall(() => _launchAtLoginChannel.invokeMethod<bool>('isEnabled')); // coverage:ignore-line
+    final (isEnabled, error) = await safeCall(() => _launchAtLoginChannel.invokeMethod<bool>('isEnabled'));
 
     if (error != null) {
-      // coverage:ignore-start
       AnalyticsService.instance.warn(
         'Failed to get launch at login status: $error',
       );
       return false;
-      // coverage:ignore-end
     }
     
     return isEnabled ?? false;
@@ -255,9 +243,7 @@ class SettingsService with ChangeNotifier {
     });
 
     if (error != null) {
-      // coverage:ignore-start
       AnalyticsService.instance.warn('Falha ao salvar settings: $error');
-      // coverage:ignore-end
     }
   }
 

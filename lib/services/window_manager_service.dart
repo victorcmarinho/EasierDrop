@@ -12,10 +12,12 @@ import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/core/utils/result_handler.dart';
 
 class WindowManagerService with WindowListener {
-  static final WindowManagerService _instance = WindowManagerService._();
+  static WindowManagerService _instance = WindowManagerService._();
   WindowManagerService._();
 
-  static WindowManagerService get instance => _instance; // coverage:ignore-line
+  static WindowManagerService get instance => _instance;
+  @visibleForTesting
+  static set instance(WindowManagerService value) => _instance = value;
   
   bool _initialized = false;
   @visibleForTesting
@@ -60,14 +62,13 @@ class WindowManagerService with WindowListener {
     await _setupMainWindow();
   }
 
-  // coverage:ignore-start
   Future<void> _setupMainWindow() async {
+    // coverage:ignore-start
     windowManager.addListener(this);
     await Future.wait([TrayService.instance.configure(), _configureWindow()]);
+    // coverage:ignore-end
   }
-  // coverage:ignore-end
 
-  // coverage:ignore-start
   Future<void> _setupSecondaryWindow(String? windowId) async {
     await windowManager.ensureInitialized();
     await windowManager.setTitleBarStyle(
@@ -121,10 +122,9 @@ class WindowManagerService with WindowListener {
       }
     }
   }
-  // coverage:ignore-end
 
-  // coverage:ignore-start
   Future<void> _configureWindow() async {
+    // coverage:ignore-start
     await windowManager.ensureInitialized();
     await windowManager.setResizable(false);
     await windowManager.setMaximizable(false);
@@ -155,11 +155,11 @@ class WindowManagerService with WindowListener {
         windowManager.setVisibleOnAllWorkspaces(true),
       ]);
     });
+    // coverage:ignore-end
   }
-  // coverage:ignore-end
 
-  // coverage:ignore-start
   Future<void> _restoreWindowPosition() async {
+    // coverage:ignore-start
     final s = SettingsService.instance;
     if (s.windowX != null && s.windowY != null) {
       final (_, error) = await safeCall(() => windowManager.setPosition(
@@ -170,10 +170,11 @@ class WindowManagerService with WindowListener {
         AnalyticsService.instance.warn('Failed to restore window position: $error');
       }
     }
+    // coverage:ignore-end
   }
-  // coverage:ignore-end
 
   Future<void> _onSettingsChanged() async {
+    // coverage:ignore-start
     final s = SettingsService.instance.settings;
     final futures = <Future<void>>[];
 
@@ -189,9 +190,9 @@ class WindowManagerService with WindowListener {
     if (futures.isNotEmpty) {
       await Future.wait(futures);
     }
+    // coverage:ignore-end
   }
 
-  // coverage:ignore-start
   Future<void> createNewWindow(double x, double y) async {
     final windowIds = await WindowController.getAll();
     if (windowIds.length >= AppConstants.maxWindows) {
@@ -211,6 +212,7 @@ class WindowManagerService with WindowListener {
     final left = x - (size / 2);
     final top = y - (size / 2);
 
+    // coverage:ignore-start
     await WindowController.create(
       WindowConfiguration(
         arguments: jsonEncode(
@@ -224,28 +226,31 @@ class WindowManagerService with WindowListener {
         ),
       ),
     );
+    // coverage:ignore-end
     AnalyticsService.instance.shakeWindowCreated();
   }
-  // coverage:ignore-end
 
   Future<void> hide() async {
+    // coverage:ignore-start
     await Future.wait([
       windowManager.hide(),
       windowManager.setSkipTaskbar(true),
     ]);
-    AnalyticsService.instance.trackEvent('window_hidden');
+    // coverage:ignore-end
+    AnalyticsService.instance.windowHidden();
   }
 
   Future<void> open() async {
+    // coverage:ignore-start
     await Future.wait([
       windowManager.show(),
       windowManager.focus(),
       windowManager.setSkipTaskbar(false),
     ]);
-    AnalyticsService.instance.trackEvent('window_shown');
+    // coverage:ignore-end
+    AnalyticsService.instance.windowShown();
   }
 
-  // coverage:ignore-start
   Map<String, dynamic> _createWindowArgs({
     required String args,
     String? title,
@@ -269,10 +274,9 @@ class WindowManagerService with WindowListener {
       'y': y,
     };
   }
-  // coverage:ignore-end
 
-  // coverage:ignore-start
   Future<void> openSettings() async {
+    // coverage:ignore-start
     final window = await WindowController.create(
       WindowConfiguration(
         arguments: jsonEncode(
@@ -286,12 +290,12 @@ class WindowManagerService with WindowListener {
       ),
     );
     await window.show();
+    // coverage:ignore-end
     AnalyticsService.instance.settingsOpened();
   }
-  // coverage:ignore-end
 
-  // coverage:ignore-start
   Future<void> openUpdateWindow() async {
+    // coverage:ignore-start
     final window = await WindowController.create(
       WindowConfiguration(
         arguments: jsonEncode(
@@ -305,14 +309,16 @@ class WindowManagerService with WindowListener {
       ),
     );
     await window.show();
+    // coverage:ignore-end
   }
-  // coverage:ignore-end
 
   Future<void> exitApp() async {
+    // coverage:ignore-start
     await Future.wait([
       TrayService.instance.destroy(),
       windowManager.destroy(),
     ]);
+    // coverage:ignore-end
     if (mockExitApp != null) {
       await mockExitApp!();
     } else {

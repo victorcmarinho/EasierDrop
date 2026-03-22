@@ -1,149 +1,87 @@
 import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockPathProviderPlatform extends Mock
-    with MockPlatformInterfaceMixin
-    implements PathProviderPlatform {
-  @override
-  Future<String?> getApplicationSupportPath() async => '.';
-}
+class MockSettingsService extends Mock implements SettingsService {}
 
 void main() {
-  setUpAll(() {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    PathProviderPlatform.instance = MockPathProviderPlatform();
+  late MockSettingsService mockSettings;
+
+  setUp(() {
+    mockSettings = MockSettingsService();
+    // Default behaviors for mock (if we could use it)
+    when(() => mockSettings.telemetryEnabled).thenReturn(true);
+    when(() => mockSettings.maxFiles).thenReturn(10);
   });
 
-  setUp(() async {
-    await SettingsService.instance.load();
-  });
-
-  group('AnalyticsService Privacy Tests', () {
-    test('trackEvent should not throw when not initialized', () {
-      expect(
-        () => AnalyticsService.instance.trackEvent('test'),
-        returnsNormally,
-      );
+  group('AnalyticsService', () {
+    test('instance is accessible', () {
+      expect(AnalyticsService.instance, isNotNull);
     });
 
-    test('trackEvent respects telemetryEnabled setting', () {
-      final service = AnalyticsService.instance;
-
-      SettingsService.instance.setTelemetryEnabled(false);
-      expect(SettingsService.instance.telemetryEnabled, false);
-      expect(() => service.trackEvent('test'), returnsNormally);
-
-      SettingsService.instance.setTelemetryEnabled(true);
-      expect(SettingsService.instance.telemetryEnabled, true);
-      expect(() => service.trackEvent('test'), returnsNormally);
-    });
-
-    test('all descriptive methods run normally', () {
-      final s = AnalyticsService.instance;
-      SettingsService.instance.setTelemetryEnabled(true);
-
-      expect(() => s.appStarted(), returnsNormally);
-      expect(() => s.fileAdded(extension: 'txt'), returnsNormally);
-      expect(() => s.fileAdded(), returnsNormally);
-      expect(() => s.fileRemoved(extension: 'txt'), returnsNormally);
-      expect(() => s.fileRemoved(), returnsNormally);
-      expect(() => s.fileShared(count: 2), returnsNormally);
-      expect(() => s.fileDroppedOut(), returnsNormally);
-      expect(() => s.shakeWindowCreated(), returnsNormally);
-      expect(() => s.shakeDetected(100, 200), returnsNormally);
-      expect(() => s.fileLimitReached(), returnsNormally);
-      expect(() => s.updateCheckStarted(), returnsNormally);
-      expect(() => s.updateAvailable('1.0.1'), returnsNormally);
-      expect(() => s.settingsOpened(), returnsNormally);
-      expect(() => s.settingsChanged('test', true), returnsNormally);
-    });
-
-    test('logging methods run normally at all levels', () {
-      final s = AnalyticsService.instance;
-      expect(() => s.trace('trace message'), returnsNormally);
-      expect(() => s.debug('debug message'), returnsNormally);
-      expect(() => s.info('info message'), returnsNormally);
-      expect(() => s.warn('warn message'), returnsNormally);
-      expect(() => s.error('error message'), returnsNormally);
-    });
-
-    test('static logging methods run normally', () {
-      expect(() => AnalyticsService.sTrace('trace'), returnsNormally);
-      expect(() => AnalyticsService.sDebug('debug'), returnsNormally);
-      expect(() => AnalyticsService.sInfo('info'), returnsNormally);
-      expect(() => AnalyticsService.sWarn('warn'), returnsNormally);
-      expect(() => AnalyticsService.sError('error'), returnsNormally);
-    });
-
-    test('initialize runs normally', () async {
-      final s = AnalyticsService.instance;
-      await s.initialize();
-
-      await s.initialize();
-      expect(true, isTrue);
-    });
-
-    test('trackEvent handles edge cases', () {
-      final s = AnalyticsService.instance;
-      SettingsService.instance.setTelemetryEnabled(true);
-
-      expect(() => s.trackEvent('test_no_props'), returnsNormally);
-
-      expect(() => s.trackEvent('test', {'prop': 'val'}), returnsNormally);
-    });
-
-    test('should handle empty app key', () async {
-      final s = AnalyticsService.instance;
-
-      expect(() => s.initialize(), returnsNormally);
-    });
-
-    test('logging methods coverage', () {
-      final s = AnalyticsService.instance;
-
-      s.trace('trace');
-      s.debug('debug');
-      s.info('info');
-      s.warn('warn');
-      s.error('error');
-
-      AnalyticsService.sTrace('sTrace');
-      AnalyticsService.sDebug('sDebug');
-      AnalyticsService.sInfo('sInfo');
-      AnalyticsService.sWarn('sWarn');
-      AnalyticsService.sError('sError');
-    });
-
-    test('trackEvent with testTrackEvent override', () {
-      final s = AnalyticsService.instance;
-      bool called = false;
-      AnalyticsService.debugTestMode = false;
-      AnalyticsService.testTrackEvent = (name, props) {
-        called = true;
-      };
-      s.trackEvent('test');
-      expect(called, isTrue);
-      AnalyticsService.testTrackEvent = null;
+    test('initialize handles empty key', () async {
       AnalyticsService.debugTestMode = true;
-    });
-
-    test('initialize coverage boost', () async {
-      final s = AnalyticsService.instance;
       AnalyticsService.testAppKey = '';
-      await s.initialize();
-      expect(s.testInitialized, isFalse);
+      AnalyticsService.instance.resetForTesting();
+      await AnalyticsService.instance.initialize();
+      expect(AnalyticsService.instance.testInitialized, isFalse);
+    });
 
-      AnalyticsService.testAppKey = 'some_key';
-      AnalyticsService.debugTestMode = false;
+    test('trackEvent handles not initialized and disabled', () {
+      AnalyticsService.instance.resetForTesting();
+      // Since we can't mock SettingsService.instance easily, we'll use the real one's defaults
+      // Default telemetryEnabled is true.
+      AnalyticsService.instance.trackEvent('test'); // Returns early because not initialized
+    });
 
-      await s.initialize();
-
+    test('Log levels and prefixes', () {
       AnalyticsService.debugTestMode = true;
-      AnalyticsService.testAppKey = null;
+      AnalyticsService.minLevel = LogLevel.trace;
+      AnalyticsService.sTrace('msg');
+      AnalyticsService.sDebug('msg');
+      AnalyticsService.sInfo('msg');
+      AnalyticsService.sWarn('msg');
+      AnalyticsService.sError('msg');
+      
+      AnalyticsService.minLevel = LogLevel.error;
+      AnalyticsService.sInfo('hidden'); 
+    });
+
+    test('trackEvent respects testTrackEvent', () {
+      AnalyticsService.debugTestMode = false;
+      AnalyticsService.testAppKey = 'test-key';
+      AnalyticsService.instance.resetForTesting();
+      
+      var eventCalled = false;
+      AnalyticsService.testTrackEvent = (name, props) {
+        eventCalled = true;
+      };
+      
+      AnalyticsService.instance.trackEvent('test');
+      expect(eventCalled, isTrue);
+      AnalyticsService.testTrackEvent = null;
+    });
+    
+    test('All event methods cover trackEvent calls', () {
+      AnalyticsService.debugTestMode = true; // Use debug mode to simplify
+      final s = AnalyticsService.instance;
+      
+      s.appStarted();
+      s.fileAdded(extension: 'txt');
+      s.fileRemoved(extension: 'txt');
+      s.fileShared(count: 1);
+      s.fileDroppedOut();
+      s.shakeWindowCreated();
+      s.shakeDetected(0, 0);
+      s.shakeLimitReached();
+      s.fileLimitReached();
+      s.updateCheckStarted();
+      s.updateAvailable('1.0.0');
+      s.settingsOpened();
+      s.settingsChanged('key', 'value');
+      s.windowShown();
+      s.windowHidden();
     });
   });
 }

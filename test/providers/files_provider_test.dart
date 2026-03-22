@@ -59,8 +59,12 @@ void main() {
   group('FilesProvider Completo', () {
     test('Getters de estado básico e limites do singleton', () {
       expect(provider.isEmpty, isTrue);
-      // hasFiles está no ignore
+      expect(provider.hasFiles, isFalse);
       expect(provider.fileCount, 0);
+      
+      provider.addFileForTest(const FileReference(pathname: '/f.txt'));
+      expect(provider.hasFiles, isTrue);
+      expect(provider.isEmpty, isFalse);
       
       // Testa _maxFiles pegando do SettingsService (cobertura da linha 40)
       final p2 = FilesProvider(repository: mockRepo, enableMonitoring: false);
@@ -93,6 +97,7 @@ void main() {
     });
 
     test('recentlyAtLimit e lastLimitHit', () async {
+      expect(provider.recentlyAtLimit, isFalse);
       provider = FilesProvider(maxFiles: 1, repository: mockRepo, enableMonitoring: false);
       await provider.addFiles([const FileReference(pathname: '/1.txt'), const FileReference(pathname: '/2.txt')]);
       expect(provider.recentlyAtLimit, isTrue);
