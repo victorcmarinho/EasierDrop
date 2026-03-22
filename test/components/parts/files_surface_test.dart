@@ -7,6 +7,10 @@ import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:flutter/gestures.dart';
+import 'package:easier_drop/helpers/app_constants.dart';
+import 'package:easier_drop/model/file_reference.dart';
+import 'package:easier_drop/components/files_stack.dart';
+import 'package:easier_drop/components/parts/file_name_badge.dart';
 
 class MockFilesProvider extends Mock implements FilesProvider {}
 
@@ -99,6 +103,31 @@ void main() {
       await tester.drag(find.byType(FilesSurface), const Offset(0, 50));
       await tester.pumpAndSettle();
       expect(dragCalled, isTrue);
+    });
+
+    testWidgets('Garante renderização de FilesStack e FileNameBadge com hasFiles == true e teste de tap Action', (tester) async {
+      when(() => mockFiles.hasFiles).thenReturn(true);
+      when(() => mockFiles.fileCount).thenReturn(1);
+      final ref = const FileReference(pathname: '/mock/path/file.png');
+      when(() => mockFiles.files).thenReturn([ref]);
+      when(() => mockFiles.shared(position: any(named: 'position')))
+          .thenAnswer((_) async => Object());
+
+      await tester.pumpWidget(
+        createWidget(hasFiles: true),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FilesStack), findsOneWidget);
+      expect(find.byType(FileNameBadge), findsOneWidget);
+
+      final shareBtn = find.byKey(SemanticKeys.shareButton);
+      expect(shareBtn, findsOneWidget);
+
+      await tester.tap(shareBtn);
+      await tester.pumpAndSettle();
+
+      verify(() => mockFiles.shared(position: any(named: 'position'))).called(1);
     });
   });
 }

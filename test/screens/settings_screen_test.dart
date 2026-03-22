@@ -2,7 +2,6 @@ import 'package:easier_drop/screens/settings_screen.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
@@ -103,5 +102,92 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Inativo'), findsOneWidget);
+  });
+
+  testWidgets('Test lifecycle change manually triggers didChangeAppLifecycleState', (tester) async {
+    await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpAndSettle();
+
+    final state = tester.state(find.byType(SettingsScreen));
+    // dynamic call since state is State<SettingsScreen> with WidgetsBindingObserver
+    (state as dynamic).didChangeAppLifecycleState(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('Test language selection calls settings.setLocale', (tester) async {
+    await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpAndSettle();
+
+    final segmentedControl = find.byType(CupertinoSlidingSegmentedControl<String>);
+    expect(segmentedControl, findsOneWidget);
+
+    // Tap on Spanish option. Wait, does tests render Spanish? Yes supportedLocales has pt.
+    await tester.tap(find.text('Espanhol'));
+    await tester.pumpAndSettle();
+
+    expect(SettingsService.instance.localeCode, 'es');
+  });
+
+  testWidgets('Test language selection fallback covers pt_BR', (tester) async {
+    SettingsService.instance.setLocale(null);
+    await tester.pumpWidget(
+      MacosApp(
+        theme: MacosThemeData.light(),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('pt', '')],
+        locale: const Locale('pt', ''),
+        home: const SettingsScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final segmentedControl = find.byType(CupertinoSlidingSegmentedControl<String>);
+    expect(segmentedControl, findsOneWidget);
+  });
+
+  testWidgets('Test language selection fallback covers es', (tester) async {
+    SettingsService.instance.setLocale(null);
+    await tester.pumpWidget(
+      MacosApp(
+        theme: MacosThemeData.light(),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('es', '')],
+        locale: const Locale('es', ''),
+        home: const SettingsScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final segmentedControl = find.byType(CupertinoSlidingSegmentedControl<String>);
+    expect(segmentedControl, findsOneWidget);
+  });
+
+  testWidgets('Test language selection fallback covers en', (tester) async {
+    SettingsService.instance.setLocale(null);
+    await tester.pumpWidget(
+      MacosApp(
+        theme: MacosThemeData.light(),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en', '')],
+        locale: const Locale('en', ''),
+        home: const SettingsScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final segmentedControl = find.byType(CupertinoSlidingSegmentedControl<String>);
+    expect(segmentedControl, findsOneWidget);
   });
 }

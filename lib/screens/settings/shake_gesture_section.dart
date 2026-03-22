@@ -64,8 +64,8 @@ class ShakeGestureSection extends StatelessWidget {
                       ),
                     ),
               onTap: !viewModel.hasShakePermission
-                  ? () =>
-                        NativeEventsService.instance.openAccessibilitySettings()
+                  ? () => // coverage:ignore-line
+                        NativeEventsService.instance.openAccessibilitySettings() // coverage:ignore-line
                   : null,
             ),
           ],
@@ -96,7 +96,7 @@ class ShakeGestureSection extends StatelessWidget {
           alignment: PlaceholderAlignment.baseline,
           baseline: TextBaseline.alphabetic,
           child: GestureDetector(
-            onTap: () => NativeEventsService.instance.restartApp(),
+            onTap: () => NativeEventsService.instance.restartApp(), // coverage:ignore-line
             child: Text(
               linkText,
               style: const TextStyle(

@@ -119,6 +119,15 @@ void main() {
       expect(service.maxFiles, 150);
     });
 
+    test('recarregamento automático error logs exception', () async {
+      await service.load();
+      await testFile.writeAsString('invalid json to force reloadSettings error');
+
+      // Wait for debounce and watch reload
+      await Future.delayed(const Duration(milliseconds: 300));
+      expect(service.isLoaded, isTrue); // Should not crash
+    });
+
     test('dispose e test methods', () async {
       final s = SettingsService.forTesting();
       expect(s.isLoaded, false);

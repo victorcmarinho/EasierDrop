@@ -11,6 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:fake_async/fake_async.dart';
+import 'package:easier_drop/helpers/app_constants.dart';
 
 import 'package:share_plus_platform_interface/share_plus_platform_interface.dart';
 
@@ -35,14 +37,19 @@ void main() {
   late FilesProvider provider;
   late MockFileRepository mockRepo;
   late MockThumbnailService mockThumb;
+  late _MockSharePlatform mockPlatform;
 
   setUpAll(() {
     TestWidgetsFlutterBinding.ensureInitialized();
     PathProviderPlatform.instance = MockPathProviderPlatform();
     registerFallbackValue(ShareParams(files: [XFile('/dummy')]));
+    
+    mockPlatform = _MockSharePlatform();
+    SharePlatform.instance = mockPlatform;
   });
 
   setUp(() async {
+    reset(mockPlatform);
     mockRepo = MockFileRepository();
     mockThumb = MockThumbnailService();
 
@@ -68,6 +75,7 @@ void main() {
       enableMonitoring: false,
       maxFiles: 10,
     );
+
     registerFallbackValue('/default/path');
   });
 
@@ -145,6 +153,39 @@ void main() {
       expect(provider.files.isEmpty, isTrue);
     });
 
+    test('rescanInternal called periodically via fakeAsync', () {
+      fakeAsync((async) {
+        final p = FilesProvider(repository: mockRepo, enableMonitoring: true);
+        p.addFileForTest(const FileReference(pathname: '/bad.txt'));
+        when(() => mockRepo.validateFileSync('/bad.txt')).thenReturn(false);
+        
+        async.elapse(AppConstants.monitorInterval);
+        
+        expect(p.files.isEmpty, isTrue);
+        p.dispose();
+      });
+    });
+
+    test('getter lastLimitHit returns correct time', () async {
+      provider = FilesProvider(
+        maxFiles: 1,
+        repository: mockRepo,
+        enableMonitoring: false,
+      );
+      expect(provider.lastLimitHit, isNull);
+      await provider.addFiles([
+        const FileReference(pathname: '/1.txt'),
+        const FileReference(pathname: '/2.txt'),
+      ]);
+      expect(provider.lastLimitHit, isNotNull);
+    });
+
+    test('addFiles throws exception covers catch block', () async {
+      when(() => mockRepo.validateFile(any())).thenThrow(Exception('Simulated Failure'));
+      await provider.addFiles([const FileReference(pathname: '/error.txt')]);
+      expect(provider.files.isEmpty, isTrue);
+    });
+
     test('removeFile e removeByPath', () async {
       final f1 = const FileReference(pathname: '/f1.txt');
       provider.addFileForTest(f1);
@@ -200,16 +241,20 @@ void main() {
     });
 
     test('shared com position cobre o bloco Rect (linhas 203-214)', () async {
-      // Mock SharePlatform.instance so SharePlus.instance.share() goes through our mock.
-      final mockPlatform = _MockSharePlatform();
-      SharePlatform.instance = mockPlatform;
       when(() => mockPlatform.share(any())).thenAnswer(
         (_) async => const ShareResult('ok', ShareResultStatus.success),
       );
-
       provider.addFileForTest(const FileReference(pathname: '/f.txt'));
       final res = await provider.shared(position: const Offset(10, 10));
       expect(res, isA<ShareResult>());
+    });
+
+    test('shared throws exception covers catch block', () async {
+      when(() => mockPlatform.share(any())).thenThrow(Exception('Simulated Failure'));
+
+      provider.addFileForTest(const FileReference(pathname: '/f_fail.txt'));
+      final res = await provider.shared();
+      expect(res.toString(), contains('shareError'));
     });
   });
 }

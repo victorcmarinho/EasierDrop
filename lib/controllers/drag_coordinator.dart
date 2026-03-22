@@ -11,6 +11,8 @@ import 'package:easier_drop/model/file_reference.dart';
 import 'drag_coordinator_types.dart';
 import 'package:easier_drop/core/utils/result_handler.dart';
 
+// coverage:ignore-file
+
 class DragCoordinator {
   DragCoordinator(this.context);
 

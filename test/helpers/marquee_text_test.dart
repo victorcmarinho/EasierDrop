@@ -156,5 +156,39 @@ void main() {
       );
       await tester.pump();
     });
+
+    testWidgets('didUpdateWidget with active scrollController triggers jumpTo(0)', (tester) async {
+      // Start with long text to force ListView (hasClients = true)
+      await tester.pumpWidget(
+        wrap(
+          MarqueeText(
+            text: TextSpan(text: 'A' * 200),
+            maxWidth: 1,
+            pauseDuration: Duration.zero,
+          ),
+        ),
+      );
+      await tester.pump(); // initState
+      await tester.pump(); // _updateLayout runs
+      await tester.pump(); // ListView built
+
+      expect(find.byType(ListView), findsOneWidget);
+
+      // Now change a property so didUpdateWidget runs and hasClients is true
+      await tester.pumpWidget(
+        wrap(
+          MarqueeText(
+            text: TextSpan(text: 'B' * 200), // changed
+            maxWidth: 1,
+            pauseDuration: Duration.zero,
+          ),
+        ),
+      );
+      await tester.pump(); // Rebuild with new widget
+
+      // In didUpdateWidget, scrollController.jumpTo(0) is executed. 
+      // After pump, verify it's still scrolling
+      expect(find.byType(ListView), findsOneWidget);
+    });
   });
 }

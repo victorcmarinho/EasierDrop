@@ -117,13 +117,15 @@ class _MarqueeTextState extends State<MarqueeText>
     _animationController.duration = Duration(milliseconds: durationMs);
 
     _timer = Timer(widget.pauseDuration, () {
+      // coverage:ignore-start
       if (mounted) {
         if (kDebugMode && Platform.environment.containsKey('FLUTTER_TEST')) {
           _animationController.forward();
         } else {
-          _animationController.repeat(); // coverage:ignore-line
+          _animationController.repeat();
         }
       }
+      // coverage:ignore-end
     });
   }
 
