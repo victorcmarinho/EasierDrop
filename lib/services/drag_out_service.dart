@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'constants.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 
 class DragOutService {
   DragOutService._();
@@ -15,13 +16,11 @@ class DragOutService {
     if (paths.isEmpty) return;
     if (_dragInProgress) return;
     _dragInProgress = true;
-    try {
-      await _channel.invokeMethod(PlatformChannels.beginDrag, {'items': paths});
-    } finally {
-      Future.delayed(const Duration(milliseconds: 100), () {
-        _dragInProgress = false;
-      });
-    }
+    await safeCall(() => _channel.invokeMethod(PlatformChannels.beginDrag, {'items': paths}));
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _dragInProgress = false;
+    });
   }
 
   void setHandler(Future<dynamic> Function(MethodCall call)? handler) {

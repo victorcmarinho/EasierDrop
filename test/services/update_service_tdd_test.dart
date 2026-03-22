@@ -66,8 +66,9 @@ void main() {
       );
       final service = UpdateService(client: client);
 
-      final result = await service.checkForUpdates();
+      final (result, error) = await service.checkForUpdates();
       expect(result, equals('https://github.com/update'));
+      expect(error, isNull);
     });
 
     test('should return null when version is not better', () async {
@@ -81,8 +82,9 @@ void main() {
       );
       final service = UpdateService(client: client);
 
-      final result = await service.checkForUpdates();
+      final (result, error) = await service.checkForUpdates();
       expect(result, isNull);
+      expect(error, isNull);
     });
 
     test('should return null on non-200 status', () async {
@@ -91,16 +93,18 @@ void main() {
       );
       final service = UpdateService(client: client);
 
-      final result = await service.checkForUpdates();
+      final (result, error) = await service.checkForUpdates();
       expect(result, isNull);
+      expect(error, isNull);
     });
 
     test('should return null on exception', () async {
       final client = MockUpdateClient(exception: Exception('Network error'));
       final service = UpdateService(client: client);
 
-      final result = await service.checkForUpdates();
+      final (result, error) = await service.checkForUpdates();
       expect(result, isNull);
+      expect(error, isNotNull);
     });
 
     test('should handle missing keys in json', () async {
@@ -110,8 +114,9 @@ void main() {
       );
       final service = UpdateService(client: client);
 
-      final result = await service.checkForUpdates();
+      final (result, error) = await service.checkForUpdates();
       expect(result, isNull);
+      expect(error, isNull);
     });
   });
 

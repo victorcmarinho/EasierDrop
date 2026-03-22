@@ -2,6 +2,7 @@ import 'dart:developer' as dev;
 import 'package:aptabase_flutter/aptabase_flutter.dart';
 import 'package:easier_drop/config/env_config.dart';
 import 'package:easier_drop/services/settings_service.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 import 'package:flutter/foundation.dart';
 
 enum LogLevel { trace, debug, info, warn, error }
@@ -30,14 +31,15 @@ class AnalyticsService {
       return;
     }
 
-    try {
+    final (_, error) = await safeCall(() async {
       if (!debugTestMode) {
         await Aptabase.init(key);
       }
       _initialized = true;
       info('Aptabase inicializado com sucesso.');
-    } catch (e) {
-      warn('Falha ao inicializar Aptabase: $e');
+    });
+    if (error != null) {
+      warn('Falha ao inicializar Aptabase: $error');
     }
   }
 
@@ -56,10 +58,9 @@ class AnalyticsService {
 
     if (!_initialized) return;
 
-    try {
-      Aptabase.instance.trackEvent(name, props);
-    } catch (e) {
-      warn('Falha ao enviar evento $name: $e');
+    final (_, error) = safeCallSync(() => Aptabase.instance.trackEvent(name, props));
+    if (error != null) {
+      warn('Falha ao enviar evento $name: $error');
     }
   }
 

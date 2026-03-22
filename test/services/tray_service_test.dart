@@ -248,7 +248,7 @@ void main() {
       final mockUpdateService = MockUpdateService();
       when(
         () => mockUpdateService.checkForUpdates(),
-      ).thenAnswer((_) async => 'https://github.com/update');
+      ).thenAnswer((_) async => ('https://github.com/update', null));
 
       final originalInstance = UpdateService.instance;
       UpdateService.instance = mockUpdateService;

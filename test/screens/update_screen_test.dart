@@ -71,7 +71,7 @@ void main() {
     testWidgets('exibe indicador de carregamento inicialmente', (
       WidgetTester tester,
     ) async {
-      final completer = Completer<String?>();
+      final completer = Completer<(String?, Object?)>();
       when(
         () => mockUpdateService.checkForUpdates(),
       ).thenAnswer((_) => completer.future);
@@ -81,14 +81,14 @@ void main() {
 
       expect(find.byType(ProgressCircle), findsOneWidget);
 
-      completer.complete(null);
+      completer.complete((null, null));
       await tester.pumpAndSettle();
     });
 
     testWidgets('exibe ícone de sucesso quando não houver atualizações disponíveis', (
       WidgetTester tester,
     ) async {
-      final completer = Completer<String?>();
+      final completer = Completer<(String?, Object?)>();
       when(
         () => mockUpdateService.checkForUpdates(),
       ).thenAnswer((_) => completer.future);
@@ -96,7 +96,7 @@ void main() {
       await pumpUpdateScreen(tester);
       await tester.pump();
 
-      completer.complete(null);
+      completer.complete((null, null));
       await tester.pumpAndSettle();
 
       expect(find.text('OK'), findsOneWidget);
@@ -106,7 +106,7 @@ void main() {
       WidgetTester tester,
     ) async {
       const updateUrl = 'https://example.com/update';
-      final completer = Completer<String?>();
+      final completer = Completer<(String?, Object?)>();
       when(
         () => mockUpdateService.checkForUpdates(),
       ).thenAnswer((_) => completer.future);
@@ -114,7 +114,7 @@ void main() {
       await pumpUpdateScreen(tester);
       await tester.pump();
 
-      completer.complete(updateUrl);
+      completer.complete((updateUrl, null));
       await tester.pumpAndSettle();
 
       expect(find.text('Baixar'), findsOneWidget);
@@ -122,7 +122,7 @@ void main() {
     });
 
     testWidgets('exibe mensagem de erro na falha', (WidgetTester tester) async {
-      final completer = Completer<String?>();
+      final completer = Completer<(String?, Object?)>();
       when(
         () => mockUpdateService.checkForUpdates(),
       ).thenAnswer((_) => completer.future);
@@ -130,7 +130,7 @@ void main() {
       await pumpUpdateScreen(tester);
       await tester.pump();
 
-      completer.completeError('Erro de Rede');
+      completer.complete((null, 'Erro de Rede'));
       await tester.pumpAndSettle();
 
       expect(find.text('Erro de Rede'), findsOneWidget);
@@ -141,7 +141,7 @@ void main() {
       WidgetTester tester,
     ) async {
       const updateUrl = 'https://example.com/update';
-      final completer = Completer<String?>();
+      final completer = Completer<(String?, Object?)>();
 
       when(
         () => mockUpdateService.checkForUpdates(),
@@ -153,7 +153,7 @@ void main() {
       await pumpUpdateScreen(tester);
       await tester.pump();
 
-      completer.complete(updateUrl);
+      completer.complete((updateUrl, null));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Baixar'));

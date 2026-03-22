@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:easier_drop/services/analytics_service.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 
 import 'package:easier_drop/model/app_settings.dart';
 
@@ -53,7 +54,7 @@ class SettingsService with ChangeNotifier {
   Future<void> load() async {
     if (_loaded) return;
 
-    try {
+    final (_, error) = await safeCall(() async {
       final file = await _getSettingsFile();
       if (await file.exists()) {
         final content = await file.readAsString();
@@ -63,14 +64,14 @@ class SettingsService with ChangeNotifier {
         }
       } else {
         String defaultLocale = 'en';
-        try {
-          final sysLocale = testLocaleName ?? Platform.localeName.toLowerCase();
-          if (sysLocale.startsWith('pt')) {
-            defaultLocale = 'pt_BR';
-          } else if (sysLocale.startsWith('es')) {
-            defaultLocale = 'es';
-          }
-        } catch (_) {}
+        final (sysLocaleResult, _) = safeCallSync(() => testLocaleName ?? Platform.localeName.toLowerCase());
+        final sysLocale = sysLocaleResult ?? '';
+        
+        if (sysLocale.startsWith('pt')) {
+          defaultLocale = 'pt_BR';
+        } else if (sysLocale.startsWith('es')) {
+          defaultLocale = 'es';
+        }
 
         _settings = _settings.copyWith(
           isAlwaysOnTop: true,
@@ -79,15 +80,17 @@ class SettingsService with ChangeNotifier {
 
         await persist();
       }
-    } catch (e) {
+    });
+
+    if (error != null) {
       // coverage:ignore-start
-      AnalyticsService.instance.warn('Falha ao carregar settings: $e');
+      AnalyticsService.instance.warn('Falha ao carregar settings: $error');
       // coverage:ignore-end
-    } finally {
-      _loaded = true;
-      _startWatching();
-      notifyListeners();
     }
+    
+    _loaded = true;
+    _startWatching();
+    notifyListeners();
   }
 
   @visibleForTesting
@@ -103,7 +106,7 @@ class SettingsService with ChangeNotifier {
   StreamSubscription<FileSystemEvent>? _subscription;
 
   Future<void> _startWatching() async {
-    try {
+    final (_, error) = await safeCall(() async {
       _subscription?.cancel();
       final file = await _getSettingsFile();
       _subscription = file.parent.watch(events: FileSystemEvent.modify).listen((
@@ -113,17 +116,19 @@ class SettingsService with ChangeNotifier {
           await _reloadSettings();
         }
       });
-    } catch (e) {
+    });
+
+    if (error != null) {
       // coverage:ignore-start
       AnalyticsService.instance.warn(
-        'Falha ao iniciar monitoramento de settings: $e',
+        'Falha ao iniciar monitoramento de settings: $error',
       );
       // coverage:ignore-end
     }
   }
 
   Future<void> _reloadSettings() async {
-    try {
+    final (_, error) = await safeCall(() async {
       final file = await _getSettingsFile();
       if (await file.exists()) {
         final content = await file.readAsString();
@@ -136,9 +141,11 @@ class SettingsService with ChangeNotifier {
           }
         }
       }
-    } catch (e) {
+    });
+
+    if (error != null) {
       // coverage:ignore-start
-      AnalyticsService.instance.warn('Failed to reload settings: $e');
+      AnalyticsService.instance.warn('Failed to reload settings: $error');
       // coverage:ignore-end
     }
   }
@@ -176,49 +183,49 @@ class SettingsService with ChangeNotifier {
   Future<void> setLaunchAtLogin(bool enabled) async {
     if (_settings.launchAtLogin == enabled) return;
 
-    try {
+    final (_, error) = await safeCall(() async {
       await _launchAtLoginChannel.invokeMethod('setEnabled', {
         'enabled': enabled,
       });
       _updateSettings(_settings.copyWith(launchAtLogin: enabled));
       AnalyticsService.instance.settingsChanged('launchAtLogin', enabled);
-    } catch (e) {
+    });
+
+    if (error != null) {
       // coverage:ignore-start
-      AnalyticsService.instance.error('Failed to change launch at login: $e');
+      AnalyticsService.instance.error('Failed to change launch at login: $error');
       // coverage:ignore-end
     }
   }
 
   Future<bool> checkLaunchAtLoginPermission() async {
-    try {
-      final hasPermission = await _launchAtLoginChannel.invokeMethod<bool>( // coverage:ignore-line
-        'checkPermission',
-      );
-      return hasPermission ?? false;
-    } catch (e) {
+    final (hasPermission, error) = await safeCall(() => _launchAtLoginChannel.invokeMethod<bool>('checkPermission')); // coverage:ignore-line
+    
+    if (error != null) {
       // coverage:ignore-start
       AnalyticsService.instance.warn(
-        'Failed to check launch at login permission: $e',
+        'Failed to check launch at login permission: $error',
       );
       return false;
       // coverage:ignore-end
     }
+    
+    return hasPermission ?? false;
   }
 
   Future<bool> getLaunchAtLoginStatus() async {
-    try {
-      final isEnabled = await _launchAtLoginChannel.invokeMethod<bool>( // coverage:ignore-line
-        'isEnabled',
-      );
-      return isEnabled ?? false;
-    } catch (e) {
+    final (isEnabled, error) = await safeCall(() => _launchAtLoginChannel.invokeMethod<bool>('isEnabled')); // coverage:ignore-line
+
+    if (error != null) {
       // coverage:ignore-start
       AnalyticsService.instance.warn(
-        'Failed to get launch at login status: $e',
+        'Failed to get launch at login status: $error',
       );
       return false;
       // coverage:ignore-end
     }
+    
+    return isEnabled ?? false;
   }
 
   void setWindowOpacity(double opacity) {
@@ -239,15 +246,17 @@ class SettingsService with ChangeNotifier {
   }
 
   Future<void> persist() async {
-    try {
+    final (_, error) = await safeCall(() async {
       final file = await _getSettingsFile();
       final jsonContent = const JsonEncoder.withIndent(
         '  ',
       ).convert(_settings.toMap(_currentSchemaVersion));
       await file.writeAsString(jsonContent);
-    } catch (e) {
+    });
+
+    if (error != null) {
       // coverage:ignore-start
-      AnalyticsService.instance.warn('Falha ao salvar settings: $e');
+      AnalyticsService.instance.warn('Falha ao salvar settings: $error');
       // coverage:ignore-end
     }
   }

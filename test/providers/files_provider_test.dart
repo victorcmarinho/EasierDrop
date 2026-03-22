@@ -35,7 +35,7 @@ void main() {
     mockRepo = MockFileRepository();
     mockThumb = MockThumbnailService();
     
-    when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
+    when(() => mockRepo.validateFile(any())).thenAnswer((_) async => (true, null));
     when(() => mockRepo.validateFileSync(any())).thenReturn(true);
     when(() => mockRepo.getIcon(any())).thenAnswer((_) async => null);
     when(() => mockRepo.getPreview(any())).thenAnswer((_) async => null);
@@ -80,7 +80,7 @@ void main() {
     });
 
     test('addFiles lida com erro no repositório', () async {
-      when(() => mockRepo.validateFile(any())).thenThrow(Exception('disk error'));
+      when(() => mockRepo.validateFile(any())).thenAnswer((_) async => (null, Exception('disk error')));
       await provider.addFiles([const FileReference(pathname: '/error.txt')]);
       expect(provider.files.isEmpty, isTrue);
     });

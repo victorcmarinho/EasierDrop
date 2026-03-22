@@ -26,12 +26,14 @@ void main() {
 
   group('FileRepository Tests', () {
     test('validateFile returns true for existing file', () async {
-      final isValid = await repository.validateFile(tempFile.path);
+      final (isValid, error) = await repository.validateFile(tempFile.path);
+      expect(error, isNull);
       expect(isValid, isTrue);
     });
 
     test('validateFile returns false for non-existing file', () async {
-      final isValid = await repository.validateFile('non_existing.txt');
+      final (isValid, error) = await repository.validateFile('non_existing.txt');
+      expect(error, isNull);
       expect(isValid, isFalse);
     });
 
@@ -49,7 +51,8 @@ void main() {
       final dir = Directory('test_dir');
       await dir.create();
       try {
-        final isValid = await repository.validateFile(dir.path);
+        final (isValid, error) = await repository.validateFile(dir.path);
+        expect(error, isNull);
         expect(isValid, isFalse);
       } finally {
         await dir.delete();
@@ -78,26 +81,6 @@ void main() {
       expect(result, anyOf(isNull, isA<Uint8List>()));
     });
 
-    test('validateFile handles exceptions', () async {
-      await IOOverrides.runZoned(
-        () async {
-          final result = await repository.validateFile(
-            'triggered_exception.txt',
-          );
-          expect(result, isFalse);
-        },
-        createFile: (path) {
-          final mockFile = _MockFile(path);
-          if (path == 'triggered_exception.txt') {
-            when(
-              () => mockFile.exists(),
-            ).thenThrow(const FileSystemException('Test Exception'));
-          }
-          return mockFile;
-        },
-      );
-    });
-
     test('validateFile: file with no read permission still passes stat check',
         () async {
       // After the perf refactor, validateFile only checks stat() (file exists
@@ -107,7 +90,8 @@ void main() {
       await nonReadable.writeAsString('secret');
       await Process.run('chmod', ['000', nonReadable.path]);
       try {
-        final result = await repository.validateFile(nonReadable.path);
+        final (result, error) = await repository.validateFile(nonReadable.path);
+        expect(error, isNull);
         expect(result, isTrue); // stat succeeds; readability is not checked
       } finally {
         await Process.run('chmod', ['644', nonReadable.path]);
@@ -115,12 +99,13 @@ void main() {
       }
     });
 
-    test('validateFile returns false when stat() throws', () async {
-      // Verify that an exception during stat() is caught and returns false.
+    test('validateFile returns error tuple when stat() throws', () async {
+      // Verify that an exception during stat() is caught and returns an error tuple.
       await IOOverrides.runZoned(
         () async {
-          final result = await repository.validateFile('stat_exception.txt');
-          expect(result, isFalse);
+          final (result, error) = await repository.validateFile('stat_exception.txt');
+          expect(error, isNotNull);
+          expect(result, isNull);
         },
         createFile: (path) {
           final mockFile = _MockFile(path);

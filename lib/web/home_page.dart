@@ -4,6 +4,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easier_drop/web/website_app.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -36,19 +37,15 @@ class _HomePageState extends State<HomePage> {
       fileName = 'CHANGELOG_es.md';
     }
 
-    try {
-      final content = await rootBundle.loadString(fileName);
-      if (mounted) {
-        setState(() {
+    final (content, error) = await safeCall(() => rootBundle.loadString(fileName));
+    if (mounted) {
+      setState(() {
+        if (error != null) {
+          _changelogContent = 'Failed to load changelog: $error';
+        } else if (content != null) {
           _changelogContent = content;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _changelogContent = 'Failed to load changelog: $e';
-        });
-      }
+        }
+      });
     }
   }
 

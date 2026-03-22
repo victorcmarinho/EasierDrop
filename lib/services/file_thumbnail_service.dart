@@ -1,5 +1,6 @@
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/services/file_repository.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 
 class FileThumbnailService {
   final FileRepository _repository;
@@ -11,16 +12,14 @@ class FileThumbnailService {
     required FileReference? Function() getCurrentFile,
     required void Function(FileReference updatedFile) onUpdate,
   }) async {
-    try {
-      await Future.wait([
-        _loadFileIcon(pathname, getCurrentFile, onUpdate),
-        _loadFilePreview(pathname, getCurrentFile, onUpdate),
-      ]);
-    } finally {
-      final current = getCurrentFile();
-      if (current != null && current.isProcessing) {
-        onUpdate(current.withProcessing(false));
-      }
+    await safeCall(() => Future.wait([
+      _loadFileIcon(pathname, getCurrentFile, onUpdate),
+      _loadFilePreview(pathname, getCurrentFile, onUpdate),
+    ]));
+
+    final current = getCurrentFile();
+    if (current != null && current.isProcessing) {
+      onUpdate(current.withProcessing(false));
     }
   }
 

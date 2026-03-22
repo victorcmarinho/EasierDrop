@@ -2,6 +2,7 @@ import 'dart:io' as io;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
 import 'package:easier_drop/services/window_manager_service.dart';
@@ -40,16 +41,20 @@ class NativeEventsService {
     }
   }
 
-  Future<bool> checkShakePermission() async {
-    try {
+  Future<(bool?, Object?)> checkShakePermission() async {
+    final (data, error) = await safeCall(() async {
       final bool? result = await _shakeChannel.invokeMethod<bool>(
         'checkPermission',
       );
       return result ?? false;
-    } catch (e) {
-      AnalyticsService.instance.warn('Failed to check shake permission: $e');
-      return false;
+    });
+
+    if (error != null) {
+      AnalyticsService.instance.warn('Failed to check shake permission: $error');
+      return (null, error);
     }
+    
+    return (data, null);
   }
 
   Future<void> openAccessibilitySettings() async {

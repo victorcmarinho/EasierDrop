@@ -51,7 +51,9 @@ void main() {
         return null;
       });
 
-      expect(await service.checkShakePermission(), isTrue);
+      final (result, error) = await service.checkShakePermission();
+      expect(result, isTrue);
+      expect(error, isNull);
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, null);
     });
@@ -122,7 +124,9 @@ void main() {
         throw Exception('Native Error');
       });
 
-      expect(await service.checkShakePermission(), isFalse);
+      final (result, error) = await service.checkShakePermission();
+      expect(result, isNull);
+      expect(error, isNotNull);
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, null);
     });

@@ -9,6 +9,7 @@ import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'drag_coordinator_types.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 
 class DragCoordinator {
   DragCoordinator(this.context);
@@ -124,17 +125,16 @@ class DragCoordinator {
 
     draggingOut.value = true;
 
-    try {
+    await safeCall(() async {
       await DragOutService.instance.beginDrag(filePaths);
       AnalyticsService.instance.info(
         'External drag started',
         tag: DragCoordinatorConfig.logTag,
       );
-    } finally {
-      Future.delayed(DragCoordinatorConfig.dragEndDelay, () {
-        draggingOut.value = false;
-      });
-    }
+    });
+    Future.delayed(DragCoordinatorConfig.dragEndDelay, () {
+      draggingOut.value = false;
+    });
     // coverage:ignore-end
   }
 

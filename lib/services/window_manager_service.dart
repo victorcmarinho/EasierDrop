@@ -9,6 +9,7 @@ import 'package:easier_drop/services/analytics_service.dart';
 import 'package:easier_drop/services/settings_service.dart';
 import 'package:easier_drop/services/tray_service.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
+import 'package:easier_drop/core/utils/result_handler.dart';
 
 class WindowManagerService with WindowListener {
   static final WindowManagerService _instance = WindowManagerService._();
@@ -79,7 +80,7 @@ class WindowManagerService with WindowListener {
       SettingsService.instance.settings.isAlwaysOnTop,
     );
 
-    try {
+    final (_, error) = await safeCall(() async {
       final controller = await WindowController.fromCurrentEngine();
       final args = jsonDecode(controller.arguments) as Map<String, dynamic>;
 
@@ -111,8 +112,10 @@ class WindowManagerService with WindowListener {
       }
 
       await controller.show();
-    } catch (e) {
-      AnalyticsService.instance.warn('Failed to setup secondary window: $e');
+    });
+
+    if (error != null) {
+      AnalyticsService.instance.warn('Failed to setup secondary window: $error');
       if (windowId != null) {
         WindowController.fromWindowId(windowId).show();
       }
@@ -159,13 +162,12 @@ class WindowManagerService with WindowListener {
   Future<void> _restoreWindowPosition() async {
     final s = SettingsService.instance;
     if (s.windowX != null && s.windowY != null) {
-      try {
-        await windowManager.setPosition(
-          Offset(s.windowX!.toDouble(), s.windowY!.toDouble()),
-          animate: false,
-        );
-      } catch (e) {
-        AnalyticsService.instance.warn('Failed to restore window position: $e');
+      final (_, error) = await safeCall(() => windowManager.setPosition(
+        Offset(s.windowX!.toDouble(), s.windowY!.toDouble()),
+        animate: false,
+      ));
+      if (error != null) {
+        AnalyticsService.instance.warn('Failed to restore window position: $error');
       }
     }
   }
