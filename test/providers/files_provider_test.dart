@@ -44,7 +44,7 @@ void main() {
       pathname: any(named: 'pathname'),
       getCurrentFile: any(named: 'getCurrentFile'),
       onUpdate: any(named: 'onUpdate'),
-    )).thenAnswer((_) async => null);
+    )).thenAnswer((_) async {});
 
     await SettingsService.instance.load();
     provider = FilesProvider(

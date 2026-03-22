@@ -2,7 +2,7 @@ import 'package:easier_drop/controllers/drag_coordinator.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/services/file_drop_service.dart';
-import 'package:easier_drop/services/constants.dart';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +16,7 @@ void main() {
     late DragCoordinator coordinator;
     late BuildContext context;
 
-    const fileDropChannel = MethodChannel(PlatformChannels.fileDrop);
+
 
     setUp(() async {
       provider = FilesProvider(enableMonitoring: false);
