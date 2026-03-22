@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Architecture**: Introduced a custom `MarqueeText` widget and refactor `MacosUpdatesService` and `WindowManagerService` to support mocking and improved testability.
 - **Dependencies**: Streamlined package dependencies and update various libraries to their latest versions.
 
+### Fixed
+- **Language Selection**: Fixed a bug where the settings screen would always default to English instead of the currently active language.
+- **Settings Initialization**: Fixed an issue where saved settings were not being loaded from disk upon application startup.
+
 ### Removed
 - **Obsolete Tests**: Removed redundant file transfer screen tests and their associated mocks.
 
