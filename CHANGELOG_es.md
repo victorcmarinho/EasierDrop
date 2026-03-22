@@ -10,6 +10,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 ### Añadido
 - **Suite de Pruebas**: Cobertura de pruebas ampliada con pruebas exhaustivas para internacionalización, gestión de temas y la superposición de arrastre.
 - **Accesibilidad**: Se agregaron etiquetas semánticas a `FileNameBadge` para un mejor soporte de lectores de pantalla.
+- **CI/CD**: Añadido un flujo de trabajo en GitHub Actions para ejecutar automáticamente las pruebas y enviar informes de cobertura a Coveralls.
 
 ### Mejorado
 - **Transiciones de Marquee**: Se mejoró la estabilidad y confiabilidad de las animaciones de `MarqueeText`, especialmente durante actualizaciones rápidas de texto y en entornos de prueba.

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Testing Suite**: Expanded test coverage with comprehensive tests for internationalization, theme management, and the dragging overlay.
 - **Accessibility**: Added semantic labels to `FileNameBadge` for better screen reader support.
+- **CI/CD**: Added a GitHub Actions workflow to automatically run tests and upload coverage reports to Coveralls on pushes and pull requests.
 
 ### Improved
 - **Marquee Transitions**: Improved `MarqueeText` animation stability and reliability, particularly during rapid text updates and in test environments.
