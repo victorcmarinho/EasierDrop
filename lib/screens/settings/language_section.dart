@@ -59,7 +59,12 @@ class LanguageSection extends StatelessWidget {
                       ),
                     ),
                   },
-                  groupValue: settings.localeCode ?? 'en',
+                  groupValue: settings.localeCode ??
+                      (Localizations.localeOf(context).languageCode == 'pt'
+                          ? 'pt_BR'
+                          : Localizations.localeOf(context).languageCode == 'es'
+                              ? 'es'
+                              : 'en'),
                   onValueChanged: (v) {
                     if (v != null) settings.setLocale(v);
                   },

@@ -1,3 +1,4 @@
+import 'package:easier_drop/services/settings_service.dart';
 import 'package:easier_drop/services/window_manager_service.dart';
 import 'package:easier_drop/services/native_events_service.dart';
 
@@ -7,6 +8,7 @@ class SystemHelper {
     String? windowId,
   }) async {
     NativeEventsService.instance.initialize();
+    await SettingsService.instance.load();
     await WindowManagerService.instance.initialize(
       isSecondaryWindow: isSecondaryWindow,
       windowId: windowId,
