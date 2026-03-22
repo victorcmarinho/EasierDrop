@@ -114,6 +114,7 @@ class FilesSurface extends StatelessWidget {
           label: loc.semAreaLabel,
           hint: hint,
           liveRegion: true,
+          explicitChildNodes: true,
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,

@@ -38,8 +38,8 @@ void main() {
     registerFallbackValue('/default/path');
   });
 
-  group('FilesProvider Tests', () {
-    test('addFile adds a single file and manages isProcessing', () async {
+  group('Testes do FilesProvider', () {
+    test('addFile adiciona um único arquivo e gerencia isProcessing', () async {
       final file = const FileReference(pathname: '/path/to/file1.txt');
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
@@ -61,7 +61,7 @@ void main() {
       verify(() => mockRepo.validateFile('/path/to/file1.txt')).called(1);
     });
 
-    test('addFiles adds multiple files and manages isProcessing', () async {
+    test('addFiles adiciona múltiplos arquivos e gerencia isProcessing', () async {
       final file1 = const FileReference(pathname: '/path/to/file1.txt');
       final file2 = const FileReference(pathname: '/path/to/file2.txt');
 
@@ -81,7 +81,7 @@ void main() {
       expect(provider.files.every((f) => !f.isProcessing), true);
     });
 
-    test('does not add duplicate files', () async {
+    test('não adiciona arquivos duplicados', () async {
       final file1 = const FileReference(pathname: '/path/to/file1.txt');
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
@@ -95,7 +95,7 @@ void main() {
       expect(provider.files.length, 1);
     });
 
-    test('clear removes all files', () async {
+    test('clear remove todos os arquivos', () async {
       final file1 = const FileReference(pathname: '/path/to/file1.txt');
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
@@ -111,7 +111,7 @@ void main() {
       expect(provider.files.isEmpty, true);
     });
 
-    test('removeFile removes specific file', () async {
+    test('removeFile remove um arquivo específico', () async {
       final file1 = const FileReference(pathname: '/path/to/file1.txt');
 
       when(() => mockRepo.validateFile(any())).thenAnswer((_) async => true);
@@ -127,7 +127,7 @@ void main() {
       expect(provider.files.isEmpty, true);
     });
 
-    test('removeByPath removes specific file by path', () async {
+    test('removeByPath remove um arquivo específico pelo caminho', () async {
       const path = '/path/to/file1.txt';
       final file1 = const FileReference(pathname: path);
 
@@ -144,7 +144,7 @@ void main() {
       expect(provider.files.isEmpty, true);
     });
 
-    test('respects maxFiles limit', () async {
+    test('respeita o limite maxFiles', () async {
       provider = FilesProvider(
         repository: mockRepo,
         enableMonitoring: false,
@@ -167,13 +167,13 @@ void main() {
       expect(provider.lastLimitHit, isNotNull);
     });
 
-    test('maxFiles override via SettingsService', () async {
+    test('sobreposição de maxFiles via SettingsService', () async {
       provider = FilesProvider(repository: mockRepo, enableMonitoring: false);
 
       expect(provider.files.isEmpty, true);
     });
 
-    test('rescan removes invalid files', () async {
+    test('rescan remove arquivos inválidos', () async {
       provider = FilesProvider(
         repository: mockRepo,
         enableMonitoring: false,
@@ -200,7 +200,7 @@ void main() {
       expect(provider.files.first.pathname, '/valid.txt');
     });
 
-    test('resolveShareMessage returns correct localizations', () {
+    test('resolveShareMessage retorna as localizações corretas', () {
       final loc = AppLocalizationsEn();
 
       expect(
@@ -214,12 +214,12 @@ void main() {
       expect(ShareMessageHelper.resolveShareMessage('custom', loc), 'custom');
     });
 
-    test('dispose cancels timer', () {
+    test('dispose cancela o timer', () {
       final provider = FilesProvider(enableMonitoring: true);
       expect(() => provider.dispose(), returnsNormally);
     });
 
-    test('shared handles empty list', () async {
+    test('shared lida com lista vazia', () async {
       final result = await provider.shared();
       expect(result.toString(), contains('shareNone'));
     });

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 void main() {
-  testWidgets('HoverIconButton hover & press states', (tester) async {
+  testWidgets('HoverIconButton estados de hover e pressionado', (tester) async {
     int taps = 0;
     await tester.pumpWidget(
       MacosApp(
@@ -12,14 +12,14 @@ void main() {
           child: HoverIconButton(
             icon: const Icon(Icons.add),
             onPressed: () => taps++,
-            semanticsLabel: 'Add',
-            semanticsHint: 'Add item',
+            semanticsLabel: 'Adicionar',
+            semanticsHint: 'Adicionar item',
           ),
         ),
       ),
     );
     await tester.pump();
-    final sem = find.bySemanticsLabel('Add');
+    final sem = find.bySemanticsLabel('Adicionar');
     expect(sem, findsOneWidget);
 
     await tester.tap(sem);
@@ -27,7 +27,7 @@ void main() {
     expect(taps, 1);
   });
 
-  testWidgets('HoverIconButton disabled has no tap', (tester) async {
+  testWidgets('HoverIconButton desativado não recebe toque', (tester) async {
     int taps = 0;
     await tester.pumpWidget(
       const MacosApp(
@@ -35,19 +35,19 @@ void main() {
           child: HoverIconButton(
             icon: Icon(Icons.remove),
             enabled: false,
-            semanticsLabel: 'Disabled',
+            semanticsLabel: 'Desativado',
           ),
         ),
       ),
     );
     await tester.pump();
-    final sem = find.bySemanticsLabel('Disabled');
+    final sem = find.bySemanticsLabel('Desativado');
     await tester.tap(sem);
     await tester.pump();
     expect(taps, 0);
   });
 
-  testWidgets('HoverIconButton focus highlight without semantics', (
+  testWidgets('HoverIconButton destaque de foco sem semântica', (
     tester,
   ) async {
     int taps = 0;

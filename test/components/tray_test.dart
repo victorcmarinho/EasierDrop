@@ -19,7 +19,7 @@ void main() {
     return ChangeNotifierProvider<FilesProvider>.value(
       value: MockFilesProvider(),
       child: Localizations(
-        locale: const Locale('en'),
+        locale: const Locale('pt'),
         delegates: const [
           AppLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,

@@ -100,7 +100,7 @@ void main() {
     handler = KeyboardShortcutHandler(mockFilesProvider);
   });
 
-  group('FileTransferScreen handler', () {
+  group('Manipulador do FileTransferScreen', () {
     test('Cmd+Backspace limpa arquivos quando há arquivos', () {
       when(
         mockFilesProvider.files,

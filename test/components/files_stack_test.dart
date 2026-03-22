@@ -10,20 +10,21 @@ import 'package:easier_drop/l10n/app_localizations.dart';
 class MockFileReference extends Mock implements FileReference {}
 
 void main() {
-  group('FilesStack Widget Tests', () {
-    testWidgets('renders drop here text when empty', (tester) async {
+  group('Testes do Widget FilesStack', () {
+    testWidgets('renderiza o texto de soltar quando vazio', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('pt'),
           home: Scaffold(body: FilesStack(droppedFiles: [])),
         ),
       );
 
-      expect(find.text('Drop files here'), findsOneWidget);
+      expect(find.text('Jogue os arquivos aqui'), findsOneWidget);
     });
 
-    testWidgets('renders file icons when files are present', (tester) async {
+    testWidgets('renderiza ícones de arquivos quando arquivos estão presentes', (tester) async {
       final validPng = Uint8List.fromList([
         0x89,
         0x50,
@@ -101,6 +102,7 @@ void main() {
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('pt'),
           home: Scaffold(body: FilesStack(droppedFiles: [file1, file2])),
         ),
       );
@@ -111,14 +113,15 @@ void main() {
 
       expect(find.byType(Image), findsNWidgets(2));
     });
-    group('FilesStack Widget Tests Additional', () {
-      testWidgets('renders shimmer when files are processing', (tester) async {
+    group('Testes Adicionais do Widget FilesStack', () {
+      testWidgets('renderiza shimmer quando arquivos estão processando', (tester) async {
         final file1 = const FileReference(pathname: '/path/1', isProcessing: true);
 
         await tester.pumpWidget(
           MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('pt'),
             home: Scaffold(body: FilesStack(droppedFiles: [file1])),
           ),
         );

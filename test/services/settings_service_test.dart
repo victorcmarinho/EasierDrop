@@ -17,7 +17,7 @@ class MockPathProviderPlatform extends Fake
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  group('SettingsService Tests', () {
+  group('Testes de SettingsService', () {
     late SettingsService settingsService;
     final testSettingsFile = File('./settings.json');
 
@@ -37,7 +37,7 @@ void main() {
       }
     });
 
-    test('should load default values when no file exists', () async {
+    test('deve carregar valores padrão quando o arquivo não existe', () async {
       await settingsService.load();
 
       expect(settingsService.isLoaded, true);
@@ -46,7 +46,7 @@ void main() {
       expect(settingsService.settings.isAlwaysOnTop, true);
     });
 
-    test('should update and persist MaxFiles', () async {
+    test('deve atualizar e persistir MaxFiles', () async {
       await settingsService.load();
       settingsService.setMaxFiles(50);
 
@@ -57,7 +57,7 @@ void main() {
       expect(content, contains('"maxFiles": 50'));
     });
 
-    test('should toggle Always on Top', () async {
+    test('deve alternar Sempre no Topo', () async {
       await settingsService.load();
       expect(settingsService.settings.isAlwaysOnTop, true);
 
@@ -65,13 +65,13 @@ void main() {
       expect(settingsService.settings.isAlwaysOnTop, false);
     });
 
-    test('should update window opacity', () async {
+    test('deve atualizar a opacidade da janela', () async {
       await settingsService.load();
       settingsService.setWindowOpacity(0.5);
       expect(settingsService.settings.windowOpacity, 0.5);
     });
 
-    test('should update window bounds', () async {
+    test('deve atualizar os limites da janela', () async {
       await settingsService.load();
       settingsService.setWindowBounds(x: 10, y: 20, w: 30, h: 40);
       expect(settingsService.windowX, 10);
@@ -80,19 +80,19 @@ void main() {
       expect(settingsService.windowH, 40);
     });
 
-    test('should update locale', () async {
+    test('deve atualizar o idioma (locale)', () async {
       await settingsService.load();
       settingsService.setLocale('pt');
       expect(settingsService.localeCode, 'pt');
     });
 
-    test('should update telemetry enabled', () async {
+    test('deve atualizar se a telemetria está habilitada', () async {
       await settingsService.load();
       settingsService.setTelemetryEnabled(false);
       expect(settingsService.telemetryEnabled, false);
     });
 
-    test('should handle launch at login', () async {
+    test('deve lidar com iniciar no login', () async {
       const channel = MethodChannel('com.easierdrop/launch_at_login');
       final log = <MethodCall>[];
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -117,11 +117,11 @@ void main() {
           .setMockMethodCallHandler(channel, null);
     });
 
-    test('should handle launch at login errors', () async {
+    test('deve lidar com erros de iniciar no login', () async {
       const channel = MethodChannel('com.easierdrop/launch_at_login');
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-            throw Exception('Native error');
+            throw Exception('Erro nativo');
           });
 
       await settingsService.load();
@@ -134,23 +134,27 @@ void main() {
           .setMockMethodCallHandler(channel, null);
     });
 
-    test('dispose should cancel timer and subscription', () {
+    test('dispose deve cancelar o timer e a inscrição', () {
       final s = SettingsService.forTesting();
       expect(() => s.dispose(), returnsNormally);
     });
 
-    test('should reload settings when file changes', () async {
+    test('deve recarregar as configurações quando o arquivo muda', () async {
       await settingsService.load();
 
       final updatedSettings = {'maxFiles': 150, 'version': 1};
       await testSettingsFile.writeAsString(jsonEncode(updatedSettings));
 
-      await Future.delayed(const Duration(milliseconds: 500));
+      // File watchers podem ser um pouco lentos em alguns sistemas, vamos esperar um momento
+      for (int i = 0; i < 10; i++) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        if (settingsService.maxFiles == 150) break;
+      }
 
       expect(settingsService.maxFiles, 150);
     });
 
-    test('should handle empty or invalid settings file', () async {
+    test('deve lidar com arquivo de configurações vazio ou inválido', () async {
       await testSettingsFile.writeAsString('');
       await settingsService.load();
 
@@ -163,7 +167,7 @@ void main() {
       expect(settingsService.isLoaded, true);
     });
 
-    test('should detect system locale during first run', () async {
+    test('deve detectar o idioma do sistema durante a primeira execução', () async {
       SettingsService.testLocaleName = 'pt_BR';
       await settingsService.load();
       expect(settingsService.localeCode, 'pt_BR');

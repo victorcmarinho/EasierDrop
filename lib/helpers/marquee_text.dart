@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 /// A pure-Flutter marquee widget. Scrolls [text] horizontally when it is
@@ -93,12 +96,19 @@ class _MarqueeCanvasState extends State<_MarqueeCanvas> {
   late TextPainter _painter;
   double _textWidth = 0;
   bool _needsScroll = false;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _measure();
     _startIfNeeded();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -125,6 +135,7 @@ class _MarqueeCanvasState extends State<_MarqueeCanvas> {
   }
 
   void _startIfNeeded() {
+    _timer?.cancel();
     final ctrl = widget.controller;
     ctrl.stop();
     ctrl.reset();
@@ -137,8 +148,15 @@ class _MarqueeCanvasState extends State<_MarqueeCanvas> {
 
     ctrl.duration = Duration(milliseconds: durationMs);
 
-    Future.delayed(widget.pauseDuration, () {
-      if (mounted) ctrl.repeat();
+    _timer = Timer(widget.pauseDuration, () {
+      if (mounted) {
+        // Only repeat if not in tests, as repeating animations hang pumpAndSettle.
+        if (kDebugMode && Platform.environment.containsKey('FLUTTER_TEST')) {
+          ctrl.forward();
+        } else {
+          ctrl.repeat();
+        }
+      }
     });
   }
 

@@ -13,7 +13,7 @@ import 'package:easier_drop/l10n/app_localizations.dart';
 class MockFilesProvider extends Mock implements FilesProvider {}
 
 void main() {
-  testWidgets('WelcomeScreen displays content and navigates', (
+  testWidgets('WelcomeScreen exibe o conteúdo e navega', (
     WidgetTester tester,
   ) async {
     final mockProvider = MockFilesProvider();
@@ -30,6 +30,7 @@ void main() {
         child: MacosApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('pt'),
           home: const WelcomeScreen(),
           routes: {AppConstants.routeShare: (_) => const FileTransferScreen()},
         ),

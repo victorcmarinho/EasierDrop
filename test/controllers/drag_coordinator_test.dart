@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  group('DragCoordinator', () {
+  group('Testes de DragCoordinator', () {
     late FilesProvider provider;
     late BuildContext context;
     late DragCoordinator coordinator;
@@ -28,7 +28,7 @@ void main() {
       );
     }
 
-    testWidgets('Clears files on move, retains on copy/unknown', (
+    testWidgets('Limpa arquivos no move, retém no copy/unknown', (
       tester,
     ) async {
       await tester.pumpWidget(buildTestWidget());
@@ -52,7 +52,7 @@ void main() {
       expect(provider.files.length, 0);
     });
 
-    testWidgets('handles different status responses', (tester) async {
+    testWidgets('lida com diferentes respostas de status', (tester) async {
       await tester.pumpWidget(buildTestWidget());
 
       context = tester.element(find.byType(SizedBox));
@@ -73,7 +73,7 @@ void main() {
       expect(provider.files.length, 0);
     });
 
-    testWidgets('handles empty and null responses', (tester) async {
+    testWidgets('lida com respostas vazias e nulas', (tester) async {
       await tester.pumpWidget(buildTestWidget());
 
       context = tester.element(find.byType(SizedBox));
@@ -90,7 +90,7 @@ void main() {
       expect(provider.files.length, 1);
     });
 
-    testWidgets('coordinator can be created and disposed', (tester) async {
+    testWidgets('coordinator pode ser criado e descartado', (tester) async {
       await tester.pumpWidget(buildTestWidget());
 
       context = tester.element(find.byType(SizedBox));
@@ -109,7 +109,7 @@ void main() {
       expect(provider.files.length, 0);
     });
 
-    testWidgets('handles various operation types', (tester) async {
+    testWidgets('lida com vários tipos de operação', (tester) async {
       await tester.pumpWidget(buildTestWidget());
 
       context = tester.element(find.byType(SizedBox));
@@ -133,7 +133,7 @@ void main() {
       }
     });
 
-    testWidgets('init and dispose cover more lines', (tester) async {
+    testWidgets('init e dispose cobrem mais linhas', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       context = tester.element(find.byType(SizedBox));
       coordinator = DragCoordinator(context);
@@ -161,7 +161,7 @@ void main() {
           .setMockMethodCallHandler(dragOutChannel, null);
     });
 
-    testWidgets('beginExternalDrag handles states', (tester) async {
+    testWidgets('beginExternalDrag lida com estados', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       context = tester.element(find.byType(SizedBox));
       coordinator = DragCoordinator(context);

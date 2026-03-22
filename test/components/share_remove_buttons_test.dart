@@ -16,7 +16,7 @@ Widget _wrap(FilesProvider provider, Widget child) =>
         debugShowCheckedModeBanner: false,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
+        locale: const Locale('pt'),
         home: MacosWindow(
           child: MediaQuery(
             data: const MediaQueryData(size: Size(420, 320)),
@@ -42,7 +42,7 @@ FilesSurface _surface(BuildContext c, FilesProvider p) => FilesSurface(
 );
 
 void main() {
-  testWidgets('Share & Remove buttons semantics reflect file counts', (
+  testWidgets('Semântica dos botões Share & Remove reflete a contagem de arquivos', (
     tester,
   ) async {
     final provider = FilesProvider(enableMonitoring: false);
@@ -56,7 +56,7 @@ void main() {
     }
 
     await pump();
-    final loc = await AppLocalizations.delegate.load(const Locale('en'));
+    final loc = await AppLocalizations.delegate.load(const Locale('pt'));
 
     expect(find.byType(ShareButton), findsNothing);
     expect(find.byType(RemoveButton), findsNothing);

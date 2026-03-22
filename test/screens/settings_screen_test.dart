@@ -65,29 +65,30 @@ void main() {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('en', '')],
+      supportedLocales: const [Locale('pt', '')],
+      locale: const Locale('pt', ''),
       home: const SettingsScreen(),
     );
   }
 
-  testWidgets('SettingsScreen renders correctly', (WidgetTester tester) async {
+  testWidgets('SettingsScreen renderiza corretamente', (WidgetTester tester) async {
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
 
-    expect(find.text('Preferences'), findsOneWidget);
+    expect(find.text('Preferências'), findsOneWidget);
 
-    expect(find.text('GENERAL'), findsOneWidget);
-    expect(find.text('SHAKE GESTURE'), findsOneWidget);
-    expect(find.text('LANGUAGE:'), findsOneWidget);
+    expect(find.text('GERAL'), findsOneWidget);
+    expect(find.text('GESTO DE AGITAR'), findsOneWidget);
+    expect(find.text('IDIOMA:'), findsOneWidget);
 
-    expect(find.text('Launch at Login'), findsOneWidget);
-    expect(find.text('Always on Top'), findsOneWidget);
-    expect(find.text('Shake Gesture'), findsOneWidget);
+    expect(find.text('Iniciar no Login'), findsOneWidget);
+    expect(find.text('Sempre no Topo'), findsOneWidget);
+    expect(find.text('Gesto de Agitar'), findsOneWidget);
 
-    expect(find.text('Active'), findsOneWidget);
+    expect(find.text('Ativo'), findsOneWidget);
   });
 
-  testWidgets('SettingsScreen handles missing permission', (
+  testWidgets('SettingsScreen lida com falta de permissão', (
     WidgetTester tester,
   ) async {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -101,6 +102,6 @@ void main() {
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
 
-    expect(find.text('Inactive'), findsOneWidget);
+    expect(find.text('Inativo'), findsOneWidget);
   });
 }

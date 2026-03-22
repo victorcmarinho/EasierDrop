@@ -45,7 +45,9 @@ FilesSurface _surface(
 );
 
 void main() {
-  testWidgets('Semantics hints change with file count', (tester) async {
+  testWidgets('Dicas semânticas mudam com a contagem de arquivos', (
+    tester,
+  ) async {
     final provider = FilesProvider(enableMonitoring: false);
     AppLocalizations? loc;
     await tester.pumpWidget(
@@ -70,10 +72,10 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.textContaining('one.txt'), findsOneWidget);
+    expect(find.bySemanticsLabel('one.txt'), findsOneWidget);
   });
 
-  testWidgets('ShareNone message resolver', (tester) async {
+  testWidgets('Resolvedor de mensagem ShareNone', (tester) async {
     final provider = FilesProvider(enableMonitoring: false);
     AppLocalizations? loc;
     await tester.pumpWidget(

@@ -16,7 +16,7 @@ Widget _wrapWithApp({required FilesProvider provider, required Widget child}) {
       debugShowCheckedModeBanner: false,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('en'),
+      locale: const Locale('pt'),
       home: MacosWindow(
         child: MediaQuery(
           data: const MediaQueryData(size: Size(400, 300)),
@@ -50,7 +50,7 @@ FilesSurface _buildSurface(
 }
 
 void main() {
-  testWidgets('FilesSurface shows badge after adding a file', (tester) async {
+  testWidgets('FilesSurface exibe o badge após adicionar um arquivo', (tester) async {
     final provider = FilesProvider(enableMonitoring: false);
     await tester.pumpWidget(
       _wrapWithApp(
@@ -74,9 +74,9 @@ void main() {
     expect(find.byType(FileNameBadge), findsOneWidget);
   });
 
-  testWidgets('FilesSurface shows limit overlay text', (tester) async {
+  testWidgets('FilesSurface exibe o texto de limite atingido', (tester) async {
     final provider = FilesProvider(enableMonitoring: false);
-    final loc = await AppLocalizations.delegate.load(const Locale('en'));
+    final loc = await AppLocalizations.delegate.load(const Locale('pt'));
     await tester.pumpWidget(
       _wrapWithApp(
         provider: provider,

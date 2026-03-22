@@ -3,13 +3,13 @@ import 'package:easier_drop/model/file_reference.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('FileReference getters', () {
-    test('fileName extracts filename correctly', () {
+  group('Getters de FileReference', () {
+    test('fileName extrai o nome do arquivo corretamente', () {
       final fileRef = const FileReference(pathname: '/path/to/test_file.txt');
       expect(fileRef.fileName, 'test_file.txt');
     });
 
-    test('extension extracts extension correctly', () {
+    test('extension extrai a extensão corretamente', () {
       final fileRef1 = const FileReference(pathname: '/path/to/test_file.txt');
       expect(fileRef1.extension, 'txt');
 
@@ -17,7 +17,7 @@ void main() {
       expect(fileRef2.extension, 'test_file');
     });
 
-    test('extension handles edge cases correctly', () {
+    test('extension lida com casos extremos corretamente', () {
       final fileRef1 = const FileReference(pathname: '/path/to/.gitignore');
       expect(fileRef1.extension, '.gitignore');
 
@@ -29,8 +29,8 @@ void main() {
     });
   });
 
-  group('FileReference withProcessing', () {
-    test('withProcessing creates new reference with processing state', () {
+  group('FileReference com Processamento', () {
+    test('withProcessing cria nova referência com estado de processamento', () {
       final originalRef = const FileReference(pathname: '/path/to/file.txt');
       final newRef = originalRef.withProcessing(true);
 
@@ -39,15 +39,15 @@ void main() {
     });
   });
 
-  group('FileReference other', () {
-    test('toString returns correct format', () {
+  group('FileReference - Outros', () {
+    test('toString retorna o formato correto', () {
       final fileRef = const FileReference(pathname: '/file.txt');
       expect(fileRef.toString(), contains('FileReference(pathname: /file.txt'));
     });
   });
 
-  group('FileReference withIcon and withPreview', () {
-    test('withIcon creates new reference with icon', () {
+  group('FileReference - Ícone e Preview', () {
+    test('withIcon cria nova referência com ícone', () {
       final originalRef = const FileReference(pathname: '/path/to/file.txt');
       final mockIcon = Uint8List.fromList([1, 2, 3, 4]);
       final newRef = originalRef.withIcon(mockIcon);
@@ -56,7 +56,7 @@ void main() {
       expect(newRef.iconData, mockIcon);
     });
 
-    test('withPreview creates new reference with preview', () {
+    test('withPreview cria nova referência com prévia', () {
       final originalRef = const FileReference(pathname: '/path/to/file.txt');
       final mockPreview = Uint8List.fromList([5, 6, 7, 8]);
       final newRef = originalRef.withPreview(mockPreview);
@@ -66,8 +66,8 @@ void main() {
     });
   });
 
-  group('FileReference equality and hashCode', () {
-    test('References to same path are equal regardless of metadata', () {
+  group('FileReference - Igualdade e hashCode', () {
+    test('Referências com o mesmo caminho são iguais, independentemente dos metadados', () {
       final ref1 = const FileReference(pathname: '/path/to/file.txt');
       final ref2 = const FileReference(pathname: '/path/to/file.txt');
       final ref3 = FileReference(

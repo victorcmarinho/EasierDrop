@@ -28,15 +28,18 @@ class FileNameBadge extends StatelessWidget {
             ),
             color: MacosTheme.of(context).primaryColor.withValues(alpha: 0.15),
           ),
-          child: MarqueeText(
-            text: TextSpan(
-              text: label,
-              style: MacosTheme.of(context).typography.caption1.copyWith(
-                fontWeight: FontWeight.w600,
-                color: MacosTheme.of(context).typography.body.color,
+          child: Semantics(
+            label: label,
+            child: MarqueeText(
+              text: TextSpan(
+                text: label,
+                style: MacosTheme.of(context).typography.caption1.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: MacosTheme.of(context).typography.body.color,
+                ),
               ),
+              speed: 20,
             ),
-            speed: 20,
           ),
         ),
       ),
