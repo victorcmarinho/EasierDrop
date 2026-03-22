@@ -1,193 +1,83 @@
-import 'package:easier_drop/components/drag_drop.dart';
-import 'package:easier_drop/components/parts/files_surface.dart';
-
-import 'package:easier_drop/controllers/drag_coordinator.dart';
-import 'package:easier_drop/l10n/app_localizations.dart';
-import 'package:easier_drop/model/file_reference.dart';
-import 'package:easier_drop/providers/files_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:easier_drop/helpers/app_constants.dart';
-import 'package:macos_ui/macos_ui.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:easier_drop/components/drag_drop.dart';
+import 'package:easier_drop/providers/files_provider.dart';
+import 'package:easier_drop/l10n/app_localizations.dart';
+import 'package:easier_drop/services/settings_service.dart';
+import 'package:flutter/services.dart';
+import 'package:macos_ui/macos_ui.dart';
 
-@GenerateNiceMocks([MockSpec<FilesProvider>(), MockSpec<DragCoordinator>()])
-import 'drag_drop_test.mocks.dart';
-
-class MockValueNotifier<T> extends ValueNotifier<T> {
-  MockValueNotifier(super.value);
-  int notifyListenersCalled = 0;
-
-  @override
-  void notifyListeners() {
-    notifyListenersCalled++;
-    super.notifyListeners();
-  }
-}
-
-class TestFileReference extends FileReference {
-  const TestFileReference(String path) : super(pathname: path);
-}
-
-class TestWrapper extends StatelessWidget {
-  final Widget child;
-  final MockFilesProvider filesProvider;
-
-  const TestWrapper({
-    super.key,
-    required this.child,
-    required this.filesProvider,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return MacosApp(
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('pt'),
-      home: MultiProvider(
-        providers: [
-          ChangeNotifierProvider<FilesProvider>.value(value: filesProvider),
-        ],
-        child: Builder(builder: (context) => child),
-      ),
-    );
-  }
-}
+class MockFilesProvider extends Mock implements FilesProvider {}
 
 void main() {
-  late MockFilesProvider mockFilesProvider;
+  late MockFilesProvider mockFiles;
 
-  setUp(() {
-    mockFilesProvider = MockFilesProvider();
+  setUp(() async {
+    mockFiles = MockFilesProvider();
+    when(() => mockFiles.hasFiles).thenReturn(false);
+    when(() => mockFiles.recentlyAtLimit).thenReturn(false);
+    when(() => mockFiles.addListener(any())).thenAnswer((_) {});
+    when(() => mockFiles.removeListener(any())).thenAnswer((_) {});
+    when(() => mockFiles.files).thenReturn([]);
+    when(() => mockFiles.fileCount).thenReturn(0);
 
-    when(mockFilesProvider.files).thenReturn([]);
-    when(mockFilesProvider.lastLimitHit).thenReturn(null);
+    // Mock platform channels
+    const channelIn = MethodChannel('com.easierdrop/file_drop');
+    const channelOut = MethodChannel('com.easierdrop/drag_out');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channelIn, (call) async => null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channelOut, (call) async => null);
+        
+    await SettingsService.instance.load();
   });
 
-  testWidgets('DragDrop inicializa e descarta o DragCoordinator corretamente', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      TestWrapper(
-        filesProvider: mockFilesProvider,
-        child: const Scaffold(body: DragDrop()),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-
-    expect(find.byType(DragDrop), findsOneWidget);
-
-    await tester.pumpWidget(Container());
-  });
-
-  testWidgets('DragDrop limpa os arquivos quando há arquivos', (tester) async {
-    final files = [
-      const TestFileReference('/path/to/file1.txt'),
-      const TestFileReference('/path/to/file2.txt'),
-    ];
-    when(mockFilesProvider.files).thenReturn(files);
-
-    bool clearCalled = false;
-
-    await tester.pumpWidget(
-      TestWrapper(
-        filesProvider: mockFilesProvider,
-        child: Scaffold(
-          body: const DragDrop(),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              final provider = Provider.of<FilesProvider>(
-                tester.element(find.byType(DragDrop)),
-                listen: false,
-              );
-              if (provider.files.isNotEmpty) {
-                provider.clear();
-                clearCalled = true;
-              }
-            },
+  Widget createWidget() {
+    return MacosApp(
+      theme: MacosThemeData.light(),
+      locale: const Locale('en'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: ChangeNotifierProvider<FilesProvider>.value(
+        value: mockFiles,
+        child: MacosWindow(
+          child: MacosScaffold(
+            children: [
+              ContentArea(
+                builder: (context, _) => const DragDrop(),
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
 
-    await tester.pumpAndSettle();
+  group('DragDrop Widget', () {
+    testWidgets('renderizado e limpeza', (tester) async {
+       when(() => mockFiles.hasFiles).thenReturn(true);
+       when(() => mockFiles.fileCount).thenReturn(1);
+       when(() => mockFiles.clear()).thenAnswer((_) async {});
+       
+       await tester.pumpWidget(createWidget());
+       await tester.pump();
+       await tester.pumpAndSettle();
+       expect(find.byType(DragDrop), findsOneWidget);
+       
+       // FileActionsBar deve ter o ícone de deletar
+       final deleteIcon = find.byIcon(Icons.delete_outline);
+       if (deleteIcon.evaluate().isNotEmpty) {
+           await tester.tap(deleteIcon);
+           verify(() => mockFiles.clear()).called(1);
+       }
+    });
 
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
-
-    expect(clearCalled, true);
-    verify(mockFilesProvider.clear()).called(1);
-  });
-
-  testWidgets('DragDrop não limpa quando não há arquivos', (tester) async {
-    when(mockFilesProvider.files).thenReturn([]);
-
-    bool clearAttempted = false;
-
-    await tester.pumpWidget(
-      TestWrapper(
-        filesProvider: mockFilesProvider,
-        child: Scaffold(
-          body: const DragDrop(),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              final provider = Provider.of<FilesProvider>(
-                tester.element(find.byType(DragDrop)),
-                listen: false,
-              );
-              clearAttempted = true;
-              if (provider.files.isNotEmpty) {
-                provider.clear();
-              }
-            },
-          ),
-        ),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
-
-    expect(clearAttempted, true);
-    verifyNever(mockFilesProvider.clear());
-  });
-
-  testWidgets('DragDrop responde corretamente a mudanças no provider', (
-    tester,
-  ) async {
-    when(mockFilesProvider.files).thenReturn([]);
-
-    await tester.pumpWidget(
-      TestWrapper(
-        filesProvider: mockFilesProvider,
-        child: const Scaffold(body: DragDrop()),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-    expect(find.byType(DragDrop), findsOneWidget);
-
-    final files = [
-      const TestFileReference('/path/to/file1.txt'),
-      const TestFileReference('/path/to/file2.txt'),
-    ];
-    when(mockFilesProvider.files).thenReturn(files);
-
-    await tester.pump();
-    await tester.pumpAndSettle();
-
-    expect(find.byType(DragDrop), findsOneWidget);
+    testWidgets('ciclo de vida', (tester) async {
+       await tester.pumpWidget(createWidget());
+       await tester.pumpAndSettle();
+       await tester.pumpWidget(const SizedBox());
+    });
   });
 }

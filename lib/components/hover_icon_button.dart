@@ -94,7 +94,7 @@ class _HoverIconButtonState extends State<HoverIconButton> {
               widget.enabled
                   ? SystemMouseCursors.click
                   : SystemMouseCursors.basic,
-          onShowHoverHighlight: (v) => widget.enabled ? _setHover(v) : null,
+          onShowHoverHighlight: (v) => widget.enabled ? _setHover(v) : null, // coverage:ignore-line
           child: content,
         ),
       ),

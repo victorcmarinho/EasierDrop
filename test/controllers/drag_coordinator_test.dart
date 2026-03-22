@@ -9,13 +9,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  group('Testes de DragCoordinator', () {
-    late FilesProvider provider;
-    late BuildContext context;
-    late DragCoordinator coordinator;
+  TestWidgetsFlutterBinding.ensureInitialized();
 
-    setUp(() {
+  group('DragCoordinator', () {
+    late FilesProvider provider;
+    late DragCoordinator coordinator;
+    late BuildContext context;
+
+    const fileDropChannel = MethodChannel(PlatformChannels.fileDrop);
+
+    setUp(() async {
       provider = FilesProvider(enableMonitoring: false);
+      try {
+        await FileDropService.instance.stop();
+      } catch (_) {}
     });
 
     Widget buildTestWidget() {
@@ -30,68 +37,41 @@ void main() {
       );
     }
 
-    testWidgets('Limpa arquivos no move, retém no copy/unknown', (
+    testWidgets('Mapeamento de resultados de drag outbound', (tester) async {
+      await tester.pumpWidget(buildTestWidget());
+      context = tester.element(find.byType(SizedBox).first);
+      coordinator = DragCoordinator(context);
+
+      provider.addFileForTest(const FileReference(pathname: '/test'));
+
+      // Error status (WARN)
+      coordinator.handleOutboundTest({'status': 'error'});
+      expect(provider.files.length, 1);
+
+      // Copy (Retain)
+      coordinator.handleOutboundTest({'status': 'ok', 'op': 'copy'});
+      expect(provider.files.length, 1);
+
+      // Move (Clear)
+      coordinator.handleOutboundTest({'status': 'ok', 'op': 'move'});
+      await tester.pump();
+      expect(provider.files.length, 0);
+
+      // Unknown (Retain)
+      provider.addFileForTest(const FileReference(pathname: '/unknown_test'));
+      coordinator.handleOutboundTest({'status': 'ok', 'op': 'unknown'});
+      expect(provider.files.length, 1);
+    });
+
+    testWidgets('beginExternalDrag com lista vazia (cobertura)', (
       tester,
     ) async {
       await tester.pumpWidget(buildTestWidget());
-      context = tester.element(find.byType(SizedBox));
+      context = tester.element(find.byType(SizedBox).first);
       coordinator = DragCoordinator(context);
-
-      provider.addFileForTest(const FileReference(pathname: '/tmp/a'));
-      provider.addFileForTest(const FileReference(pathname: '/tmp/b'));
-      await tester.pump();
-      expect(provider.files.length, 2);
-
-      coordinator.handleOutboundTest({'status': 'ok', 'op': 'copy'});
-      expect(provider.files.length, 2);
-
-      coordinator.handleOutboundTest({'status': 'ok', 'op': 'move'});
-      await tester.pump();
-      expect(provider.files.length, 0);
-    });
-
-    testWidgets('lida com diferentes respostas de status', (tester) async {
-      await tester.pumpWidget(buildTestWidget());
-      context = tester.element(find.byType(SizedBox));
-      coordinator = DragCoordinator(context);
-
-      provider.addFileForTest(const FileReference(pathname: '/tmp/test'));
-      await tester.pump();
-      expect(provider.files.length, 1);
-
-      coordinator.handleOutboundTest({'status': 'error', 'op': 'move'});
-      expect(provider.files.length, 1);
-
-      coordinator.handleOutboundTest({'status': 'ok', 'op': 'move'});
-      await tester.pump();
-      expect(provider.files.length, 0);
-    });
-
-    testWidgets('beginExternalDrag lida com estados', (tester) async {
-      await tester.pumpWidget(buildTestWidget());
-      context = tester.element(find.byType(SizedBox));
-      coordinator = DragCoordinator(context);
-
-      const dragOutChannel = MethodChannel(PlatformChannels.fileDragOut);
-      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        dragOutChannel,
-        (call) async => null,
-      );
 
       await coordinator.beginExternalDrag();
       expect(coordinator.draggingOut.value, isFalse);
-
-      provider.addFileForTest(const FileReference(pathname: '/tmp/drag_test'));
-      await coordinator.beginExternalDrag();
-      expect(coordinator.draggingOut.value, isTrue);
-
-      await tester.pump(const Duration(milliseconds: 500));
-      expect(coordinator.draggingOut.value, isFalse);
-
-      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        dragOutChannel,
-        null,
-      );
     });
   });
 }

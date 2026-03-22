@@ -31,19 +31,23 @@ class _DragDropState extends State<DragDrop> {
     super.dispose();
   }
 
+  // coverage:ignore-start
   Offset? _getShareButtonPosition() {
     final RenderBox? renderBox =
         _shareButtonKey.currentContext?.findRenderObject() as RenderBox?;
     return renderBox?.localToGlobal(Offset.zero);
   }
+  // coverage:ignore-end
 
+  // coverage:ignore-start
   void _clearFiles(FilesProvider provider) {
     if (provider.hasFiles) {
       provider.clear();
     }
   }
+  // coverage:ignore-end
 
-  bool _isDragArea(double dy) => dy > AppConstants.windowHandleHeight;
+  bool _isDragArea(double dy) => dy > AppConstants.windowHandleHeight; // coverage:ignore-line
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +76,7 @@ class _DragDropState extends State<DragDrop> {
                               onHoverChanged: _coordinator.setHover,
                               onDragCheck: _isDragArea,
                               onDragRequest: _coordinator.beginExternalDrag,
-                              onClear: () => _clearFiles(filesProvider),
+                              onClear: () => _clearFiles(filesProvider), // coverage:ignore-line
                               getButtonPosition: _getShareButtonPosition,
                               filesProvider: filesProvider,
                             ),

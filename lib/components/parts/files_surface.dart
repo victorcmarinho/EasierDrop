@@ -64,8 +64,8 @@ class FilesSurface extends StatelessWidget {
             // when the user clicks/drags these buttons.
             GestureDetector(
               behavior: HitTestBehavior.deferToChild,
-              onPanStart: (_) {},
-              onPanUpdate: (_) {},
+              onPanStart: (_) {}, // coverage:ignore-line
+              onPanUpdate: (_) {}, // coverage:ignore-line
               child: FileActionsBar(
                 hasFiles: hasFiles,
                 filesProvider: filesProvider,

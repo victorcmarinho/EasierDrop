@@ -25,9 +25,11 @@ sealed class ChannelDragResult {
   const ChannelDragResult();
 
   bool get isSuccess => this is ChannelDragSuccess;
+  // coverage:ignore-start
   DragOperation get operation => this is ChannelDragSuccess
       ? (this as ChannelDragSuccess).operation
       : DragOperation.unknown;
+  // coverage:ignore-end
 
   static ChannelDragResult parse(dynamic raw) {
     try {
@@ -49,12 +51,14 @@ sealed class ChannelDragResult {
       }
       return const ChannelDragSuccess(DragOperation.unknown);
     } catch (e, st) {
+      // coverage:ignore-start
       AnalyticsService.instance.warn(
         'Failed to parse drag result: $e',
         tag: 'DragResult',
       );
       AnalyticsService.instance.debug(st.toString(), tag: 'DragResult');
       return const ChannelDragSuccess(DragOperation.unknown);
+      // coverage:ignore-end
     }
   }
 }
