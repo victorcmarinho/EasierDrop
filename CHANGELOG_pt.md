@@ -5,7 +5,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.0] - 22-03-2026
+## [1.2.0] - 16-05-2026
 
 ### Agradecimentos Especiais
 - Um agradecimento especial ao **Alexandre**, cujo e-mail e feedback inspiraram o esforço para expandir a compatibilidade e levar o Easier Drop para Macs Intel mais antigos rodando macOS 10.15 (Catalina)!
