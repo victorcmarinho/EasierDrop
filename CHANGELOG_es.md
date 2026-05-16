@@ -8,6 +8,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.
 ## [1.2.0] - 2026-03-22
 
 ### Añadido
+- **Retrocompatibilidad**: Soporte ampliado para incluir Macs más antiguos con macOS 10.15 (Catalina).
 - **Suite de Pruebas**: Cobertura de pruebas ampliada con pruebas exhaustivas para internacionalización, gestión de temas y la superposición de arrastre.
 - **Accesibilidad**: Se agregaron etiquetas semánticas a `FileNameBadge` para un mejor soporte de lectores de pantalla.
 - **CI/CD**: Añadido un flujo de trabajo en GitHub Actions para ejecutar automáticamente las pruebas y enviar informes de cobertura a Coveralls.
