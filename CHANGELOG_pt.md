@@ -7,6 +7,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.
 
 ## [1.2.0] - 22-03-2026
 
+### Agradecimentos Especiais
+- Um agradecimento especial ao **Alexandre**, cujo e-mail e feedback inspiraram o esforço para expandir a compatibilidade e levar o Easier Drop para Macs Intel mais antigos rodando macOS 10.15 (Catalina)!
+
 ### Adicionado
 - **Retrocompatibilidade**: Suporte expandido para incluir Macs mais antigos rodando macOS 10.15 (Catalina).
 - **Suíte de Testes**: Cobertura de testes expandida com testes abrangentes para internacionalização, gerenciamento de temas e a sobreposição de arrasto.
