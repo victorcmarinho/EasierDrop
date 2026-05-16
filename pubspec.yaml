@@ -87,4 +87,4 @@ l10n:
 
 
 macos:
-  min_os_version: '13.5'
+  min_os_version: '10.15'

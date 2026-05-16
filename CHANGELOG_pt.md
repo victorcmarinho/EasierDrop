@@ -5,9 +5,13 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.0] - 22-03-2026
+## [1.2.0] - 16-05-2026
+
+### Agradecimentos Especiais
+- Um agradecimento especial ao **Alexandre**, cujo e-mail e feedback inspiraram o esforço para expandir a compatibilidade e levar o Easier Drop para Macs Intel mais antigos rodando macOS 10.15 (Catalina)!
 
 ### Adicionado
+- **Retrocompatibilidade**: Suporte expandido para incluir Macs mais antigos rodando macOS 10.15 (Catalina).
 - **Suíte de Testes**: Cobertura de testes expandida com testes abrangentes para internacionalização, gerenciamento de temas e a sobreposição de arrasto.
 - **Acessibilidade**: Adicionados rótulos semânticos ao `FileNameBadge` para melhor suporte a leitores de tela.
 - **CI/CD**: Adicionado um workflow no GitHub Actions para rodar testes e enviar os relatórios de cobertura para o Coveralls automaticamente.

@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.0] - 2026-03-22
+## [1.2.0] - 2026-05-16
+
+### Special Thanks
+- A special shoutout to **Alexandre**, whose email and feedback inspired the effort to expand compatibility and bring Easier Drop to older Intel Macs running macOS 10.15 (Catalina)!
 
 ### Added
+- **Backward Compatibility**: Expanded support to include older Macs running macOS 10.15 (Catalina).
 - **Testing Suite**: Expanded test coverage with comprehensive tests for internationalization, theme management, and the dragging overlay.
 - **Accessibility**: Added semantic labels to `FileNameBadge` for better screen reader support.
 - **CI/CD**: Added a GitHub Actions workflow to automatically run tests and upload coverage reports to Coveralls on pushes and pull requests.
