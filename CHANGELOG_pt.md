@@ -5,6 +5,15 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 08-08-2026
+
+### Adicionado
+- **Suporte a Pastas**: Agora é possível arrastar e soltar pastas inteiras! As pastas são validadas corretamente e exibem os ícones nativos do macOS de forma elegante.
+
+### Modificado
+- **Dependências**: Realizada uma grande limpeza nas dependências, removendo pacotes `_platform_interface` obsoletos das dev_dependencies para evitar conflitos de versão.
+- **Renderização Markdown**: Substituído o pacote descontinuado `flutter_markdown` pelo pacote mantido pela comunidade `flutter_markdown_plus`.
+
 ## [1.2.0] - 16-05-2026
 
 ### Agradecimentos Especiais

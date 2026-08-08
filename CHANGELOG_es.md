@@ -5,6 +5,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-08-08
+
+### Añadido
+- **Soporte para Carpetas**: ¡Los usuarios ahora pueden arrastrar y soltar carpetas enteras! Las carpetas se validan correctamente y muestran iconos nativos de macOS con elegancia.
+
+### Modificado
+- **Dependencias**: Se realizó una gran limpieza de dependencias, eliminando paquetes `_platform_interface` obsoletos de dev_dependencies para prevenir conflictos de versiones.
+- **Renderizado Markdown**: Se reemplazó el paquete discontinuado `flutter_markdown` por el paquete mantenido por la comunidad `flutter_markdown_plus`.
+
 ## [1.2.0] - 2026-05-16
 
 ### Agradecimientos Especiales
