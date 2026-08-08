@@ -7,12 +7,14 @@ class FileReference {
   final Uint8List? iconData;
   final Uint8List? previewData;
   final bool isProcessing;
+  final bool isFolder;
 
   const FileReference({
     required this.pathname,
     this.iconData,
     this.previewData,
     this.isProcessing = false,
+    this.isFolder = false,
   });
 
   String get fileName => pathname.split(Platform.pathSeparator).last;
@@ -31,6 +33,7 @@ class FileReference {
     iconData: icon,
     previewData: previewData,
     isProcessing: isProcessing,
+    isFolder: isFolder,
   );
 
   FileReference withPreview(Uint8List? preview) => FileReference(
@@ -38,6 +41,7 @@ class FileReference {
     iconData: iconData,
     previewData: preview,
     isProcessing: isProcessing,
+    isFolder: isFolder,
   );
 
   FileReference withProcessing(bool processing) => FileReference(
@@ -45,6 +49,15 @@ class FileReference {
     iconData: iconData,
     previewData: previewData,
     isProcessing: processing,
+    isFolder: isFolder,
+  );
+
+  FileReference withIsFolder(bool folder) => FileReference(
+    pathname: pathname,
+    iconData: iconData,
+    previewData: previewData,
+    isProcessing: isProcessing,
+    isFolder: folder,
   );
 
   @override
@@ -57,5 +70,5 @@ class FileReference {
 
   @override
   String toString() =>
-      'FileReference(pathname: $pathname, hasIcon: ${iconData != null}, hasPreview: ${previewData != null})';
+      'FileReference(pathname: $pathname, isFolder: $isFolder, hasIcon: ${iconData != null}, hasPreview: ${previewData != null})';
 }
