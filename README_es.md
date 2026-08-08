@@ -29,7 +29,10 @@ Easier Drop es tu compañero nativo de productividad para macOS que termina con 
 
 ---
 
-## ✨ Funcionalidades Increíbles (v1.1.2)
+## ✨ Funcionalidades Increíbles (v1.2.1)
+
+### 📂 Soporte para Carpetas
+Arrastra y suelta carpetas enteras sin esfuerzo. Easier Drop gestiona las estructuras de directorios de forma nativa conservando los iconos de carpeta de macOS con elegancia.
 
 ### 📦 Recolecta en cualquier lugar, al instante
 Arrastra desde Finder, Safari, Fotos o incluso tu editor de código. Tus archivos se quedan guardados hasta que estés listo para moverlos.
