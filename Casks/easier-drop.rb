@@ -1,6 +1,6 @@
 cask "easier-drop" do
-  version "1.2.0"
-  sha256 "5dbbf54997008a54eb9dc0316b24a35d44b93fc44e5bcc96ed6303e1987ba01c"
+  version "1.2.1"
+  sha256 "3861dd144d82e4be5e28b2fa67bd42e2ef8f9ddcd8de98980e53e5b90eb02c2a"
 
   url "https://github.com/victorcmarinho/EasierDrop/releases/download/v#{version}/easier_drop-macos-universal-v#{version}.dmg"
   name "Easier Drop"
