@@ -218,4 +218,30 @@ void main() {
       Icons.insert_drive_file,
     );
   });
+
+  testWidgets('AnimatedFileIcon exibe ícone de pasta quando file.isFolder for true', (
+    tester,
+  ) async {
+    final file = const FileReference(pathname: '/test_dir', isFolder: true);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AnimatedFileIcon(
+          file: file,
+          size: 100,
+          rotationDegrees: 0,
+          dx: 0,
+          elevation: 0,
+          duration: Duration.zero,
+          curve: Curves.linear,
+        ),
+      ),
+    );
+
+    expect(find.byType(Icon), findsOneWidget);
+    expect(
+      (tester.widget(find.byType(Icon)) as Icon).icon,
+      Icons.folder,
+    );
+  });
 }
