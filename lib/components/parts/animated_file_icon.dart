@@ -61,6 +61,15 @@ class AnimatedFileIcon extends StatelessWidget {
         fit: BoxFit.contain,
       );
     }
+    
+    if (file.isFolder) {
+      return Icon(
+        Icons.folder,
+        size: size * 0.75,
+        color: const Color(0xFF6EC6FF),
+      );
+    }
+
     return Icon(
       Icons.insert_drive_file,
       size: size * 0.6,
