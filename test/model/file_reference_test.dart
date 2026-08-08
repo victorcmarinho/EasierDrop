@@ -29,7 +29,7 @@ void main() {
     });
   });
 
-  group('FileReference com Processamento', () {
+  group('FileReference com Processamento e Pasta', () {
     test('withProcessing cria nova referência com estado de processamento', () {
       final originalRef = const FileReference(pathname: '/path/to/file.txt');
       final newRef = originalRef.withProcessing(true);
@@ -37,12 +37,21 @@ void main() {
       expect(newRef.pathname, originalRef.pathname);
       expect(newRef.isProcessing, isTrue);
     });
+
+    test('withIsFolder cria nova referência com o campo isFolder', () {
+      final originalRef = const FileReference(pathname: '/path/to/folder');
+      final newRef = originalRef.withIsFolder(true);
+
+      expect(newRef.pathname, originalRef.pathname);
+      expect(newRef.isFolder, isTrue);
+    });
   });
 
   group('FileReference - Outros', () {
     test('toString retorna o formato correto', () {
       final fileRef = const FileReference(pathname: '/file.txt');
       expect(fileRef.toString(), contains('FileReference(pathname: /file.txt'));
+      expect(fileRef.toString(), contains('isFolder: false'));
     });
   });
 

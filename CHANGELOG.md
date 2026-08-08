@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-08-08
+
+### Added
+- **Folder Support**: Users can now drag and drop entire folders! Folders are properly validated and display native macOS icons gracefully.
+
+### Changed
+- **Dependencies**: Performed a major dependency cleanup, removing obsolete `_platform_interface` dev_dependencies to prevent version conflicts.
+- **Markdown Rendering**: Replaced the discontinued `flutter_markdown` package with the community-maintained `flutter_markdown_plus`.
+
 ## [1.2.0] - 2026-05-16
 
 ### Special Thanks

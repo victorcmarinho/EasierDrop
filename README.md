@@ -29,12 +29,15 @@ Easier Drop is your native macOS productivity companion that ends the window-shu
 
 ---
 
-## ✨ Power Features (v1.1.2)
+## ✨ Power Features (v1.2.1)
+
+### 📂 Folder Support
+Drag and drop entire folders effortlessly. Easier Drop handles directory structures natively while preserving crisp macOS folder icons.
 
 ### 📦 Collect Anywhere, Instantly
 Drag from Finder, Safari, Photos, or even your code editor. Your files stay put until you're ready to move them.
 > ![Collecting Files](https://raw.githubusercontent.com/victorcmarinho/EasierDrop/main/assets/promo/useged-2.png)
-> *Stash files from multiple sources into one organized stack.*
+> *Stash files and folders from multiple sources into one organized stack.*
 
 ### 🛠️ Multi-Window Magic
 Need to keep separate piles for different projects? Open multiple Easier Drop windows anywhere on your screen.

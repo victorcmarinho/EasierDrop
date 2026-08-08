@@ -10,7 +10,9 @@ class FileRepository {
   Future<(bool?, Object?)> validateFile(String pathname) async {
     final (data, error) = await safeCall(() async {
       final stat = await File(pathname).stat();
-      return stat.type == FileSystemEntityType.file;
+      if (stat.type == FileSystemEntityType.directory) return true;
+      if (stat.type == FileSystemEntityType.file) return false;
+      throw Exception('Invalid entity type');
     });
 
     if (error != null) {
@@ -26,11 +28,12 @@ class FileRepository {
 
   bool validateFileSync(String pathname) {
     final (result, error) = safeCallSync<bool>(() {
-      final file = File(pathname);
-      if (!file.existsSync()) return false;
-      if (file.statSync().type != FileSystemEntityType.file) return false;
-
-      return _testReadabilitySync(file);
+      final stat = File(pathname).statSync();
+      if (stat.type == FileSystemEntityType.directory) return true;
+      if (stat.type == FileSystemEntityType.file) {
+        return _testReadabilitySync(File(pathname));
+      }
+      return false;
     });
     
     if (error != null) return false;

@@ -20,10 +20,10 @@ void main() {
   });
 
   group('FileRepository', () {
-    test('validateFile returns true for existing file', () async {
+    test('validateFile returns isFolder=false for existing file', () async {
       await IOOverrides.runZoned(() async {
-        final (bool? result, Object? error) = await repository.validateFile('test.txt');
-        expect(result, isTrue);
+        final (bool? isFolder, Object? error) = await repository.validateFile('test.txt');
+        expect(isFolder, isFalse);
         expect(error, isNull);
       }, createFile: (path) {
         final mockFile = _MockFile(path);
@@ -32,11 +32,23 @@ void main() {
       });
     });
 
-    test('validateFile returns false for non-existent file', () async {
+    test('validateFile returns isFolder=true for existing directory', () async {
       await IOOverrides.runZoned(() async {
-        final (bool? result, Object? error) = await repository.validateFile('non_existent.txt');
-        expect(result, isFalse);
+        final (bool? isFolder, Object? error) = await repository.validateFile('test_dir');
+        expect(isFolder, isTrue);
         expect(error, isNull);
+      }, createFile: (path) {
+        final mockFile = _MockFile(path);
+        when(() => mockFile.stat()).thenAnswer((_) async => _MockFileStat(FileSystemEntityType.directory));
+        return mockFile;
+      });
+    });
+
+    test('validateFile returns null for non-existent file or invalid entity', () async {
+      await IOOverrides.runZoned(() async {
+        final (bool? isFolder, Object? error) = await repository.validateFile('non_existent.txt');
+        expect(isFolder, isNull);
+        expect(error, isNotNull);
       }, createFile: (path) {
         final mockFile = _MockFile(path);
         when(() => mockFile.stat()).thenAnswer((_) async => _MockFileStat(FileSystemEntityType.notFound));
@@ -76,10 +88,10 @@ void main() {
       });
     });
 
-    test('validateFileSync returns false for non-file entity', () {
+    test('validateFileSync returns true for directory entity', () {
       IOOverrides.runZoned(() {
         final result = repository.validateFileSync('dir.txt');
-        expect(result, isFalse);
+        expect(result, isTrue);
       }, createFile: (path) {
         final mockFile = _MockFile(path);
         when(() => mockFile.existsSync()).thenReturn(true);

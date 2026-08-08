@@ -87,9 +87,9 @@ class FilesProvider with ChangeNotifier {
       final validated = await Future.wait(
         files.map((f) async {
           if (_files.containsKey(f.pathname)) return null;
-          final (isValid, error) = await _repository.validateFile(f.pathname);
-          if (error != null) return null;
-          return isValid == true ? f : null;
+          final (isFolder, error) = await _repository.validateFile(f.pathname);
+          if (error != null || isFolder == null) return null;
+          return f.withIsFolder(isFolder);
         }),
       );
 

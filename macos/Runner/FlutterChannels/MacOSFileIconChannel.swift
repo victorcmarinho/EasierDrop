@@ -62,6 +62,22 @@ class MacOSFileIconChannel: NSObject {
          }
 
          let fileURL = URL(fileURLWithPath: filePath)
+         var isDirectory: ObjCBool = false
+         if FileManager.default.fileExists(atPath: filePath, isDirectory: &isDirectory), isDirectory.boolValue {
+             // For directories, use NSWorkspace to get the native macOS folder icon
+             let icon = NSWorkspace.shared.icon(forFile: filePath)
+             icon.size = NSSize(width: 256, height: 256)
+             
+             guard let tiffData = icon.tiffRepresentation,
+                   let bitmap = NSBitmapImageRep(data: tiffData),
+                   let pngData = bitmap.representation(using: .png, properties: [:]) else {
+                 result(nil)
+                 return
+             }
+             result(FlutterStandardTypedData(bytes: pngData))
+             return
+         }
+
          let size = CGSize(width: 256, height: 256)
          let scale = NSScreen.main?.backingScaleFactor ?? 2.0
          
@@ -74,6 +90,15 @@ class MacOSFileIconChannel: NSObject {
          
          QLThumbnailGenerator.shared.generateBestRepresentation(for: request) { (thumbnail, error) in
              if error != nil {
+                 // Fallback to generic icon if thumbnail generation fails
+                 let icon = NSWorkspace.shared.icon(forFile: filePath)
+                 icon.size = NSSize(width: 256, height: 256)
+                 if let tiffData = icon.tiffRepresentation,
+                    let bitmap = NSBitmapImageRep(data: tiffData),
+                    let pngData = bitmap.representation(using: .png, properties: [:]) {
+                     result(FlutterStandardTypedData(bytes: pngData))
+                     return
+                 }
                  result(nil)
                  return
              }
