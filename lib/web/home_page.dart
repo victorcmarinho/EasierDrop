@@ -693,7 +693,7 @@ class _HomePageState extends State<HomePage> {
                 ? const Center(child: CircularProgressIndicator())
                 : MarkdownBody(
                     data: _changelogContent,
-                    styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+                    styleSheet: MarkdownStyleSheet(
                       p: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface,
                       ),

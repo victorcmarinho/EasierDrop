@@ -2,7 +2,7 @@ import 'package:easier_drop/components/window_handle.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:flutter/gestures.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' hide GlobalMaterialLocalizations;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:macos_ui/macos_ui.dart';
 
@@ -14,7 +14,7 @@ class TestWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MacosApp(
-      localizationsDelegates: const [
+      localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

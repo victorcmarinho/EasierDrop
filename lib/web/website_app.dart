@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' hide GlobalMaterialLocalizations;
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/web/home_page.dart';
 
@@ -47,7 +47,7 @@ class _WebsiteAppState extends State<WebsiteApp> {
         fontFamily: 'Inter',
       ),
       locale: _locale,
-      localizationsDelegates: const [
+      localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
