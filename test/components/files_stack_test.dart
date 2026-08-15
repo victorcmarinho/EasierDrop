@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:easier_drop/components/files_stack.dart';
 import 'package:easier_drop/model/file_reference.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';

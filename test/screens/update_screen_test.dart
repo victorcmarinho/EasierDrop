@@ -9,7 +9,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class MockUpdateService extends Mock implements UpdateService {}
 

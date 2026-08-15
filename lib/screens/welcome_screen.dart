@@ -1,6 +1,6 @@
 import 'package:easier_drop/components/welcome/animated_welcome_content.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 class WelcomeScreen extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'dart:io' as io;
 import 'dart:convert';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:easier_drop/services/analytics_service.dart';

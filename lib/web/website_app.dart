@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/web/home_page.dart';

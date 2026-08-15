@@ -1,7 +1,7 @@
 import 'package:easier_drop/components/parts/async_file_wrapper.dart';
 import 'dart:math' as math;
 import 'package:easier_drop/model/file_reference.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class AnimatedFileIcon extends StatelessWidget {
   final FileReference file;

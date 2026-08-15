@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:provider/provider.dart';
 

@@ -2,7 +2,7 @@ import 'package:easier_drop/helpers/keyboard_shortcuts.dart';
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/providers/files_provider.dart';
 import 'package:easier_drop/screens/file_transfer_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';

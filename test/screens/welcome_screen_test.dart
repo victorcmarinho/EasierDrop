@@ -1,7 +1,7 @@
 import 'package:easier_drop/screens/welcome_screen.dart';
 import 'package:easier_drop/screens/file_transfer_screen.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:mocktail/mocktail.dart';

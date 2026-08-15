@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:easier_drop/model/file_reference.dart';
 import 'package:easier_drop/l10n/app_localizations.dart';
 import 'package:easier_drop/helpers/app_constants.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'parts/animated_file_icon.dart';
 
 class FilesStack extends StatelessWidget {

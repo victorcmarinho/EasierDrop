@@ -1,5 +1,5 @@
 import 'package:easier_drop/l10n/app_localizations.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 class AnimatedWelcomeContent extends StatelessWidget {

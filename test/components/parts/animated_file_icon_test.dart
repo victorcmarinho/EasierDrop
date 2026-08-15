@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:easier_drop/components/parts/animated_file_icon.dart';
 import 'package:easier_drop/model/file_reference.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
