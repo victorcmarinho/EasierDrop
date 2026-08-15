@@ -60,9 +60,7 @@ void main() {
       theme: MacosThemeData.light(),
       localizationsDelegates: [
         AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+        ...GlobalCupertinoLocalizations.delegates,
       ],
       supportedLocales: const [Locale('pt', '')],
       locale: const Locale('pt', ''),
@@ -135,9 +133,7 @@ void main() {
         theme: MacosThemeData.light(),
         localizationsDelegates: [
           AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
+          ...GlobalCupertinoLocalizations.delegates,
         ],
         supportedLocales: const [Locale('pt', '')],
         locale: const Locale('pt', ''),
@@ -156,9 +152,7 @@ void main() {
         theme: MacosThemeData.light(),
         localizationsDelegates: [
           AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
+          ...GlobalCupertinoLocalizations.delegates,
         ],
         supportedLocales: const [Locale('es', '')],
         locale: const Locale('es', ''),
@@ -177,9 +171,7 @@ void main() {
         theme: MacosThemeData.light(),
         localizationsDelegates: [
           AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
+          ...GlobalCupertinoLocalizations.delegates,
         ],
         supportedLocales: const [Locale('en', '')],
         locale: const Locale('en', ''),
