@@ -13,8 +13,8 @@ class GeneralSettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([SettingsService.instance, viewModel]),
+    return ListenableBuilder(
+      listenable: Listenable.merge([SettingsService.instance, viewModel]),
       builder: (context, _) {
         final settings = SettingsService.instance;
         final loc = AppLocalizations.of(context)!;

@@ -12,8 +12,8 @@ class ShakeGestureSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: viewModel,
+    return ListenableBuilder(
+      listenable: viewModel,
       builder: (context, _) {
         final loc = AppLocalizations.of(context)!;
 

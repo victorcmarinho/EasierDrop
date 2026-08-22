@@ -15,30 +15,25 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen>
-    with WidgetsBindingObserver {
+class _SettingsScreenState extends State<SettingsScreen> {
   late final SettingsViewModel _viewModel;
+  late final AppLifecycleListener _lifecycleListener;
 
   @override
   void initState() {
     super.initState();
     _viewModel = SettingsViewModel();
-    WidgetsBinding.instance.addObserver(this);
+    _lifecycleListener = AppLifecycleListener(
+      onResume: _viewModel.checkPermissions,
+    );
     _viewModel.checkPermissions();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    _lifecycleListener.dispose();
     _viewModel.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _viewModel.checkPermissions();
-    }
   }
 
   @override

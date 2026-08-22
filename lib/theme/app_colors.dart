@@ -6,11 +6,11 @@ class AppColors {
 
   static final Map<int, Color> primaryOpacity = {
     100: primary,
-    80: primary.withAlpha((255 * 0.8).round()),
-    60: primary.withAlpha((255 * 0.6).round()),
-    40: primary.withAlpha((255 * 0.4).round()),
-    20: primary.withAlpha((255 * 0.2).round()),
-    10: primary.withAlpha((255 * 0.1).round()),
+    80: primary.withValues(alpha: 0.8),
+    60: primary.withValues(alpha: 0.6),
+    40: primary.withValues(alpha: 0.4),
+    20: primary.withValues(alpha: 0.2),
+    10: primary.withValues(alpha: 0.1),
   };
 
   static const Map<int, Color> greyScale = {

@@ -9,8 +9,8 @@ class LanguageSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: SettingsService.instance,
+    return ListenableBuilder(
+      listenable: SettingsService.instance,
       builder: (context, _) {
         final settings = SettingsService.instance;
         final loc = AppLocalizations.of(context)!;
